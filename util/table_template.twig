@@ -9,11 +9,6 @@
     use Enobrev\ORM\Field\{{type}} as F_{{type}};
 {% endfor %}
 
-    /**
-{% for field in fields %}
-     * @property {{field.type}} {{field.name}}
-{% endfor %}
-     */
     class {{table.title}} extends Table {
         protected $sTitle = '{{table.name}}';
 
@@ -25,9 +20,22 @@
 
 {% endif %}
 {% endfor %}
+{% for field in fields %}
+        /** @var {{field.type}} {{field.name}} **/
+        public ${{ field.name }};
+
+{% endfor %}
+
         protected function init() {
+{% if primary %}
+{% for field in primary %}
+            $this->addPrimary($this->{{field.name}});
+{% endfor %}
+{% endif %}
+
             $this->addFields(
 {% for field in fields %}
+{% if field.primary == false %}
 {% if field.type == 'F_Enum' %}
                 new {{field.type}}('{{field.name}}', array({% for value in field.values %}self::{{value.const}}{% if not loop.last %}, {% endif %}{% endfor %})){% if not loop.last %},{% endif %}
 
@@ -35,14 +43,9 @@
                 new {{field.type}}('{{field.name}}'){% if not loop.last %},{% endif %}
 
 {% endif %}
+{% endif %}
 {% endfor %}
             );
-
-{% if primary %}
-{% for field in primary %}
-            $this->addPrimary($this->{{field.name}});
-{% endfor %}
-{% endif %}
 
 {% for field in fields %}
 {% if field.default is not empty %}
@@ -97,10 +100,10 @@
          */
         public function insert() {
 {% if date_added %}
-            $this->{{date_added.name}}   = Db::getInstance()->getDate();
+            $this->{{date_added.name}}   = $this->now();
 {% endif %}
 {% if date_updated %}
-            $this->{{date_updated.name}} = Db::getInstance()->getDate();
+            $this->{{date_updated.name}} = $this->now();
 {% endif %}
             return parent::insert();
         }
@@ -111,9 +114,9 @@
          * @return \MySQLi_Result
          */
         public function update() {
-            if ($this->Primary->hasValue()) {
+            if ($this->primaryHasValue()) {
 {% if date_updated %}
-                $this->{{date_updated.name}} = Db::getInstance()->getDate();
+                $this->{{date_updated.name}} = $this->now();
 {% endif %}
                 return parent::update();
             }

@@ -1,5 +1,5 @@
 <?php
-    require_once __DIR__ .'/../../../autoload.php';
+    require_once __DIR__ .'/../vendor/autoload.php';
 
     use Enobrev\ORM\Db;
 
@@ -98,6 +98,7 @@
             foreach($aFields as $sField => $oField) {
                 $oTemplateField = array(
                     'name'    => $sField,
+                    'primary' => false,
                     'var'     => str_replace(' ', '', (ucwords(str_replace('_', ' ', $sField)))),
                     'default' => strlen($oField->Default) ? $oField->Default : null
                 );
@@ -230,6 +231,7 @@
                 }
                 
                 if ($oField->Key == 'PRI') {
+                    $oTemplateField['primary'] = true;
                     $aData['primary'][] = $oTemplateField;
                 }
 

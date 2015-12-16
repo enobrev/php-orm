@@ -101,7 +101,11 @@
                 'date_added'    => false,
                 'date_updated'  => false
             );
-            
+
+            if ($aData['table']['title'] == $aData['table']['plural']) {
+                $aData['table']['plural'] .= 's';
+            }
+
             foreach($aFields as $sField => $oField) {
                 $oTemplateField = array(
                     'name'    => $sField,

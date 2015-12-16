@@ -256,14 +256,16 @@
         /**
          *
          * @param MySQLi_Result $oResult
+         * @return Table
          */
         public function setFromResult(MySQLi_Result $oResult) { 
-            $this->setFromObject($oResult->fetch_object());
+            return $this->setFromObject($oResult->fetch_object());
         }
 
         /**
          *
          * @param stdClass $oData
+         * @return Table
          */
         public function setFromObject(stdClass $oData) {
             $this->oResult = $oData;
@@ -271,17 +273,22 @@
                 /** @var Field $oField */
                 $oField->setValueFromData($oData);
             }
+
+            return $this;
         }
 
         /**
          *
          * @param array $aData
+         * @return Table
          */
         public function setFromArray(Array $aData) {
             foreach ($this->getFields() as &$oField) {
                 /** @var Field $oField */
                 $oField->setValueFromArray($aData);
             }
+
+            return $this;
         }
 
         /**
@@ -330,7 +337,7 @@
          * @return Table|null
          * @throws TableException
          */
-        protected function getBy(...$aFields) {
+        protected static function getBy(...$aFields) {
             $oObject = NULL;
             $oConditions = SQL::also($aFields);
             if ($oConditions->count() == 0) {
@@ -342,13 +349,14 @@
                 $aQueryName[] = $oField->sColumn;
             }
 
-            $aClass     = explode('\\', get_class($this));
+            $oTable     = new self;
+            $aClass     = explode('\\', get_class($oTable));
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 
-            if ($oResult = $this->DB->namedQuery($sQueryName, SQL::select($this, $oConditions))) {
+            if ($oResult = $oTable->DB->namedQuery($sQueryName, SQL::select($oTable, $oConditions))) {
                 if ($oResult->num_rows > 0) {
-                    $this->setFromObject($oResult->fetch_object());
-                    return $this;
+                    $oTable->setFromObject($oResult->fetch_object());
+                    return $oTable;
                 }
             }
 

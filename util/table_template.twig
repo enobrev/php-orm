@@ -1,9 +1,6 @@
 <?php
     namespace Enobrev\Table;
 
-{% if date_added or date_updated %}
-    use Enobrev\ORM\Db;
-{% endif %}
     use Enobrev\ORM\Table;
 {% for type in types %}
     use Enobrev\ORM\Field\{{type}} as F_{{type}};
@@ -37,7 +34,7 @@
 {% for field in fields %}
 {% if field.primary == false %}
 {% if field.type == 'F_Enum' %}
-                new {{field.type}}('{{field.name}}', array({% for value in field.values %}self::{{value.const}}{% if not loop.last %}, {% endif %}{% endfor %})){% if not loop.last %},{% endif %}
+                new {{field.type}}('{{field.name}}', [{% for value in field.values %}self::{{value.const}}{% if not loop.last %}, {% endif %}{% endfor %}]){% if not loop.last %},{% endif %}
 
 {% else %}
                 new {{field.type}}('{{field.name}}'){% if not loop.last %},{% endif %}
@@ -63,16 +60,12 @@
          */
         public static function getById({% for field in primary %}${{field.var}}{% if not loop.last %}, {% endif %}{% endfor %}) {
             $oTable = new self;
-{% for field in primary %}
-            $oTable->{{field.name}}->setValue(${{field.var}});
-{% endfor %}
-
-            return $oTable->getBy(
+            return self::getBy(
 {% for field in primary %}
 {% if loop.last %}
-                $oTable->{{field.name}}
+                $oTable->{{field.name}}->setValue(${{field.var}})
 {% else %}
-                $oTable->{{field.name}},
+                $oTable->{{field.name}}->setValue(${{field.var}}),
 {% endif %}
 {% endfor %}
             );
@@ -85,7 +78,7 @@
          * @return {{field.reference.class}}
          */
         public function get{{field.reference.title}}() {
-            if ($this->{{field.name}}->getValue()) {
+            if ($this->{{field.name}}->hasValue()) {
                 return {{field.reference.class}}::getById($this->{{field.name}}->getValue());
             }
         }

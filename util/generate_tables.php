@@ -133,6 +133,7 @@
                     
                     case strpos($oField->Type, 'varchar') !== false:
                     case strpos($oField->Type, 'text')    !== false:
+                    case strpos($oField->Type, 'char')    !== false:
                         $oTemplateField['type']     = 'F_Text';
                         $oTemplateField['var']      = 's' . $oTemplateField['var'];
                         if ($oField->Default) {

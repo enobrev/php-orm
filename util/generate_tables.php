@@ -202,7 +202,7 @@
                     case strpos($oField->Type, 'time') !== false:
                         $oTemplateField['type']     = 'F_Time';
                         $oTemplateField['var']      = 'd' . $oTemplateField['var'];
-                        
+
                         if ($oField->Default) {
                             $oTemplateField['default'] = '"' . $oField->Default . '"';
                         }

@@ -8,7 +8,6 @@
     class TablesMultiplePrimaryException extends TablesException {}
 
     class Tables {
-
         protected static $sTable = null;
 
         /**
@@ -20,7 +19,7 @@
             $aOutput = array();
             foreach($aData as $aDatum) {
                 /** @var Table $sTable */
-                $sTable = '\\Enobrev\\Table\\' . static::$sTable;
+                $sTable = static::$sTable;
                 $aOutput[] = $sTable::createAndUpdateFromMap($aDatum, $aMap);
             }
 
@@ -35,7 +34,7 @@
             $aOutput = array();
             foreach($aData as $aDatum) {
                 /** @var Table $sTable */
-                $sTable = '\\Enobrev\\Table\\' . static::$sTable;
+                $sTable = static::$sTable;
                 $aOutput[] = $sTable::createAndUpdate($aDatum);
             }
 
@@ -43,13 +42,13 @@
         }
 
         /**
-         * @param string        $sTable
+         * @param Table         $oTable
          * @param MySQLi_Result $oResults
          * @param string        $sKey  Column to use as array key
          * @return Table[]
          */
-        public static function toTables($sTable, MySQLi_Result $oResults, $sKey = null) {
-            $sTable = '\\Enobrev\\Table\\' . $sTable;
+        public static function toTables(Table $oTable, MySQLi_Result $oResults, $sKey = null) {
+            $sTable  = get_class($oTable);
             $aTables = array();
             if ($oResults->num_rows) {
                 /** @var Table $sTable */
@@ -68,7 +67,7 @@
         }
 
         /**
-         * @param array         $aTables
+         * @param Table[]       $aTables
          * @param MySQLi_Result $oResults
          * @return Table[]
          */
@@ -76,10 +75,10 @@
             $aOutput = array();
             while ($oResult = $oResults->fetch_object()) {
                 $aRow = array();
-                foreach($aTables as $sTable) {
+                foreach($aTables as $oTable) {
                     /** @var Table $sPrefixedTable */
-                    $sPrefixedTable = '\\Enobrev\\Table\\' . $sTable;
-                    $aRow[$sTable]  = $sPrefixedTable::createFromObject($oResult);
+                    $sPrefixedTable = get_class($oTable);
+                    $aRow[$oTable->getTitle()]  = $sPrefixedTable::createFromObject($oResult);
                 }
                 $aOutput[] = $aRow;
             }

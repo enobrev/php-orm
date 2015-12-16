@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Db;
 
-    if ($argc < 6) {
+    if ($argc < 7) {
         echo 'Usage: php generate_tables.php host user pass database path';
         exit();
     }
@@ -13,6 +13,7 @@
     $sPass = $argv[3];
     $sName = $argv[4];
     $sPath = $argv[5];
+    $sNamespace = $argv[6];
 
     $oLoader = new Twig_Loader_Filesystem(dirname(__FILE__));
     $oTwig = new Twig_Environment($oLoader, array('debug' => true));
@@ -263,6 +264,7 @@
                 }
             }
 
+            $aData['namespace']     = $sNamespace;
             $aData['primary_count'] = count($aData['primary']);
             $aFiles[$aData['table']['title'] . '.php'] = $oTemplate->render($aData);
         }

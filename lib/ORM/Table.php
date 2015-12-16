@@ -226,10 +226,10 @@
 
         public function getFields() {
             $aFields = [];
-            $aVars = get_object_vars($this);
-            foreach($aVars as $sName => $sVar) {
-                if ($this->$sName instanceof Field) {
-                    $aFields[] =& $this->$sName;
+            $aProperties = get_object_vars($this);
+            foreach(array_keys($aProperties) as $sProperty) {
+                if ($this->$sProperty instanceof Field) {
+                    $aFields[] =& $this->$sProperty;
                 }
             }
 
@@ -241,11 +241,11 @@
          */
         public function getPrimary() {
             $aPrimary = [];
-            $aVars    = get_object_vars($this);
-            foreach($aVars as $sVar) {
-                if ($this->$sVar instanceof Field) {
-                    if ($this->$sVar->isPrimary()) {
-                        $aPrimary[] =& $this->$sVar;
+            $aProperties = get_object_vars($this);
+            foreach(array_keys($aProperties) as $sProperty) {
+                if ($this->$sProperty instanceof Field) {
+                    if ($this->$sProperty->isPrimary()) {
+                        $aPrimary[] =& $this->$sProperty;
                     }
                 }
             }

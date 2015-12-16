@@ -77,6 +77,10 @@
     function getClassName($sTable) {
         return depluralize(str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable)))));
     }
+
+    function getClassNamePlural($sTable) {
+        return str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable))));
+    }
         
     if (count($aChosenTables)) {
         $aFiles = array();
@@ -87,7 +91,8 @@
             $aData = array(
                 'table'         => array(
                     'name'    => $sTable,
-                    'title'   => getClassName($sTable)
+                    'title'   => getClassName($sTable),
+                    'plural'  => getClassNamePlural($sTable)
                 ),
                 'fields'        => array(),
                 'types'         => array(),

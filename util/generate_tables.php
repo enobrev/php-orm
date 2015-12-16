@@ -18,6 +18,7 @@
     $oLoader = new Twig_Loader_Filesystem(dirname(__FILE__));
     $oTwig = new Twig_Environment($oLoader, array('debug' => true));
     $oTemplate = $oTwig->loadTemplate('table_template.twig');
+    $oTemplates = $oTwig->loadTemplate('tables_template.twig');
 
     $Db = Db::getInstance($sHost, $sUser, $sPass, $sName);
     $oTables = $Db->query('SHOW TABLES;');
@@ -272,7 +273,7 @@
             $aData['namespace']     = $sNamespace;
             $aData['primary_count'] = count($aData['primary']);
             $aFiles[$aData['table']['title'] . '.php'] = $oTemplate->render($aData);
-            $aFiles[$aData['table']['plural'] . '.php'] = $oTemplate->render($aData);
+            $aFiles[$aData['table']['plural'] . '.php'] = $oTemplates->render($aData);
         }
 
         foreach($aFiles as $sFile => $sOutput) {

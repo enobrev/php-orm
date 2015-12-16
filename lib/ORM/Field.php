@@ -98,16 +98,10 @@
          */
         public function toSQLColumnForFields($bWithTable = true) {
             if ($bWithTable) {
-                $aTableColumn = array($this->sTable, $this->sColumn);
-                $sTableColumn = implode('.', $aTableColumn);
-
                 if (strlen($this->sAlias)) {
-                    $aAliasColumn = array($this->sAlias, $this->sColumn);
-                    $sAliasColumn = implode('_', $aAliasColumn);
-
-                    return implode(' ', array($sTableColumn, "AS", $sAliasColumn));
+                    return implode(' ', array(implode('.', [$this->sAlias, $this->sColumn]), "AS", implode('_', [$this->sAlias, $this->sColumn])));
                 } else if (strlen($this->sTable)) {
-                    return $sTableColumn;
+                    return implode('.', [$this->sTable, $this->sColumn]);
                 }
             }
 

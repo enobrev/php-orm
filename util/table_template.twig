@@ -46,7 +46,7 @@
 
 {% for field in fields %}
 {% if field.default is not empty %}
-            $this->{{field.name}}->setDefault({{field.default}});
+            $this->{{field.name}}->setDefault({{field.default|raw}});
 {% endif %}
 {% endfor %}
         }

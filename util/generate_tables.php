@@ -190,6 +190,11 @@
                         $oTemplateField['type']     = 'F_Date';
                         $oTemplateField['var']      = 'd' . $oTemplateField['var'];
                         break;
+
+                    case strpos($oField->Type, 'time') !== false:
+                        $oTemplateField['type']     = 'F_Time';
+                        $oTemplateField['var']      = 'd' . $oTemplateField['var'];
+                        break;
                     
                     case strpos($oField->Type, 'enum') !== false:
                         $oTemplateField['type']    = 'F_Enum';

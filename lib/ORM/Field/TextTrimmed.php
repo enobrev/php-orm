@@ -16,6 +16,7 @@
         /**
          *
          * @param mixed $sValue
+         * @return TextTrimmed
          */
         public function setValue($sValue) {
             if ($sValue instanceof Field) {
@@ -23,6 +24,7 @@
             }
 
             $this->sValue = trim($sValue);
+            return $this;
         }
 
         /**

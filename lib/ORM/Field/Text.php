@@ -44,7 +44,8 @@
         
         /**
          *
-         * @param mixed $sValue 
+         * @param mixed $sValue
+         * @return Text
          */
         public function setValue($sValue) {
             if ($sValue instanceof Field) {
@@ -56,6 +57,8 @@
             }
 
             $this->sValue = $sValue;
+
+            return $this;
         }
     }
 ?>

@@ -41,7 +41,8 @@
 
         /**
          *
-         * @param mixed $sValue 
+         * @param mixed $sValue
+         * @return Date
          */
         public function setValue($sValue) {
             if ($sValue instanceof Field) {
@@ -62,6 +63,8 @@
                     $this->sValue = new DateTime($sValue);
                     break;
             }
+
+            return $this;
         }
 
         /**

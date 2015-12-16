@@ -82,6 +82,7 @@
 
         /**
          * @param mixed $sValue
+         * @return Enum
          * @throws FieldInvalidValueException
          */
         public function setValue($sValue) {
@@ -96,6 +97,8 @@
             }
 
             $this->sValue = $sValue;
+
+            return $this;
         }
     }
 ?>

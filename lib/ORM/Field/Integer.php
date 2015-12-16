@@ -19,6 +19,7 @@
         /**
          *
          * @param mixed $sValue
+         * @return Integer;
          */
         public function setValue($sValue) {
             if ($sValue instanceof Field) {
@@ -34,6 +35,8 @@
             }
 
             $this->sValue = $sValue;
+
+            return $this;
         }
 
         /**

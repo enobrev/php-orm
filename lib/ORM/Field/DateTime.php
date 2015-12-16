@@ -13,6 +13,7 @@
         /**
          *
          * @param mixed $sValue
+         * @return DateTime
          */
         public function setValue($sValue) {
             if ($sValue instanceof Field) {
@@ -25,6 +26,8 @@
             } else {
                 parent::setValue($sValue);
             }
+
+            return $this;
         }
 
 

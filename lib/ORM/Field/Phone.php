@@ -14,7 +14,8 @@
         
         /**
          *
-         * @param mixed $sValue 
+         * @param mixed $sValue
+         * @return Phone
          */
         public function setValue($sValue) {
             if ($sValue instanceof Field) {
@@ -26,6 +27,8 @@
             }
 
             $this->sValue = $sValue;
+
+            return $this;
         }
     }
 ?>

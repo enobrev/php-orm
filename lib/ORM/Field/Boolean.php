@@ -15,6 +15,7 @@
         /**
          *
          * @param mixed $sValue
+         * @return Boolean
          */
         public function setValue($sValue) {
             if ($sValue instanceof Field) {
@@ -22,6 +23,8 @@
             }
 
             $this->sValue = $sValue ? true : false;
+
+            return $this;
         }
 
         /**

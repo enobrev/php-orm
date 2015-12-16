@@ -13,6 +13,7 @@
         /**
          *
          * @param array|string|Field $sValue
+         * @return PipeDelimited
          */
         public function setValue($sValue) {
             if ($sValue instanceof Field) {
@@ -28,6 +29,8 @@
             }
 
             $this->sValue = $sValue;
+
+            return $this;
         }
 
         /**

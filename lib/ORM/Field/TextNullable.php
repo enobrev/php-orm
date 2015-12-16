@@ -26,6 +26,7 @@
         /**
          *
          * @param mixed $sValue
+         * @return TextNullable
          */
         public function setValue($sValue) {
             if ($sValue instanceof Field) {
@@ -41,6 +42,8 @@
             }
 
             $this->sValue = $sValue;
+
+            return $this;
         }
         
         /**

@@ -5,13 +5,15 @@
 
     class UUID extends Hash {
         /**
-         *
          * @param mixed $sValue
+         * @return UUID
          */
         public function setValue($sValue) {
             parent::setValue($sValue);
 
             $this->sValue = strtolower(str_replace('-', '', $this->sValue));
+
+            return $this;
         }
 
         public function generateValue() {

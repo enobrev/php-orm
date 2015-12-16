@@ -145,10 +145,11 @@
                 'type'  => get_class($this)
             );
         }
-        
+
         /**
          *
-         * @param mixed $sValue 
+         * @param mixed $sValue
+         * @return Field
          */
         public function setValue($sValue) {
             if ($sValue instanceof Field) {
@@ -156,6 +157,8 @@
             }
             
             $this->sValue = $sValue;
+
+            return $this;
         }
 
         public function applyDefault() {

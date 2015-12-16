@@ -6,7 +6,8 @@
     class Decimal extends Number {
         /**
          *
-         * @param mixed $sValue 
+         * @param mixed $sValue
+         * @return Decimal
          */
         public function setValue($sValue) {
             if ($sValue instanceof Field) {
@@ -18,6 +19,8 @@
             }
 
             $this->sValue = $sValue;
+
+            return $this;
         }
     }
 ?>

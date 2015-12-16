@@ -6,6 +6,7 @@
         /**
          *
          * @param mixed $sValue
+         * @return Hash
          */
         public function setValue($sValue) {
             parent::setValue($sValue);
@@ -15,6 +16,8 @@
                     $this->sValue = bin2hex($this->sValue);
                 }
             }
+
+            return $this;
         }
 
         /**

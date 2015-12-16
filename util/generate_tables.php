@@ -1,4 +1,6 @@
 <?php
+    require_once __DIR__ .'/../vendor/autoload.php';
+    
     use Enobrev\ORM\Db;
 
     if ($argc < 6) {

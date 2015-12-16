@@ -2,15 +2,6 @@
     namespace Enobrev;
 
     use stdClass;
-    use Enobrev\ORM\Condition;
-    use Enobrev\ORM\Conditions;
-    use Enobrev\ORM\Field;
-    use Enobrev\ORM\Group;
-    use Enobrev\ORM\Join;
-    use Enobrev\ORM\Joins;
-    use Enobrev\ORM\Limit;
-    use Enobrev\ORM\Order;
-    use Enobrev\ORM\Table;
 
     class SQLException extends \Exception {}
     class SQLMissingTableOrFieldsException extends SQLException {}
@@ -37,167 +28,167 @@
 
         /**
          * @param array ...$aArguments
-         * @return Conditions
+         * @return ORM\Conditions
          */
         public static function either(...$aArguments) {
-            return Conditions::either(...$aArguments);
+            return ORM\Conditions::either(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Conditions
+         * @return ORM\Conditions
          */
         public static function also(...$aArguments) {
-            return Conditions::also(...$aArguments);
+            return ORM\Conditions::also(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Condition
+         * @return ORM\Condition
          */
         public static function eq(...$aArguments) {
-            return Condition::eq(...$aArguments);
+            return ORM\Condition::eq(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Condition
+         * @return ORM\Condition
          */
         public static function neq(...$aArguments) {
-            return Condition::neq(...$aArguments);
+            return ORM\Condition::neq(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Condition
+         * @return ORM\Condition
          */
         public static function lt(...$aArguments) {
-            return Condition::lt(...$aArguments);
+            return ORM\Condition::lt(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Condition
+         * @return ORM\Condition
          */
         public static function gt(...$aArguments) {
-            return Condition::gt(...$aArguments);
+            return ORM\Condition::gt(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Condition
+         * @return ORM\Condition
          */
         public static function gte(...$aArguments) {
-            return Condition::gte(...$aArguments);
+            return ORM\Condition::gte(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Condition
+         * @return ORM\Condition
          */
         public static function like(...$aArguments) {
-            return Condition::like(...$aArguments);
+            return ORM\Condition::like(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Condition
+         * @return ORM\Condition
          */
         public static function nlike(...$aArguments) {
-            return Condition::nlike(...$aArguments);
+            return ORM\Condition::nlike(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Condition
+         * @return ORM\Condition
          */
         public static function nul(...$aArguments) {
-            return Condition::nul(...$aArguments);
+            return ORM\Condition::nul(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Condition
+         * @return ORM\Condition
          */
         public static function nnul(...$aArguments) {
-            return Condition::nnul(...$aArguments);
+            return ORM\Condition::nnul(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Condition
+         * @return ORM\Condition
          */
         public static function in(...$aArguments) {
-            return Condition::in(...$aArguments);
+            return ORM\Condition::in(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Condition
+         * @return ORM\Condition
          */
         public static function nin(...$aArguments) {
-            return Condition::nin(...$aArguments);
+            return ORM\Condition::nin(...$aArguments);
         }
 
         /**
          * @param array ...$aArguments
-         * @return Condition
+         * @return ORM\Condition
          */
         public static function between(...$aArguments) {
-            return Condition::between(...$aArguments);
+            return ORM\Condition::between(...$aArguments);
         }
 
         /**
-         * @param Field $oFrom
-         * @param Field $oTo
-         * @return Join
+         * @param ORM\Field $oFrom
+         * @param ORM\Field $oTo
+         * @return ORM\Join
          */
-        public static function join(Field $oFrom, Field $oTo) {
-            return Join::create($oFrom, $oTo);
+        public static function join(ORM\Field $oFrom, ORM\Field $oTo) {
+            return ORM\Join::create($oFrom, $oTo);
         }
 
         /**
          * @param int|null $iStart
          * @param int|null $iOffset
-         * @return Limit
+         * @return ORM\Limit
          */
         public static function limit($iStart = null, $iOffset = null) {
-            return Limit::create($iStart, $iOffset);
+            return ORM\Limit::create($iStart, $iOffset);
         }
 
         /**
-         * @param Field[]  ...$aFields
-         * @return Group
+         * @param ORM\Field[]  ...$aFields
+         * @return ORM\Group
          */
         public static function group(...$aFields) {
-            return Group::create(...$aFields);
+            return ORM\Group::create(...$aFields);
         }
 
         /**
-         * @param Field $oField
+         * @param ORM\Field $oField
          * @param array $aValues
-         * @return Order
+         * @return ORM\Order
          */
-        public static function desc(Field $oField, Array $aValues = array()) {
-            return Order::desc($oField, $aValues);
+        public static function desc(ORM\Field $oField, Array $aValues = array()) {
+            return ORM\Order::desc($oField, $aValues);
         }
 
         /**
-         * @param Field $oField
+         * @param ORM\Field $oField
          * @param array $aValues
-         * @return Order
+         * @return ORM\Order
          */
-        public static function asc(Field $oField, Array $aValues = array()) {
-            return Order::asc($oField, $aValues);
+        public static function asc(ORM\Field $oField, Array $aValues = array()) {
+            return ORM\Order::asc($oField, $aValues);
         }
 
         /**
-         * @param Field $oField
+         * @param ORM\Field $oField
          * @param array $aValues
-         * @return Order
+         * @return ORM\Order
          */
-        public static function byfield(Field $oField, Array $aValues = array()) {
-            return Order::byfield($oField, $aValues);
+        public static function byfield(ORM\Field $oField, Array $aValues = array()) {
+            return ORM\Order::byfield($oField, $aValues);
         }
 
         /**
@@ -209,34 +200,34 @@
         public static function select(...$aArguments) {
             $bStar       = false;
 
-            /** @var Field[] $aFields */
+            /** @var ORM\Field[] $aFields */
             $aFields     = array();
 
-            /** @var Table[] $aTables */
+            /** @var ORM\Table[] $aTables */
             $aTables     = array();
 
-            /** @var Join[] $aJoins */
+            /** @var ORM\Join[] $aJoins */
             $aJoins      = array();
 
-            /** @var Order[] $aOrders */
+            /** @var ORM\Order[] $aOrders */
             $aOrders     = array();
 
-            /** @var Limit $oLimit */
-            $oLimit      = NULL;
-
-            /** @var Group $oGroup */
+            /** @var ORM\Group $oGroup */
             $oGroup      = NULL;
 
-            /** @var Conditions $oConditions */
-            $oConditions = new Conditions;
+            /** @var ORM\Limit $oLimit */
+            $oLimit      = NULL;
+
+            /** @var ORM\Conditions $oConditions */
+            $oConditions = new ORM\Conditions;
 
             foreach($aArguments as $mArgument) {
                 switch(true) {
-                    case $mArgument instanceof Join:
+                    case $mArgument instanceof ORM\Join:
                         $aJoins[] = $mArgument;
                         break;
 
-                    case $mArgument instanceof Joins:
+                    case $mArgument instanceof ORM\Joins:
                         foreach($mArgument as $oJoin) {
                             $aJoins[] = $oJoin;
                         }
@@ -254,24 +245,22 @@
                         $oLimit = $mArgument;
                         break;
 
-                    case $mArgument instanceof Table:
-                        /** @var Table $mArgument */
+                    case $mArgument instanceof ORM\Table:
                         $aTables[] = $mArgument;
                         break;
 
-                    case $mArgument instanceof Conditions:
-                    case $mArgument instanceof Condition:
+                    case $mArgument instanceof ORM\Conditions:
+                    case $mArgument instanceof ORM\Condition:
                         $oConditions->add($mArgument);
                         break;
 
-                    case $mArgument instanceof Field:
-                        /** @var Field $mArgument */
+                    case $mArgument instanceof ORM\Field:
                         $aFields[] = $mArgument;
                         break;
 
                     case is_array($mArgument):
                         foreach($mArgument as $oField) {
-                            if ($oField instanceof Field) {
+                            if ($oField instanceof ORM\Field) {
                                 $aFields[] = $mArgument;
                             }
                         }
@@ -294,10 +283,9 @@
                 $aSQLFields = array('*');
 
                 // Add hex'd aliases
-                /** @var Field $oField*/
                 foreach($aTables[0]->getFields() as $oField) {
-                    if ($oField instanceof Field\Hash
-                    ||  $oField instanceof Field\UUID) {
+                    if ($oField instanceof ORM\Field\Hash
+                    ||  $oField instanceof ORM\Field\UUID) {
                         $aSQLFields[] = $oField->toSQLColumnForSelect();
                     }
                 }
@@ -310,7 +298,6 @@
             $aSQL[] = 'FROM';
             $aSQL[] = $aTables[0]->getTitle();
 
-            /** @var ORM\Join[] $aJoins */
             if (count($aJoins)) {
                 foreach($aJoins as $oJoin) {
                     $aSQL[] = $oJoin->toSQL();
@@ -326,13 +313,14 @@
                 $aSQLLog[] = $oConditions->toSQLLog();
             }
 
-            if ($oGroup instanceof ORM\Group) {
+            if ($oGroup) {
+                $aSQL[] = 'GROUP BY';
                 $aSQL[] = $oGroup->toSQL();
 
+                $aSQLLog[] = 'GROUP BY';
                 $aSQLLog[] = $oGroup->toSQL();
             }
 
-            /** @var ORM\Order[] $aOrders */
             if (count($aOrders)) {
                 $aOrderSQL = array();
                 foreach($aOrders as $oOrder) {
@@ -367,17 +355,25 @@
          * @throws ORM\ConditionsNonConditionException
          */
         public static function count(...$aArguments) {
+            /** @var ORM\Table[] $aTables */
             $aTables     = array();
+
+            /** @var ORM\Join[] $aJoins */
             $aJoins      = array();
+
+            /** @var ORM\Group $oGroup */
             $oGroup      = NULL;
-            $oConditions = new Conditions;
+
+            /** @var ORM\Conditions $oConditions */
+            $oConditions = new ORM\Conditions;
+
             foreach($aArguments as $mArgument) {
                 switch(true) {
-                    case $mArgument instanceof Join:
+                    case $mArgument instanceof ORM\Join:
                         $aJoins[] = $mArgument;
                         break;
 
-                    case $mArgument instanceof Joins:
+                    case $mArgument instanceof ORM\Joins:
                         foreach($mArgument as $oJoin) {
                             $aJoins[] = $oJoin;
                         }
@@ -387,18 +383,17 @@
                         $oGroup = $mArgument;
                         break;
 
-                    case $mArgument instanceof Table:
+                    case $mArgument instanceof ORM\Table:
                         $aTables[] = $mArgument;
                         break;
 
-                    case $mArgument instanceof Conditions:
-                    case $mArgument instanceof Condition:
+                    case $mArgument instanceof ORM\Conditions:
+                    case $mArgument instanceof ORM\Condition:
                         $oConditions->add($mArgument);
                         break;
                 }
             }
 
-            /** @var Table $oTable */
             $oTable = $aTables[0];
             $aSQL   = array(self::TYPE_SELECT);
 
@@ -430,7 +425,10 @@
             }
 
             if ($oGroup instanceof ORM\Group) {
+                $aSQL[] = 'GROUP BY';
                 $aSQL[] = $oGroup->toSQL();
+
+                $aSQLLog[] = 'GROUP BY';
                 $aSQLLog[] = $oGroup->toSQL();
             }
 
@@ -454,13 +452,11 @@
 
             foreach($aArguments as $mArgument) {
                 switch(true) {
-                    case $mArgument instanceof Field:
-                        /** @var Field $mArgument  */
+                    case $mArgument instanceof ORM\Field:
                         $aFields[] = $mArgument;
                         break;
 
-                    case $mArgument instanceof Table:
-                        /** @var Table $mArgument  */
+                    case $mArgument instanceof ORM\Table:
                         $sTable = $mArgument->getTitle();
                         $aFields[] = $mArgument->getFields();
                         break;
@@ -515,28 +511,25 @@
         public static function update(...$aArguments) {
             $aFields     = [];
             $oTable      = NULL;
-            $oConditions = new Conditions;
+            $oConditions = new ORM\Conditions;
             foreach($aArguments as $mArgument) {
                 switch(true) {
-                    case $mArgument instanceof Field:
-                        /** @var Field $mArgument  */
+                    case $mArgument instanceof ORM\Field:
                         $aFields[] = $mArgument;
                         break;
 
-                    case $mArgument instanceof Table:
-                        /** @var Table $mArgument  */
-                        /** @var Table $oTable  */
+                    case $mArgument instanceof ORM\Table:
                         $oTable = $mArgument;
                         break;
 
-                    case $mArgument instanceof Conditions:
-                    case $mArgument instanceof Condition:
+                    case $mArgument instanceof ORM\Conditions:
+                    case $mArgument instanceof ORM\Condition:
                         $oConditions->add($mArgument);
                         break;
 
                     case is_array($mArgument):
                         foreach($mArgument as $oField) {
-                            if ($oField instanceof Field) {
+                            if ($oField instanceof ORM\Field) {
                                 $aFields[] = $mArgument;
                             }
                         }
@@ -545,7 +538,7 @@
             }
 
             if (count($aFields) == 0) {
-                if ($oTable instanceof Table) {
+                if ($oTable instanceof ORM\Table) {
                     $aFields = $oTable->getFields();
                 } else {
                     throw new SQLMissingTableOrFieldsException;
@@ -556,10 +549,9 @@
                 throw new SQLMissingConditionException;
             }
 
-            if ($oTable instanceof Table === false) {
+            if ($oTable instanceof ORM\Table === false) {
                 $sTableObject = 'Table_' . $aFields[0]->sTable;
 
-                /** @var Table $oTable */
                 $oTable = new $sTableObject;
             }
 
@@ -602,20 +594,18 @@
             $oTable      = null;
             foreach($aArguments as $mArgument) {
                 switch(true) {
-                    case $mArgument instanceof Field:
-                        /** @var Field $mArgument  */
+                    case $mArgument instanceof ORM\Field:
                         $aFields[] = $mArgument;
                         break;
 
-                    case $mArgument instanceof Table:
-                        /** @var Table $mArgument  */
+                    case $mArgument instanceof ORM\Table:
                         $oTable  = $mArgument;
                         $aFields = array_merge($aFields, $mArgument->getFields());
                         break;
 
                     case is_array($mArgument):
                         foreach($mArgument as $oField) {
-                            if ($oField instanceof Field) {
+                            if ($oField instanceof ORM\Field) {
                                 $aFields[] = $mArgument;
                             }
                         }
@@ -627,10 +617,9 @@
                 throw new SQLMissingTableOrFieldsException;
             }
 
-            if ($oTable instanceof Table === false) {
+            if ($oTable instanceof ORM\Table === false) {
                 $sTableObject = 'Table_' . $aFields[0]->sTable;
 
-                /** @var Table $oTable */
                 $oTable = new $sTableObject;
             }
 
@@ -680,28 +669,26 @@
         public static function delete(...$aArguments) {
             $aFields     = [];
             $sTable      = NULL;
-            $oConditions = new Conditions;
+            $oConditions = new ORM\Conditions;
             foreach($aArguments as $mArgument) {
                 switch(true) {
-                    case $mArgument instanceof Field:
-                        /** @var Field $mArgument  */
+                    case $mArgument instanceof ORM\Field:
                         $aFields[] = $mArgument;
                         break;
 
-                    case $mArgument instanceof Table:
-                        /** @var Table $mArgument  */
+                    case $mArgument instanceof ORM\Table:
                         $sTable = $mArgument->getTitle();
                         $aFields = array_merge($aFields, $mArgument->getFields());
                         break;
 
-                    case $mArgument instanceof Conditions:
-                    case $mArgument instanceof Condition:
+                    case $mArgument instanceof ORM\Conditions:
+                    case $mArgument instanceof ORM\Condition:
                         $oConditions->add($mArgument);
                         break;
 
                     case is_array($mArgument):
                         foreach($mArgument as $oField) {
-                            if ($oField instanceof Field) {
+                            if ($oField instanceof ORM\Field) {
                                 $aFields[] = $mArgument;
                             }
                         }
@@ -746,14 +733,14 @@
         }
 
         /**
-         * @param Field[] $aFields
+         * @param ORM\Field[] $aFields
          * @param bool $bWithTable
          * @return string
          */
         private static function toSQLColumnsForSelect($aFields, $bWithTable = true) {
             $aColumns = array();
 
-            /** @var Field $oField */
+            /** @var ORM\Field $oField */
             foreach($aFields as $oField) {
                 $aColumns[] = $oField->toSQLColumnForSelect($bWithTable);
             }
@@ -762,14 +749,14 @@
         }
 
         /**
-         * @param Field[] $aFields
+         * @param ORM\Field[] $aFields
          * @param bool $bWithTable
          * @return string
          */
         private static function toSQLColumnsForCount($aFields, $bWithTable = true) {
             $aColumns = array();
 
-            /** @var Field $oField */
+            /** @var ORM\Field $oField */
             foreach($aFields as $oField) {
                 $aColumns[] = $oField->toSQLColumnForCount($bWithTable);
             }
@@ -778,13 +765,13 @@
         }
 
         /**
-         * @param Field[] $aFields
+         * @param ORM\Field[] $aFields
          * @return string
          */
         private static function toSQLColumnsForInsert($aFields) {
             $aColumns = array();
 
-            /** @var Field $oField */
+            /** @var ORM\Field $oField */
             foreach($aFields as $oField) {
                 $aColumns[] = $oField->toSQLColumnForInsert();
             }
@@ -793,13 +780,13 @@
         }
 
         /**
-         * @param Field[] $aFields
+         * @param ORM\Field[] $aFields
          * @return string
          */
         private static function toSQL($aFields) {
             $aColumns = array();
 
-            /** @var Field $oField */
+            /** @var ORM\Field $oField */
             foreach($aFields as $oField) {
                 $aColumns[] = $oField->toSQL();
             }
@@ -808,13 +795,12 @@
         }
 
         /**
-         * @param Field[] $aFields
+         * @param ORM\Field[] $aFields
          * @return string
          */
         private static function toSQLLog($aFields) {
             $aColumns = array();
             foreach($aFields as $oField) {
-                /** @var Field $oField */
                 $aColumns[] = get_class($oField);
             }
 
@@ -822,14 +808,13 @@
         }
 
         /**
-         * @param Field[] $aFields
+         * @param ORM\Field[] $aFields
          * @param stdClass|null $oResult
          * @return string
          */
         public function toSQLUpdate(Array $aFields, stdClass $oResult = NULL) {
             $aColumns = array();
 
-            /** @var Field $oField */
             foreach($aFields as $oField) {
                 if ($oResult !== NULL) {
                     if (property_exists($oResult, $oField->sColumn)) {
@@ -846,14 +831,14 @@
         }
 
         /**
-         * @param Field[] array $aFields
+         * @param ORM\Field[] array $aFields
          * @param stdClass|null $oResult
          * @return string
          */
         public function toSQLUpdateLog(Array $aFields, stdClass $oResult = NULL) {
             $aColumns = array();
 
-            /** @var Field $oField */
+            /** @var ORM\Field $oField */
             foreach($aFields as $oField) {
                 if ($oResult !== NULL) {
                     if (property_exists($oResult, $oField->sColumn)) {
@@ -863,7 +848,7 @@
                     }
                 }
 
-                /** @var Field $oField */
+                /** @var ORM\Field $oField */
                 $aColumns[] = $oField->toSQLColumn() . ' = ' . get_class($oField);
             }
 

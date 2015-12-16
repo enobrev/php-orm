@@ -6,14 +6,13 @@
     class Joins extends ArrayIterator {
 
         /**
-         * @param $aJoins
+         * @param Join[] ...$aJoins
          * @return Joins
          */
-        public static function create($aJoins) {
-            $aJoins = func_get_args();
+        public static function create(...$aJoins) {
             $oJoins = new self();
-            foreach($aJoins as $mCondition) {
-                $oJoins->append($mCondition);
+            foreach($aJoins as $oJoin) {
+                $oJoins->append($oJoin);
             }
 
             return $oJoins;

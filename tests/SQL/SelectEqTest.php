@@ -33,4 +33,13 @@
             );
             $this->assertEquals("SELECT * FROM users WHERE users.user_id = 1", (string) $oSQL);
         }
+
+        public function testSelectStringEqualsValue() {
+            $oUser = new User();
+            $oSQL = SQL::select(
+                $oUser,
+                SQL::eq($oUser->user_email, 'test@example.com')
+            );
+            $this->assertEquals('SELECT * FROM users WHERE users.user_email = "test@example.com"', (string) $oSQL);
+        }
     }

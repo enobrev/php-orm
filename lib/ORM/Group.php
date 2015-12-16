@@ -30,6 +30,6 @@
                 $aFields[] = $oField->toSQLColumnForFields(true);
             }
 
-            return 'GROUP BY ' . implode(', ', $aFields);
+            return implode(', ', $aFields);
         }
     }

@@ -36,14 +36,13 @@
          */
         public static function Field($sField, $sAlias = null) {
             $oTable = new static;
-            $oField = $oTable->$sField;
             
-            if ($oField instanceof Field) {
+            if ($oTable->$sField instanceof Field) {
                 if ($sAlias !== null) {
-                    $oField->sAlias = $sAlias;
+                    $oTable->$sField->sAlias = $sAlias;
                 }
 
-                return $oField;
+                return $oTable->$sField;
             }
             
             throw new TableFieldNotFoundException($sField);

@@ -18,9 +18,21 @@
     class SQLPrimaryValuesNotSetException extends SQLException {}
 
     class SQL {
+        const TYPE_SELECT = 'SELECT';
+        const TYPE_INSERT = 'INSERT';
+        const TYPE_UPDATE = 'UPDATE';
+        const TYPE_DELETE = 'DELETE';
+
+        /** @var string  */
         public $sSQL      = NULL;
+
+        /** @var string  */
         public $sSQLGroup = NULL;
+
+        /** @var string  */
         public $sSQLTable = NULL;
+
+        /** @var string  */
         public $sSQLType  = NULL;
 
         /**
@@ -189,12 +201,12 @@
         }
 
         /**
-         * @static
+         * @param array ...$aArguments
          * @return SQL
+         * @throws ORM\ConditionsNonConditionException
          * @throws SQLMissingTableOrFieldsException
          */
-        public static function select() {
-            $aArguments  = func_get_args();
+        public static function select(...$aArguments) {
             $bStar       = false;
 
             /** @var Field[] $aFields */
@@ -277,7 +289,7 @@
                 throw new SQLMissingTableOrFieldsException;
             }
 
-            $aSQL = array('SELECT');
+            $aSQL = array(self::TYPE_SELECT);
             if ($bStar) {
                 $aSQLFields = array('*');
 
@@ -341,7 +353,7 @@
             }
 
             $oSQL = new self;
-            $oSQL->sSQLType  = 'SELECT';
+            $oSQL->sSQLType  = self::TYPE_SELECT;
             $oSQL->sSQLTable = $aTables[0]->getTitle();
             $oSQL->sSQL      = implode(' ', $aSQL);
             $oSQL->sSQLGroup = implode(' ', $aSQLLog);
@@ -349,8 +361,12 @@
             return $oSQL;
         }
 
-        public static function count() {
-            $aArguments  = func_get_args();
+        /**
+         * @param array ...$aArguments
+         * @return SQL
+         * @throws ORM\ConditionsNonConditionException
+         */
+        public static function count(...$aArguments) {
             $aTables     = array();
             $aJoins      = array();
             $oGroup      = NULL;
@@ -384,7 +400,7 @@
 
             /** @var Table $oTable */
             $oTable = $aTables[0];
-            $aSQL   = array('SELECT');
+            $aSQL   = array(self::TYPE_SELECT);
 
             $aPrimary = $oTable->getPrimary();
 
@@ -419,7 +435,7 @@
             }
 
             $oSQL = new self;
-            $oSQL->sSQLType  = 'SELECT';
+            $oSQL->sSQLType  = self::TYPE_SELECT;
             $oSQL->sSQLTable = $oTable->getTitle();
             $oSQL->sSQL      = implode(' ', $aSQL);
             $oSQL->sSQLGroup = implode(' ', $aSQLLog);
@@ -428,11 +444,11 @@
         }
 
         /**
-         * @return string
+         * @param array ...$aArguments
+         * @return SQL
          * @throws SQLMissingTableOrFieldsException
          */
-        public static function insert() {
-            $aArguments = func_get_args();
+        public static function insert(...$aArguments) {
             $aFields     = [];
             $sTable      = NULL;
 
@@ -460,11 +476,11 @@
             }
 
             $oSQL = new self;
-            $oSQL->sSQLType  = 'INSERT';
+            $oSQL->sSQLType  = self::TYPE_INSERT;
             $oSQL->sSQLTable = $sTable;
             $oSQL->sSQL      = implode(' ',
                 array(
-                    'INSERT INTO',
+                    self::TYPE_INSERT . ' INTO',
                         $sTable,
                     '(',
                         self::toSQLColumnsForInsert($aFields),
@@ -476,7 +492,7 @@
 
             $oSQL->sSQLGroup = implode(' ',
                 array(
-                    'INSERT INTO',
+                    self::TYPE_INSERT . ' INTO',
                         $sTable,
                     '(',
                         self::toSQLColumnsForInsert($aFields),
@@ -490,9 +506,11 @@
         }
 
         /**
-         * @static
-         * @return string
-         * @throws SQLMissingConditionException|SQLMissingTableOrFieldsException
+         * @param array ...$aArguments
+         * @return SQL
+         * @throws ORM\ConditionsNonConditionException
+         * @throws SQLMissingConditionException
+         * @throws SQLMissingTableOrFieldsException
          */
         public static function update(...$aArguments) {
             $aFields     = [];
@@ -546,11 +564,11 @@
             }
 
             $oSQL = new self;
-            $oSQL->sSQLType  = 'UPDATE';
+            $oSQL->sSQLType  = self::TYPE_UPDATE;
             $oSQL->sSQLTable = $oTable->getTitle();
             $oSQL->sSQL      = implode(' ',
                 array(
-                    'UPDATE',
+                    self::TYPE_UPDATE,
                         $oTable->getTitle(),
                     'SET',
                         self::toSQLUpdate($aFields, $oTable->oResult),
@@ -561,7 +579,7 @@
 
             $oSQL->sSQLGroup = implode(' ',
                 array(
-                    'UPDATE',
+                    self::TYPE_UPDATE,
                         $oTable->getTitle(),
                     'SET',
                         self::toSQLUpdateLog($aFields, $oTable->oResult),
@@ -654,7 +672,9 @@
         }
 
         /**
-         * @return string
+         * @param array ...$aArguments
+         * @return SQL
+         * @throws ORM\ConditionsNonConditionException
          * @throws SQLMissingTableOrFieldsException
          */
         public static function delete(...$aArguments) {
@@ -702,7 +722,7 @@
             }
 
             $oSQL = new self;
-            $oSQL->sSQLType  = 'DELETE';
+            $oSQL->sSQLType  = self::TYPE_DELETE;
             $oSQL->sSQLTable = $sTable;
             $oSQL->sSQL      = implode(' ',
                 array(
@@ -848,5 +868,9 @@
             }
 
             return implode(', ', $aColumns);
+        }
+
+        public function __toString() {
+            return $this->sSQL;
         }
     }

@@ -9,13 +9,17 @@
     ],
     "autoload": {
         "psr-4": {
-            "Enobrev\\": "lib/"
+            "Enobrev\\": "lib/",
+            "Enobrev\\Mock\\": "tests/Mock/"
         }
     },
     "require": {
     },
     "require-dev": {
         "twig/twig": "^1.23",
-        "monolog/monolog": "^1.17"
+        "monolog/monolog": "^1.17",
+        "phpunit/phpunit": "^5.1",
+        "phpunit/phpunit-mock-objects": "^3.0"
+
     }
 }

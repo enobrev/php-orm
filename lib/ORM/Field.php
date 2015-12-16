@@ -294,28 +294,6 @@
                 $this->setValue($aData[$this->sColumn]);
             }
         }
-        
-        /**
-         *
-         * @param string $sVar
-         * @param mixed $sValue 
-         */
-        public function __set($sVar, $sValue) {
-            switch($sVar) {
-                case 'sValue':
-                    $this->setValue($sValue);
-                    break;
-                   
-                case 'sColumn':
-                    $this->sColumn = $sValue;
-                    break;
-
-                case 'sAlias':
-                    $this->sAlias = $sValue;
-                    break;
-                    
-            }
-        }
 
         public function getTable() {
             if ($this->sTableClass) {

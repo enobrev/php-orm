@@ -6,7 +6,7 @@
 {% endif %}
     use Enobrev\ORM\Table;
 {% for type in types %}
-    use Enobrev\ORM\Field\{{type}} as Field_{{type}};
+    use Enobrev\ORM\Field\{{type}} as F_{{type}};
 {% endfor %}
 
     /**
@@ -18,7 +18,7 @@
         protected $sTitle = '{{table.name}}';
 
 {% for field in fields %}
-{% if field.type == 'Field_Enum' %}
+{% if field.type == 'F_Enum' %}
 {% for value in field.values %}
         const {{value.const_padded}}= '{{value.name}}';
 {% endfor %}
@@ -28,7 +28,7 @@
         protected function init() {
             $this->addFields(
 {% for field in fields %}
-{% if field.type == 'Field_Enum' %}
+{% if field.type == 'F_Enum' %}
                 new {{field.type}}('{{field.name}}', array({% for value in field.values %}self::{{value.const}}{% if not loop.last %}, {% endif %}{% endfor %})){% if not loop.last %},{% endif %}
 
 {% else %}

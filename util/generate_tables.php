@@ -105,9 +105,9 @@
                 switch(true) {
                     case strpos($oField->Type, 'int') !== false:
                         if ($oField->Key == 'PRI') {
-                            $oTemplateField['type'] = 'Field_Id';
+                            $oTemplateField['type'] = 'F_Id';
                         } else {
-                            $oTemplateField['type'] = 'Field_Integer';
+                            $oTemplateField['type'] = 'F_Integer';
                         }
                         $oTemplateField['var']  = 'i' . $oTemplateField['var'];
 
@@ -126,13 +126,13 @@
 
                     case strpos($oField->Type, 'float')   !== false:
                     case strpos($oField->Type, 'decimal') !== false:
-                        $oTemplateField['type'] = 'Field_Float';
+                        $oTemplateField['type'] = 'F_Decimal';
                         $oTemplateField['var']  = 'f' . $oTemplateField['var'];
                         break;
                     
                     case strpos($oField->Type, 'varchar') !== false:
                     case strpos($oField->Type, 'text')    !== false:
-                        $oTemplateField['type']     = 'Field_String';
+                        $oTemplateField['type']     = 'F_Text';
                         $oTemplateField['var']      = 's' . $oTemplateField['var'];
                         if ($oField->Default) {
                             $oTemplateField['default'] = '"' . $oField->Default . '"';
@@ -142,15 +142,15 @@
                     case strpos($oField->Type, 'binary') !== false:
                         if (strpos($oField->Type, '20') !== false) {
                             if ($oField->Key == 'PRI') {
-                                $oTemplateField['type'] = 'Field_Hash';
+                                $oTemplateField['type'] = 'F_Hash';
                             } else {
-                                $oTemplateField['type'] = 'Field_HashNullable';
+                                $oTemplateField['type'] = 'F_HashNullable';
                             }
                         } else if (strpos($oField->Type, '16') !== false) {
                             if ($oField->Key == 'PRI') {
-                                $oTemplateField['type'] = 'Field_UUID';
+                                $oTemplateField['type'] = 'F_UUID';
                             } else {
-                                $oTemplateField['type'] = 'Field_UUIDNullable';
+                                $oTemplateField['type'] = 'F_UUIDNullable';
                             }
                         }
 
@@ -170,7 +170,7 @@
                         break;
 
                     case strpos($oField->Type, 'datetime') !== false:
-                        $oTemplateField['type'] = 'Field_DateTime';
+                        $oTemplateField['type'] = 'F_DateTime';
                         $oTemplateField['var']  = 'd' . $oTemplateField['var'];
 
                         switch (true) {
@@ -185,12 +185,12 @@
                         break;
 
                     case strpos($oField->Type, 'date') !== false:
-                        $oTemplateField['type']     = 'Field_Date';
+                        $oTemplateField['type']     = 'F_Date';
                         $oTemplateField['var']      = 'd' . $oTemplateField['var'];
                         break;
                     
                     case strpos($oField->Type, 'enum') !== false:
-                        $oTemplateField['type']    = 'Field_Enum';
+                        $oTemplateField['type']    = 'F_Enum';
                         $oTemplateField['var']     = 's' . $oTemplateField['var'];
                         $oTemplateField['values']  = array();
 
@@ -235,7 +235,7 @@
 
                 $aData['fields'][] = $oTemplateField;
 
-                $sType = str_replace('Field_', '', $oTemplateField['type']);
+                $sType = str_replace('F_', '', $oTemplateField['type']);
                 if (!in_array($sType, $aData['types'])) {
                     $aData['types'][] = $sType;
                 }

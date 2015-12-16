@@ -184,16 +184,28 @@
                                 $aData['date_updated'] = $oTemplateField;
                                 break;
                         }
+
+                        if ($oField->Default) {
+                            $oTemplateField['default'] = '"' . $oField->Default . '"';
+                        }
                         break;
 
                     case strpos($oField->Type, 'date') !== false:
                         $oTemplateField['type']     = 'F_Date';
                         $oTemplateField['var']      = 'd' . $oTemplateField['var'];
+
+                        if ($oField->Default) {
+                            $oTemplateField['default'] = '"' . $oField->Default . '"';
+                        }
                         break;
 
                     case strpos($oField->Type, 'time') !== false:
                         $oTemplateField['type']     = 'F_Time';
                         $oTemplateField['var']      = 'd' . $oTemplateField['var'];
+                        
+                        if ($oField->Default) {
+                            $oTemplateField['default'] = '"' . $oField->Default . '"';
+                        }
                         break;
                     
                     case strpos($oField->Type, 'enum') !== false:

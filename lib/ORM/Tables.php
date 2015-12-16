@@ -1,147 +1,136 @@
 <?php
     namespace Enobrev\ORM;
 
+    use ArrayIterator;
     use MySQLi_Result;
     use Enobrev\SQL;
 
     class TablesException extends DbException {}
     class TablesMultiplePrimaryException extends TablesException {}
 
-    class Tables {
+    class Tables extends ArrayIterator {
         protected static $sTable = null;
 
         /**
+         * @param Table $oTable
          * @param array $aData
          * @param array $aMap
-         * @return array
+         * @return Tables
          */
-        public static function createAndUpdateFromMap(Array $aData, Array $aMap) {
-            $aOutput = array();
+        public static function createAndUpdateFromMap(Table $oTable, Array $aData, Array $aMap) {
+            $aOutput = new self;
             foreach($aData as $aDatum) {
                 /** @var Table $sTable */
-                $sTable = static::$sTable;
-                $aOutput[] = $sTable::createAndUpdateFromMap($aDatum, $aMap);
+                $sTable = get_class($oTable);
+                $aOutput->append($sTable::createAndUpdateFromMap($aDatum, $aMap));
             }
 
             return $aOutput;
         }
 
         /**
+         * @param Table $oTable
          * @param array $aData
-         * @return array
+         * @return Tables
          */
-        public static function createAndUpdate(Array $aData) {
-            $aOutput = array();
+        public static function createAndUpdate(Table $oTable, Array $aData) {
+            $aOutput = new self;
             foreach($aData as $aDatum) {
                 /** @var Table $sTable */
-                $sTable = static::$sTable;
-                $aOutput[] = $sTable::createAndUpdate($aDatum);
+                $sTable = get_class($oTable);
+                $aOutput->append($sTable::createAndUpdate($aDatum));
             }
 
             return $aOutput;
         }
 
         /**
-         * @param Table         $oTable
          * @param MySQLi_Result $oResults
-         * @param string        $sKey  Column to use as array key
-         * @return Table[]
+         * @param Table[] ...$aTables
+         * @return Tables
          */
-        public static function toTables(Table $oTable, MySQLi_Result $oResults, $sKey = null) {
-            $sTable  = get_class($oTable);
-            $aTables = array();
-            if ($oResults->num_rows) {
-                /** @var Table $sTable */
-                if ($sKey) {
-                    while ($oResult = $oResults->fetch_object()) {
-                        $aTables[$oResult->$sKey] = $sTable::createFromObject($oResult);
-                    }
-                } else {
-                    while ($oResult = $oResults->fetch_object()) {
-                        $aTables[] = $sTable::createFromObject($oResult);
-                    }
-                }
-            }
-
-            return $aTables;
-        }
-
-        /**
-         * @param Table[]       $aTables
-         * @param MySQLi_Result $oResults
-         * @return Table[]
-         */
-        public static function toMultipleTables(Array $aTables, MySQLi_Result $oResults) {
-            $aOutput = array();
+        protected static function fromResults(MySQLi_Result $oResults, ...$aTables) {
+            $oOutput = new self;
             while ($oResult = $oResults->fetch_object()) {
-                $aRow = array();
-                foreach($aTables as $oTable) {
-                    /** @var Table $sPrefixedTable */
-                    $sPrefixedTable = get_class($oTable);
-                    $aRow[$oTable->getTitle()]  = $sPrefixedTable::createFromObject($oResult);
-                }
-                $aOutput[] = $aRow;
-            }
-
-            return $aOutput;
-        }
-
-        /**
-         * @param $sTable
-         * @param MySQLi_Result $oResults
-         * @return array (ids)
-         */
-        public static function toIds($sTable, MySQLi_Result $oResults) {
-            $aIds = array();
-            if ($oResults->num_rows) {
-                /** @var Table $oTable */
-                $oTable = new $sTable;
-                while($oResult = $oResults->fetch_object()) {
-                    foreach ($oTable->getPrimary() as $oPrimary) {
-                        $aIds[] = $oResult->{$oPrimary->sColumn};
+                if (count($aTables) > 1) {
+                    $aRow = array();
+                    foreach ($aTables as $oTable) {
+                        /** @var Table $sPrefixedTable */
+                        $sPrefixedTable = get_class($oTable);
+                        $aRow[$oTable->getTitle()] = $sPrefixedTable::createFromObject($oResult);
                     }
-                }
-            }
-
-            return $aIds;
-        }
-
-        /**
-         * @param Table[] $aTables
-         * @return array
-         */
-        public static function arrayToIds(Array $aTables) {
-            $aIds = array();
-
-            foreach($aTables as $oTable) {
-                foreach ($oTable->getPrimary() as $oPrimary) {
-                    $aIds[] = $oTable->{$oPrimary->sColumn};
-                }
-            }
-
-            return $aIds;
-        }
-
-        /**
-         * @param Table[] $aTables
-         * @param string $sKey
-         * @param string $sValue,...
-         * @return array
-         */
-        public static function toArray(Array $aTables, $sKey = '', $sValue = '') {
-            $aFilter = func_get_args();
-            array_shift($aFilter);
-            array_shift($aFilter);
-
-            $aReturn = array();
-            foreach ($aTables as $oTable) {
-                $aValue = $oTable->toArray();
-
-                if ($sKey) {
-                    /** @var Field $oTable->$sKey */
-                    $aReturn[$oTable->$sKey->getValue()] = $aValue;
+                    $oOutput->append($aRow);
                 } else {
-                    $aReturn[] = $aValue;
+                    $oOutput->append($aTables[0]::createFromObject($oResult));
+                }
+            }
+
+            return $oOutput;
+        }
+
+        /**
+         * @param string $sKey
+         * @param string $sValue
+         * @return array
+         */
+        public function toKeyValueArray($sKey, $sValue) {
+            $aReturn = [];
+            foreach($this as $oTable) {
+                $aReturn[$oTable->$sKey->getValue()] = $oTable->$sValue->getValue();
+            }
+
+            return $aReturn;
+        }
+
+        /**
+         * @return Field[]
+         * @throws \Exception
+         */
+        public function toPrimaryFieldArray() {
+            $aReturn = [];
+            foreach($this as $oTable) {
+                $aPrimary = $oTable->getPrimary();
+                if (count($aPrimary) > 1) {
+                    throw new \Exception("Can Only get Primary Array of Tables with Single Primary Keys");
+                }
+
+                $aReturn[] = $oTable->{$aPrimary[0]->sColumn};
+            }
+
+            return $aReturn;
+        }
+
+        /**
+         * @return array
+         * @throws \Exception
+         */
+        public function toPrimaryArray() {
+            $aReturn = [];
+            foreach($this as $oTable) {
+                $aPrimary = $oTable->getPrimary();
+                if (count($aPrimary) > 1) {
+                    throw new \Exception("Can Only get Primary Array of Tables with Single Primary Keys");
+                }
+
+                $aReturn[] = $oTable->{$aPrimary[0]->sColumn}->getValue();
+            }
+
+            return $aReturn;
+        }
+
+        /**
+         * @param string $sKey
+         * @return array
+         */
+        public function toArray($sKey = '') {
+            $aReturn = [];
+            if ($sKey) {
+                foreach ($this as $oTable) {
+                    $aReturn[$oTable->$sKey->getValue()] = $oTable->toArray();
+                }
+            } else {
+                foreach ($this as $oTable) {
+                    $aReturn[] = $oTable->toArray();
                 }
             }
 

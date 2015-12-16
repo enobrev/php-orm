@@ -267,6 +267,7 @@
             $aData['namespace']     = $sNamespace;
             $aData['primary_count'] = count($aData['primary']);
             $aFiles[$aData['table']['title'] . '.php'] = $oTemplate->render($aData);
+            $aFiles[$aData['table']['plural'] . '.php'] = $oTemplate->render($aData);
         }
 
         foreach($aFiles as $sFile => $sOutput) {

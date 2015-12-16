@@ -1,0 +1,19 @@
+<?php
+    namespace {{ namespace }};
+
+    use Enobrev\ORM\Db;
+    use Enobrev\ORM\Tables;
+    use Enobrev\SQL;
+
+    class {{table.plural}} extends Tables {
+        /**
+         * @return {{table.plural}}
+         */
+        public static function get() {
+            $oTable = new {{table.title}}();
+            $oSQL = SQL::select($oTable);
+
+            $oResults = Db::getInstance()->namedQuery('{{table.plural}}.get', $oSQL);
+            return self::fromResults($oResults, $oTable);
+        }
+    }

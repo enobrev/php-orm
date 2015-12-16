@@ -1,0 +1,122 @@
+<?php
+    namespace Enobrev\Table;
+
+{% if date_added or date_updated %}
+    use Enobrev\ORM\Db;
+{% endif %}
+    use Enobrev\ORM\Table;
+{% for type in types %}
+    use Enobrev\ORM\Field\{{type}} as Field_{{type}};
+{% endfor %}
+
+    /**
+{% for field in fields %}
+     * @property {{field.type}} {{field.name}}
+{% endfor %}
+     */
+    class {{table.title}} extends Table {
+        protected $sTitle = '{{table.name}}';
+
+{% for field in fields %}
+{% if field.type == 'Field_Enum' %}
+{% for value in field.values %}
+        const {{value.const_padded}}= '{{value.name}}';
+{% endfor %}
+
+{% endif %}
+{% endfor %}
+        protected function init() {
+            $this->addFields(
+{% for field in fields %}
+{% if field.type == 'Field_Enum' %}
+                new {{field.type}}('{{field.name}}', array({% for value in field.values %}self::{{value.const}}{% if not loop.last %}, {% endif %}{% endfor %})){% if not loop.last %},{% endif %}
+
+{% else %}
+                new {{field.type}}('{{field.name}}'){% if not loop.last %},{% endif %}
+
+{% endif %}
+{% endfor %}
+            );
+
+{% if primary %}
+{% for field in primary %}
+            $this->addPrimary($this->{{field.name}});
+{% endfor %}
+{% endif %}
+
+{% for field in fields %}
+{% if field.default is not empty %}
+            $this->{{field.name}}->setDefault({{field.default}});
+{% endif %}
+{% endfor %}
+        }
+
+{% if primary %}
+        /**
+{% for field in primary %}
+         * @param int ${{field.var}}
+{% endfor %}
+         * @return {{table.title}}
+         */
+        public static function getById({% for field in primary %}${{field.var}}{% if not loop.last %}, {% endif %}{% endfor %}) {
+            $oTable = new self;
+{% for field in primary %}
+            $oTable->{{field.name}}->setValue(${{field.var}});
+{% endfor %}
+
+            return $oTable->getBy(
+{% for field in primary %}
+{% if loop.last %}
+                $oTable->{{field.name}}
+{% else %}
+                $oTable->{{field.name}},
+{% endif %}
+{% endfor %}
+            );
+        }
+{% endif %}
+
+{% for field in fields %}
+{% if field.reference %}
+        /**
+         * @return {{field.reference.class}}
+         */
+        public function get{{field.reference.title}}() {
+            if ($this->{{field.name}}->getValue()) {
+                return {{field.reference.class}}::getById($this->{{field.name}}->getValue());
+            }
+        }
+
+{% endif %}
+{% endfor %}
+{% if date_added or date_updated %}
+
+        /**
+         *
+         * @return int
+         */
+        public function insert() {
+{% if date_added %}
+            $this->{{date_added.name}}   = Db::getInstance()->getDate();
+{% endif %}
+{% if date_updated %}
+            $this->{{date_updated.name}} = Db::getInstance()->getDate();
+{% endif %}
+            return parent::insert();
+        }
+{% endif %}
+{% if primary or date_updated %}
+
+        /**
+         * @return \MySQLi_Result
+         */
+        public function update() {
+            if ($this->Primary->hasValue()) {
+{% if date_updated %}
+                $this->{{date_updated.name}} = Db::getInstance()->getDate();
+{% endif %}
+                return parent::update();
+            }
+        }
+{% endif %}
+    }

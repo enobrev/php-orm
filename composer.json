@@ -1,0 +1,21 @@
+{
+    "name": "enobrev/orm",
+    "description": "Simple ORM",
+    "authors": [
+        {
+            "name": "Mark Armendariz",
+            "email": "src@enobrev.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Enobrev\\": "lib/"
+        }
+    },
+    "require": {
+    },
+    "require-dev": {
+        "twig/twig": "^1.23",
+        "monolog/monolog": "^1.17"
+    }
+}

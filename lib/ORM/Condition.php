@@ -2,24 +2,11 @@
     namespace Enobrev\ORM;
     
     class ConditionException extends DbException {}
+    class ConditionInvalidTypeException extends ConditionException {}
     class ConditionMissingBetweenValueException extends ConditionException {}
     class ConditionMissingInValueException extends ConditionException {}
     class ConditionMissingFieldException extends ConditionException {}
 
-    /**
-     * @throws ConditionMissingBetweenValueException|ConditionMissingFieldException
-     * @method static Condition eq()
-     * @method static Condition neq()
-     * @method static Condition lt()
-     * @method static Condition lte()
-     * @method static Condition gt()
-     * @method static Condition gte()
-     * @method static Condition like()
-     * @method static Condition nul()
-     * @method static Condition in()
-     * @method static Condition nin()
-     * @method static Condition between()
-     */
     class Condition {
         const LT           = '<';
         const LTE          = '<=';
@@ -51,45 +38,37 @@
         }
 
         /**
-         * @param mixed $aElements,... As many args as necessary.  Field MUST come before values.  Condition Type can come in any order, defaults to Equals
+         * @param  mixed ...$aElements,... As many args as necessary.  Field MUST come before values.  Condition Type can come in any order, defaults to Equals
          * @return Condition
+         * @throws ConditionInvalidTypeException
          * @throws ConditionMissingInValueException
          * @throws ConditionMissingFieldException
          * @throws ConditionMissingBetweenValueException
          */
-        public static function create($aElements) {
-            $aElements = func_get_args();
+        private static function create($sSign, ...$aElements) {
+            if (!self::isSign($sSign)) {
+                throw new ConditionInvalidTypeException();
+            }
 
             $oCondition = new self;
+            $oCondition->sSign = $sSign;
+
             foreach($aElements as $mElement) {
-                switch(true) {
-                    case !is_int($mElement)
-                      && !is_bool($mElement)
-                      && self::isSign($mElement):
-                        $oCondition->sSign = $mElement;
-                        break;
+                if ($mElement instanceof Field) {
+                    $oCondition->aElements[] = $mElement;
+                } else if (isset($oCondition->aElements[0])
+                       &&        $oCondition->aElements[0] instanceof Field) { // Value should be of the same field type as Field
+                    /** @var Field $oField  */
+                    $oField = clone $oCondition->aElements[0];
 
-                    case $mElement instanceof Field:
+                    if (is_array($mElement)) {
                         $oCondition->aElements[] = $mElement;
-                        break;
-
-                    default:
-                        // Value should be of the same field type as Field
-                        if (isset($oCondition->aElements[0])
-                        &&        $oCondition->aElements[0] instanceof Field) {
-                            /** @var Field $oField  */
-                            $oField = clone $oCondition->aElements[0];
-
-                            if (is_array($mElement)) {
-                                $oCondition->aElements[] = $mElement;
-                            } else {
-                                $oField->setValue($mElement);
-                                $oCondition->aElements[] = $oField;
-                            }
-                        } else {
-                            $oCondition->aElements[] = $mElement;
-                        }
-                        break;
+                    } else {
+                        $oField->setValue($mElement);
+                        $oCondition->aElements[] = $oField;
+                    }
+                } else {
+                    $oCondition->aElements[] = $mElement;
                 }
             }
 
@@ -116,32 +95,56 @@
             return $oCondition;
         }
 
-        /**
-         * Wrapper method defining condition types in method name
-         * @static
-         * @param string $sName
-         * @param array $aArguments
-         * @return Condition
-         */
-        public static function __callStatic($sName, $aArguments) {
-            switch($sName) {
-                default:
-                case 'eq':      array_unshift($aArguments, self::EQUAL);    break;
-                case 'neq':     array_unshift($aArguments, self::NEQ);      break;
-                case 'lt':      array_unshift($aArguments, self::LT);       break;
-                case 'lte':     array_unshift($aArguments, self::LTE);      break;
-                case 'gt':      array_unshift($aArguments, self::GT);       break;
-                case 'gte':     array_unshift($aArguments, self::GTE);      break;
-                case 'like':    array_unshift($aArguments, self::LIKE);     break;
-                case 'nlike':   array_unshift($aArguments, self::NLIKE);     break;
-                case 'in':      array_unshift($aArguments, self::IN);       break;
-                case 'nin':     array_unshift($aArguments, self::NIN);       break;
-                case 'nul':     array_unshift($aArguments, self::ISNULL);   break;
-                case 'notnul':  array_unshift($aArguments, self::NOTNULL);   break;
-                case 'between': array_unshift($aArguments, self::BETWEEN);  break;
-            }
-            
-            return call_user_func_array('self::create', $aArguments);
+        public static function eq(...$aArguments) {
+            return self::create(self::EQUAL, ...$aArguments);
+        }
+
+        public static function neq(...$aArguments) {
+            return self::create(self::NEQ, ...$aArguments);
+        }
+
+        public static function lt(...$aArguments) {
+            return self::create(self::LT, ...$aArguments);
+        }
+
+        public static function lte(...$aArguments) {
+            return self::create(self::LTE, ...$aArguments);
+        }
+
+        public static function gt(...$aArguments) {
+            return self::create(self::GT, ...$aArguments);
+        }
+
+        public static function gte(...$aArguments) {
+            return self::create(self::GTE, ...$aArguments);
+        }
+
+        public static function like(...$aArguments) {
+            return self::create(self::LIKE, ...$aArguments);
+        }
+
+        public static function nlike(...$aArguments) {
+            return self::create(self::NLIKE, ...$aArguments);
+        }
+
+        public static function in(...$aArguments) {
+            return self::create(self::IN, ...$aArguments);
+        }
+
+        public static function nin(...$aArguments) {
+            return self::create(self::NIN, ...$aArguments);
+        }
+
+        public static function nul(...$aArguments) {
+            return self::create(self::ISNULL, ...$aArguments);
+        }
+
+        public static function nnul(...$aArguments) {
+            return self::create(self::NOTNULL, ...$aArguments);
+        }
+
+        public static function between(...$aArguments) {
+            return self::create(self::BETWEEN, ...$aArguments);
         }
 
         public function __construct() {

@@ -4,12 +4,6 @@
     class ConditionsException extends DbException {}
     class ConditionsNonConditionException extends ConditionsException {}
 
-    /**
-     * @throws ConditionsNonConditionException
-     * @method static Conditions also()
-     * @method static Conditions either()
-     *
-     */
     class Conditions {
         const TYPE_AND = 'AND';
         const TYPE_OR  = 'OR';
@@ -19,7 +13,6 @@
         );
 
         /**
-         * @static
          * @param mixed $sElement
          * @return bool
          */
@@ -27,18 +20,17 @@
             return in_array($sElement, self::$aTypes);
         }
 
+        /** @var string  */
         private $sType;
 
         /** @var Condition[] $aConditions */
         private $aConditions;
 
         /**
-         * @static
-         * @param array $aConditions,... Array of Condition|Conditions
+         * @param Condition[]|Conditions $aConditions
          * @return Conditions
          */
-        public static function create($aConditions) {
-            $aConditions = func_get_args();
+        private static function create(...$aConditions) {
             $oConditions = new self();
             foreach($aConditions as $mCondition) {
                 switch(true) {
@@ -62,20 +54,19 @@
         }
 
         /**
-         * Wrapper method defining condition types in method name
-         * @static
-         * @param string $sName
-         * @param array $aArguments
-         * @return Condition
+         * @param array ...$aArguments
+         * @return Conditions
          */
-        public static function __callStatic($sName, $aArguments) {
-            switch($sName) {
-                default:
-                case 'also':   array_unshift($aArguments, self::TYPE_AND); break;
-                case 'either': array_unshift($aArguments, self::TYPE_OR);  break;
-            }
-            
-            return call_user_func_array('self::create', $aArguments);
+        public static function also(...$aArguments) {
+            return self::create(self::TYPE_AND, ...$aArguments);
+        }
+
+        /**
+         * @param array ...$aArguments
+         * @return Conditions
+         */
+        public static function either(...$aArguments) {
+            return self::create(self::TYPE_OR, ...$aArguments);
         }
 
         public function __construct() {
@@ -90,14 +81,14 @@
                     $this->aConditions[] = $oCondition;
                     break;
 
-                case $oCondition instanceof Fields:
+                case $oCondition instanceof Field:
+                    $this->add(Condition::eq($oCondition));
+                    break;
+
+                case is_array($oCondition):
                     foreach($oCondition as $oField) {
                         $this->add($oField);
                     }
-                    break;
-
-                case $oCondition instanceof Field:
-                    $this->add(Condition::eq($oCondition));
                     break;
 
                 case $oCondition === null:

@@ -3,11 +3,6 @@
 
     class OrderException extends DbException {}
 
-    /**
-     * @method static Order desc()
-     * @method static Order asc()
-     * @method static Order byfield()
-     */
     class Order {
         const TYPE_DESC  = 'DESC';
         const TYPE_ASC   = 'ASC';
@@ -27,7 +22,7 @@
          *
          * @return Order
          */
-        public static function create(Field $oField, $sType = self::TYPE_ASC, Array $aValues = array()) {
+        private static function create(Field $oField, $sType = self::TYPE_ASC, Array $aValues = array()) {
             $oOrder   = new self;
             $oOrder->oField  = $oField;
             $oOrder->sType   = $sType;
@@ -37,24 +32,33 @@
         }
 
         /**
-         * Wrapper method defining group types in method name
-         * @param string $sName
-         * @param array $aArguments
-         * @return Condition
+         * @param Field $oField
+         * @param array $aValues
+         * @return Order
          */
-        public static function __callStatic($sName, $aArguments) {
-            switch($sName) {
-                default:
-                case 'desc':    array_push($aArguments, self::TYPE_DESC);           break;
-                case 'asc':     array_push($aArguments, self::TYPE_ASC);            break;
-                case 'byfield': array_splice($aArguments, 1, 0, self::TYPE_FIELD);  break;
-            }
+        public static function desc(Field $oField, Array $aValues = array()) {
+            return self::create($oField, self::TYPE_DESC, $aValues);
+        }
 
-            return call_user_func_array('self::create', $aArguments);
+        /**
+         * @param Field $oField
+         * @param array $aValues
+         * @return Order
+         */
+        public static function asc(Field $oField, Array $aValues = array()) {
+            return self::create($oField, self::TYPE_ASC, $aValues);
+        }
+
+        /**
+         * @param Field $oField
+         * @param array $aValues
+         * @return Order
+         */
+        public static function byfield(Field $oField, Array $aValues = array()) {
+            return self::create($oField, self::TYPE_FIELD, $aValues);
         }
 
         public function __construct() {
-            $this->Fields = new Fields(array());
         }
 
         public function toSQL() {

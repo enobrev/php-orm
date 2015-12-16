@@ -95,10 +95,10 @@
         public static function toIds($sTable, MySQLi_Result $oResults) {
             $aIds = array();
             if ($oResults->num_rows) {
+                /** @var Table $oTable */
                 $oTable = new $sTable;
                 while($oResult = $oResults->fetch_object()) {
-                    /** @var Field $oPrimary */
-                    foreach ($oTable->Primary as $oPrimary) {
+                    foreach ($oTable->getPrimary() as $oPrimary) {
                         $aIds[] = $oResult->{$oPrimary->sColumn};
                     }
                 }
@@ -115,8 +115,7 @@
             $aIds = array();
 
             foreach($aTables as $oTable) {
-                /** @var Field $oPrimary */
-                foreach ($oTable->Primary as $oPrimary) {
+                foreach ($oTable->getPrimary() as $oPrimary) {
                     $aIds[] = $oTable->{$oPrimary->sColumn};
                 }
             }
@@ -125,7 +124,6 @@
         }
 
         /**
-         * @static
          * @param Table[] $aTables
          * @param string $sKey
          * @param string $sValue,...
@@ -138,12 +136,7 @@
 
             $aReturn = array();
             foreach ($aTables as $oTable) {
-                if (count($aFilter) == 1) {
-                    $sField = $aFilter[0];
-                    $aValue = $oTable->$sField->getValue();
-                } else {
-                    $aValue = $oTable->Fields->toArray($aFilter);
-                }
+                $aValue = $oTable->toArray();
 
                 if ($sKey) {
                     /** @var Field $oTable->$sKey */
@@ -154,87 +147,6 @@
             }
 
             return $aReturn;
-        }
-
-        /**
-         * @return Fields
-         */
-        protected static function getCMSSearchFields() {
-            $oTable  = new static::$sTable;
-            $oFields = new Fields();
-
-            foreach($oTable->Primary as $oField) {
-                /** @var Field $oField */
-                $oFields->add($oField);
-            }
-
-            foreach($oTable->Fields as $oField) {
-                /** @var Field $oField */
-                if ($oField instanceof Field\Text
-                &&  $oField instanceof Field\Date === false) {
-                    $oFields->add($oField);
-                }
-            }
-
-            return $oFields;
-        }
-
-        /**
-         * @param string $sNeedle
-         * @param Conditions $oConditionsOverride
-         * @return array
-         */
-        public static function CMSSearch($sNeedle, Conditions $oConditionsOverride = null) {
-            $oTable      = new static::$sTable;
-            $oFields     = static::getCMSSearchFields();
-
-            if ($oConditionsOverride === null) {
-                $oConditions = SQL::either();
-
-                foreach($oFields as $oField) {
-                    /** @var Field $oField */
-                    if ($oField instanceof Field\Date
-                    ||  $oField instanceof Field\Number) {
-                        $oConditions->add(
-                            SQL::eq($oField,  $sNeedle)
-                        );
-                    } else {
-                        $oConditions->add(
-                            SQL::like($oField,  "%" . $sNeedle . "%")
-                        );
-                    }
-                }
-            } else {
-                $oConditions = $oConditionsOverride;
-            }
-
-            $oResults = Db::getInstance()->namedQuery('Table.CMSSearch',
-                SQL::select(
-                    $oTable,
-                    $oFields,
-                    $oConditions,
-                    SQL::limit(20)
-                )
-            );
-
-            $aTables = array();
-            if ($oResults->num_rows) {
-                $oPrimary = null;
-                foreach($oTable->Primary as $oField) {
-                    /** @var Field $oField */
-                    $oPrimary = $oField;
-                    break;
-                }
-
-                while($aResult = $oResults->fetch_assoc()) {
-                    $iPrimary = $aResult[$oPrimary->sColumn];
-                    unset($aResult[$oPrimary->sColumn]);
-
-                    $aTables[$iPrimary] = implode(': ', $aResult);
-                }
-            }
-
-            return $aTables;
         }
     }
 ?>

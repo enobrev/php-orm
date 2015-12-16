@@ -31,6 +31,11 @@
          * @var string
          */
         public $sAlias;
+
+        /**
+         * @var boolean
+         */
+        public $bPrimary;
         
         /**
          *
@@ -45,6 +50,7 @@
 
             $this->sTable   = $sTable;
             $this->sColumn  = $sColumn;
+            $this->bPrimary = false;
             $this->sDefault = null;
             $this->sValue   = null;
             $this->sAlias   = null;
@@ -181,6 +187,20 @@
          */
         public function setAlias($sAlias) {
             $this->sAlias = $sAlias;
+        }
+
+        /**
+         * @param boolean $bPrimary
+         */
+        public function setPrimary($bPrimary) {
+            $this->bPrimary = $bPrimary;
+        }
+
+        /**
+         * @return bool
+         */
+        public function isPrimary() {
+            return $this->bPrimary;
         }
 
         /**

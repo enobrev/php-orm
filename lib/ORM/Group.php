@@ -5,27 +5,31 @@
 
     class Group {
         /**
-         * @var Fields
+         * @var Field[]
          */
-        private $Fields;
+        private $aFields;
 
-        public static function create() {
-            $aFields = func_get_args();
+        /**
+         * @param array ...$aFields
+         * @return Group
+         */
+        public static function create(...$aFields) {
             $oGroup   = new self;
-
-            /** @var Field $oField */
-            foreach($aFields as $oField) {
-                $oGroup->Fields->add($oField);
-            }
+            $oGroup->aFields = $aFields;
 
             return $oGroup;
         }
 
         public function __construct() {
-            $this->Fields = new Fields(array());
+            $this->aFields = [];
         }
 
         public function toSQL() {
-            return 'GROUP BY ' . $this->Fields->toSQLColumns();
+            $aFields = array();
+            foreach($this->aFields as $oField) {
+                $aFields[] = $oField->toSQLColumnForFields(true);
+            }
+
+            return 'GROUP BY ' . implode(', ', $aFields);
         }
     }

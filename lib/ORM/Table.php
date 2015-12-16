@@ -17,18 +17,6 @@
         
         /**
          *
-         * @var Fields
-         */
-        public $Fields;
-
-        /**
-         *
-         * @var Fields
-         */
-        public $Primary;
-        
-        /**
-         *
          * @var stdClass
          */
         public $oResult;
@@ -110,7 +98,7 @@
             $oTable = new static;
             $oTable->mapArrayToFields($aData, $aMap);
 
-            if ($oTable->Primary->hasValue()) {
+            if ($oTable->primaryHasValue()) {
                 /** @var Table $oExisting */
                 $oExisting = $oTable->getByPrimary();
                 if ($oExisting instanceof static) {
@@ -133,7 +121,7 @@
             $oTable = new static;
             $oTable->setFromArray($aData);
 
-            if ($oTable->Primary->hasValue()) {
+            if ($oTable->primaryHasValue()) {
                 /** @var Table $oExisting */
                 $oExisting = $oTable->getByPrimary();
                 if ($oExisting instanceof static) {
@@ -165,13 +153,11 @@
                     throw new TableNamelessException;
                 }
 
-                $this->Fields  = new Fields(array());
-                $this->Primary = new Fields(array());
                 $this->DB      = Db::getInstance();
 
                 $this->init();
 
-                $this->Fields->applyDefaults();
+                $this->applyDefaults();
             }
 
             $this->bConstructed = true;
@@ -179,6 +165,21 @@
         
         protected function init() {
         }
+
+        /**
+         * @return bool
+         */
+        public function applyDefaults() {
+            /** @var Field $oField */
+            foreach ($this->getFields() as $oField) {
+                if ($oField->hasDefault()) {
+                    if (!$oField->hasValue()) {
+                        $oField->applyDefault();
+                    }
+                }
+            }
+        }
+
 
         /**
          * @return string
@@ -215,7 +216,7 @@
                 return true;
             }
 
-            foreach($this->Fields as $oField) {
+            foreach($this->getFields() as $oField) {
                 if ($this->fieldChanged($oField)) {
                     return true;
                 }
@@ -224,40 +225,35 @@
             return false;
         }
 
-        /**
-         * @param string $sField
-         *
-         * @return Field
-         * @throws TableFieldNotFoundException
-         */
-        public function __get($sField) {
-            $oField = $this->Fields->$sField;
-            
-            if ($oField instanceof Field) {
-                return $oField;
-            } else {
-                throw new TableFieldNotFoundException($sField);
+        public function getFields() {
+            $aFields = [];
+            $aVars = get_object_vars($this);
+            foreach($aVars as $sName => $sVar) {
+                if ($this->$sName instanceof Field) {
+                    $aFields[] =& $this->$sName;
+                }
             }
+
+            return $aFields;
         }
 
         /**
-         * @param string $sField
-         * @param mixed  $sValue
-         *
-         * @throws TableFieldNotFoundException
+         * @return Field[]
          */
-        public function __set($sField, $sValue) {
-            if (!$this->bConstructed) {
-                $this->__construct();
+        public function getPrimary() {
+            $aPrimary = [];
+            $aVars    = get_object_vars($this);
+            foreach($aVars as $sVar) {
+                if ($this->$sVar instanceof Field) {
+                    if ($this->$sVar->isPrimary()) {
+                        $aPrimary[] =& $this->$sVar;
+                    }
+                }
             }
 
-            if ($this->Fields->$sField instanceof Field) {
-                $this->Fields->$sField->setValue($sValue);
-            } else {
-                throw new TableFieldNotFoundException($sField);
-            }
+            return $aPrimary;
         }
-        
+
         /**
          *
          * @param MySQLi_Result $oResult
@@ -271,8 +267,8 @@
          * @param stdClass $oData
          */
         public function setFromObject(stdClass $oData) {
-            $this->oResult = $oData;            
-            foreach ($this->Fields as &$oField) {            
+            $this->oResult = $oData;
+            foreach ($this->getFields() as &$oField) {
                 /** @var Field $oField */
                 $oField->setValueFromData($oData);
             }
@@ -283,7 +279,7 @@
          * @param array $aData
          */
         public function setFromArray(Array $aData) {
-            foreach ($this->Fields as &$oField) {
+            foreach ($this->getFields() as &$oField) {
                 /** @var Field $oField */
                 $oField->setValueFromArray($aData);
             }
@@ -315,12 +311,9 @@
          * @param array $aData
          */
         public function setPrimaryFromArray(Array $aData) {
-            foreach ($this->Primary as $oPrimary) {
+            foreach ($this->getPrimary() as $oPrimary) {
                 if (isset($aData[$oPrimary->sColumn])) {
-                    $oField = $this->Fields->seekByTitle($oPrimary->sColumn);
-
-                    /** @var Field $oField */
-                    $oField->setValue($aData[$oPrimary->sColumn]);
+                    $this->{$oPrimary->sColumn}->setValue($aData[$oPrimary->sColumn]);
                 }
             }
         }
@@ -330,11 +323,11 @@
          * @return Table
          */
         public function getByPrimary() {
-            return $this->getBy($this->Primary);
+            return $this->getBy($this->getPrimary());
         }
 
         /**
-         * @param Fields|Field $aFields...
+         * @param Field[] $aFields
          * @return Table|null
          * @throws TableException
          */
@@ -364,57 +357,39 @@
         }
 
         /**
-         * Wrapper for Fields object, mostly for auto-setting table name
          * @param Field $oField
          * @return void
          */
         public function addField(Field $oField) {
             $oField->sTable      = $this->sTitle;
             $oField->sTableClass = get_class($this);
-            $this->Fields->add($oField);
+            $this->{$oField->sColumn} =& $oField;
         }
 
         /**
-         * Wrapper for Fields object, mostly for auto-setting table name
-         * @param Field $aFields,... Array of Field
+         * @param Field[] ...$aFields
          * @return void
          */
-        public function addFields($aFields) {
-            $aFields = func_get_args();
+        public function addFields(...$aFields) {
             foreach ($aFields as $oField) {
                 $this->addField($oField);
             }
         }
 
         /**
-         * Wrapper for Fields object, mostly for auto-setting table name
-         * @param $aFields
-         */
-        public function setFields($aFields) {
-            $aFields = func_get_args();
-
-            $this->Fields = new Fields($aFields);
-            foreach($this->Fields as $oField) {
-                $oField->sTable = $this->sTitle;
-            }
-        }
-
-        /**
-         * Wrapper for Fields object, mostly for auto-setting table name
          * @param Field $oField
          * @return void
          */
         public function addPrimary(Field $oField) {
-            $this->Primary->add($oField);
+            $this->addField($oField);
+            $oField->setPrimary(true);
         }
 
         /**
-         * Wrapper for Fields object, mostly for auto-setting table name
-         * @param array $aFields,... Array of Field
+         * @param Field[] $aFields
          * @return void
          */
-        public function addPrimaries($aFields) {
-            $aFields = func_get_args();
+        public function addPrimaries(...$aFields) {
             foreach ($aFields as $oField) {
                 $this->addPrimary($oField);
             }
@@ -429,13 +404,13 @@
                 return false;
             }
 
-            if ($this->Primary->hasValue()) {
+            if ($this->primaryHasValue()) {
                 $sFromTable = 'Table';
                 if ($sFromTable === NULL) {
                     $sFromTable = get_class($this);
                 }
 
-                $oConditions = Conditions::also($this->Primary);
+                $oConditions = Conditions::also($this->getPrimary());
 
                 $oReturn = $this->DB->namedQuery($sFromTable . '.update',
                     SQL::update($this, $oConditions)
@@ -443,6 +418,19 @@
 
                 return $oReturn;
             }
+
+            return false;
+        }
+
+        public function primaryHasValue() {
+            $aPrimary = $this->getPrimary();
+            foreach($aPrimary as $oPrimary) {
+                if (!$oPrimary->hasValue()) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /**
@@ -450,8 +438,8 @@
          * @return MySQLi_Result
          */
         public function delete() {
-            if ($this->Primary->hasValue()) {
-                $oConditions = Conditions::also($this->Primary);
+            if ($this->primaryHasValue()) {
+                $oConditions = Conditions::also($this->getPrimary());
 
                 $oReturn = $this->DB->namedQuery(get_class($this) . '.delete',
                     SQL::delete($this, $oConditions)
@@ -459,6 +447,8 @@
 
                 return $oReturn;
             }
+
+            return false;
         }
         
         /**
@@ -480,9 +470,10 @@
          * @param int $iLastInsertId
          */
         private function updatePrimary($iLastInsertId) {
-            if (count($this->Primary) == 1) {
+            $aPrimary = $this->getPrimary();
+            if (count($aPrimary) == 1) {
                 /** @var Field\Id $oField */
-                $oField = $this->Primary[0];
+                $oField =& $aPrimary[0];
                 if ( $oField instanceof Field\Id
                 ||   $oField instanceof Field\Integer ) {
                     $oField->setValue($iLastInsertId);
@@ -513,16 +504,6 @@
         }
 
         /**
-         * Checks if object is new or not
-         *
-         * @return bool
-            @author
-         */
-        public function isNew() {
-            return ($this->Primary->hasValue())? FALSE : TRUE;
-        }
-
-        /**
          * @param MySQLi_Result $oResults
          * @param string        $sKey  Column to use as array key
          * @return Table[]
@@ -543,6 +524,50 @@
             }
 
             return $aTables;
+        }
+
+        /**
+         * @return array
+         */
+        public function toArray() {
+            $aArray = array();
+
+            foreach ($this->getFields() as $oField) {
+                $aArray[$oField->sColumn] = (string) $oField;
+            }
+
+            return $aArray;
+        }
+
+        /**
+         *
+         * @return String[]
+         */
+        public function toSQLArray() {
+            $aArray = array();
+
+            /** @var Field $oField */
+            foreach ($this->getFields() as $oField) {
+                if (!$oField->isNull()) {
+                    $aArray[$oField->sColumn] = $oField->toSQL();
+                }
+            }
+
+            return $aArray;
+        }
+
+        /**
+         * @return array[]
+         */
+        public function toInfoArray() {
+            $aFields = array();
+
+            /** @var Field $oField */
+            foreach($this->getFields() as $oField) {
+                $aFields[$oField->sColumn] = $oField->toInfoArray();
+            }
+
+            return $aFields;
         }
 
     }

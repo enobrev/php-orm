@@ -2,62 +2,49 @@
     namespace Enobrev\ORM;
     
     class JoinException extends DbException {}
-    class JoinWrongFieldCountException extends JoinException {}
 
     class Join {
         const LEFT_OUTER = 'LEFT OUTER';
 
+        /** @var string  */
         private $sType;
+        
+        /** @var  Field */
+        private $oFrom;
+
+        /** @var  Field */
+        private $oTo;
 
         /**
-         * @var Fields
-         */
-        private $Fields;
-
-        /**
-         * @param mixed|Field[] $aFields...
-         *
+         * @param Field $oFrom
+         * @param Field $oTo
          * @return Join
-         * @throws JoinWrongFieldCountException
          */
-        public static function create($aFields) {
-            $aFields = func_get_args();
-            $oJoin   = new self;
-
-            foreach($aFields as $oField) {
-                $oJoin->Fields->add($oField);
-            }
-
-            if (count($oJoin->Fields) !== 2) {
-                throw new JoinWrongFieldCountException;
-            }
-
+        public static function create($oFrom, $oTo) {            
+            $oJoin = new self;
+            $oJoin->oFrom = $oFrom;
+            $oJoin->oTo   = $oTo;
             return $oJoin;
         }
 
         public function __construct() {
-            $this->sType  = self::LEFT_OUTER;
-            $this->Fields = new Fields(array());
+            $this->sType   = self::LEFT_OUTER;
+            $this->aFields = [];
         }
 
         public function toSQL() {
-            /** @var Field $oFrom */
-            /** @var Field $oTo */
-            $oFrom = $this->Fields->offsetGet(0);
-            $oTo   = $this->Fields->offsetGet(1);
-
-            if ($oTo->hasAlias()) {
+            if ($this->oTo->hasAlias()) {
                 return implode(' ',
                     array(
                         $this->sType,
                         'JOIN',
-                        $oTo->sTable,
+                        $this->oTo->sTable,
                         'AS',
-                        $oTo->sAlias,
+                        $this->oTo->sAlias,
                         'ON',
-                        $oFrom->toSQLColumn(),
+                        $this->oFrom->toSQLColumn(),
                         '=',
-                        $oTo->toSQLColumn()
+                        $this->oTo->toSQLColumn()
                     )
                 );
             } else {
@@ -65,11 +52,11 @@
                     array(
                         $this->sType,
                         'JOIN',
-                        $oTo->sTable,
+                        $this->oTo->sTable,
                         'ON',
-                        $oFrom->toSQLColumn(),
+                        $this->oFrom->toSQLColumn(),
                         '=',
-                        $oTo->toSQLColumn()
+                        $this->oTo->toSQLColumn()
                     )
                 );
             }

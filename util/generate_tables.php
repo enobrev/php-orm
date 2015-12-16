@@ -96,6 +96,8 @@
             );
             
             foreach($aFields as $sField => $oField) {
+                echo $sField . ': Default ';
+                print_r($oField->Default);
                 $oTemplateField = array(
                     'name'    => $sField,
                     'primary' => false,
@@ -227,7 +229,9 @@
                             }
                         }
 
-                        $oTemplateField['default'] = 'self::' . $sEnumType . '_' . strtoupper(str_replace(' ', '_', $oField->Default));
+                        if ($oField->Default) {
+                            $oTemplateField['default'] = 'self::' . $sEnumType . '_' . strtoupper(str_replace(' ', '_', $oField->Default));
+                        }
                         break;
                     
                     default:

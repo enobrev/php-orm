@@ -457,8 +457,8 @@
                         break;
 
                     case $mArgument instanceof ORM\Table:
-                        $sTable = $mArgument->getTitle();
-                        $aFields[] = $mArgument->getFields();
+                        $sTable  = $mArgument->getTitle();
+                        $aFields = array_merge($aFields, $mArgument->getFields());
                         break;
                 }
             }

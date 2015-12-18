@@ -6,6 +6,9 @@
 
     class Time extends Date {
 
+        const DEFAULT_FORMAT = 'H:i:s';
+        const NULL_VALUE     = '00:00:00';
+
         /**
          * @var \DateTime
          */
@@ -40,7 +43,7 @@
          * @return bool
          */
         public function isNull() {
-            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format('H:i:s') : '00:00:00';
+            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
             if (substr($sValue, 0, 1) == '-') {
                 return true;
@@ -53,7 +56,7 @@
          * @return bool
          */
         public function hasValue() {
-            return parent::hasValue() && (string) $this != '00:00:00';
+            return parent::hasValue() && (string) $this != self::NULL_VALUE;
         }
 
         /**
@@ -61,7 +64,7 @@
          * @return string|integer
          */
         public function __toString() {
-            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format('H:i:s') : '00:00:00';
+            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
             if (substr($sValue, 0, 1) == '-') {
                 $sValue = 'NULL';

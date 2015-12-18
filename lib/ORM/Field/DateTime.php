@@ -1,10 +1,14 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use \DateTime as PHPDateTime;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
 
     class DateTime extends Date {
+
+        const DEFAULT_FORMAT = 'Y-m-d H:i:s';
+        const NULL_VALUE     = '0000-00-00 00:00:00';
 
         /**
          * @var \DateTime
@@ -25,6 +29,10 @@
                 $sValue = $sValue->getValue();
             }
 
+            if ($sValue instanceof PHPDateTime) {
+                $sValue = $sValue->format(self::DEFAULT_FORMAT);
+            }
+
             if ($sValue === 'NULL'
             ||  $sValue === NULL) {
                 $this->sValue = NULL;
@@ -40,7 +48,7 @@
          * @return bool
          */
         public function isNull() {
-            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format('Y-m-d H:i:s') : '0000-00-00 00:00:00';
+            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
             if (substr($sValue, 0, 1) == '-') {
                 return true;
@@ -53,7 +61,7 @@
          * @return bool
          */
         public function hasValue() {
-            return parent::hasValue() && (string) $this != '0000-00-00 00:00:00';
+            return parent::hasValue() && (string) $this != self::NULL_VALUE;
         }
 
         /**
@@ -61,7 +69,7 @@
          * @return string|integer
          */
         public function __toString() {
-            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format('Y-m-d H:i:s') : '0000-00-00 00:00:00';
+            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
             if (substr($sValue, 0, 1) == '-') {
                 $sValue = 'NULL';

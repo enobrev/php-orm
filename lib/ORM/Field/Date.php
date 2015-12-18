@@ -7,6 +7,9 @@
 
     class Date extends Text {
 
+        const DEFAULT_FORMAT = 'Y-m-d';
+        const NULL_VALUE     = '0000-00-00 00:00:00';
+
         /**
          * @var \DateTime
          */
@@ -23,7 +26,7 @@
          * @return bool
          */
         public function hasValue() {
-            return parent::hasValue() && (string) $this != '0000-00-00';
+            return parent::hasValue() && (string) $this != self::NULL_VALUE;
         }
 
         /**
@@ -31,10 +34,10 @@
          * @return string
          */
         public function __toString() {
-            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format('Y-m-d') : '0000-00-00';
+            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
             
             if (substr($sValue, 0, 1) == '-') {
-                $sValue = '0000-00-00';
+                $sValue = self::NULL_VALUE;
             }
             
             return $sValue;
@@ -55,7 +58,7 @@
             }
             
             switch(true) {
-                case $sValue == '0000-00-00':
+                case $sValue == self::NULL_VALUE:
                     $this->sValue = null;
                     break;
 

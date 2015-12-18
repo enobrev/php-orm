@@ -212,7 +212,7 @@
             }
 
             if ($this->oLogger) {
-                $this->oLogger->stopQuery($sQuery, $aParams, $sName);
+                $this->oLogger->stopQuery($sQuery, $aParams, $sName, self::$iRowsAffected);
             }
 
             return $mResult;

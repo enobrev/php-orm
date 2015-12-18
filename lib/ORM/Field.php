@@ -152,6 +152,10 @@
          * @return Field
          */
         public function setValue($sValue) {
+            if ($sValue instanceof Table) {
+                $sValue = $sValue->{$this->sColumn};
+            }
+
             if ($sValue instanceof Field) {
                 $sValue = $sValue->getValue();
             }

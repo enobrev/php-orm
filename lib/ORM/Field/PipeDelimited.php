@@ -2,6 +2,7 @@
     namespace Enobrev\ORM\Field;
 
     use Enobrev\ORM\Field;
+    use Enobrev\ORM\Table;
 
     class PipeDelimited extends Text {
 
@@ -16,6 +17,10 @@
          * @return PipeDelimited
          */
         public function setValue($sValue) {
+            if ($sValue instanceof Table) {
+                $sValue = $sValue->{$this->sColumn};
+            }
+
             if ($sValue instanceof Field) {
                 $sValue = $sValue->getValue();
             }

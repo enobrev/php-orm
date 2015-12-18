@@ -2,6 +2,7 @@
     namespace Enobrev\ORM\Field;
 
     use Enobrev\ORM\Field;
+    use Enobrev\ORM\Table;
 
     class Boolean extends Number {
         /**
@@ -18,6 +19,10 @@
          * @return Boolean
          */
         public function setValue($sValue) {
+            if ($sValue instanceof Table) {
+                $sValue = $sValue->{$this->sColumn};
+            }
+
             if ($sValue instanceof Field) {
                 $sValue = $sValue->getValue();
             }

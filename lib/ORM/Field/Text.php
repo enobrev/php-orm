@@ -3,6 +3,7 @@
 
     use Enobrev\ORM\Db;
     use Enobrev\ORM\Field;
+    use Enobrev\ORM\Table;
 
     class Text extends Field {
 
@@ -48,6 +49,10 @@
          * @return Text
          */
         public function setValue($sValue) {
+            if ($sValue instanceof Table) {
+                $sValue = $sValue->{$this->sColumn};
+            }
+
             if ($sValue instanceof Field) {
                 $sValue = $sValue->getValue();
             }

@@ -4,6 +4,7 @@
     use Enobrev\ORM\Db;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\FieldInvalidValueException;
+    use Enobrev\ORM\Table;
 
     class Enum extends Field {
         public $aValues = array();
@@ -86,6 +87,10 @@
          * @throws FieldInvalidValueException
          */
         public function setValue($sValue) {
+            if ($sValue instanceof Table) {
+                $sValue = $sValue->{$this->sColumn};
+            }
+
             if ($sValue instanceof Field) {
                 $sValue = $sValue->getValue();
             }

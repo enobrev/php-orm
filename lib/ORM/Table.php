@@ -22,7 +22,7 @@
         public $oResult;
 
         /**
-         * @var Db
+         * @var \Enobrev\ORM\Db
          */
         protected $DB = NULL;
 
@@ -349,6 +349,7 @@
                 $aQueryName[] = $oField->sColumn;
             }
 
+            /** @var Table $oTable */
             $oTable     = new static;
             $aClass     = explode('\\', get_class($oTable));
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);

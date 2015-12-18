@@ -349,7 +349,7 @@
                 $aQueryName[] = $oField->sColumn;
             }
 
-            $oTable     = new self;
+            $oTable     = new static;
             $aClass     = explode('\\', get_class($oTable));
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 

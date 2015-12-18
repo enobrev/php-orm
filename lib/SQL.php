@@ -812,7 +812,7 @@
          * @param stdClass|null $oResult
          * @return string
          */
-        public function toSQLUpdate(Array $aFields, stdClass $oResult = NULL) {
+        public static function toSQLUpdate(Array $aFields, stdClass $oResult = NULL) {
             $aColumns = array();
 
             foreach($aFields as $oField) {
@@ -835,7 +835,7 @@
          * @param stdClass|null $oResult
          * @return string
          */
-        public function toSQLUpdateLog(Array $aFields, stdClass $oResult = NULL) {
+        public static function toSQLUpdateLog(Array $aFields, stdClass $oResult = NULL) {
             $aColumns = array();
 
             /** @var ORM\Field $oField */

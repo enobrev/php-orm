@@ -141,9 +141,9 @@
         }
 
         /**
-         * @param string|array $sName
-         * @param string       $sQuery
-         * @param int          $iResultMode
+         * @param string|string[]   $sName
+         * @param string            $sQuery
+         * @param int               $iResultMode
          *
          * @return bool|\mysqli_result
          */

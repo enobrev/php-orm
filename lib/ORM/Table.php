@@ -153,15 +153,13 @@
                 }
 
                 $this->DB      = Db::getInstance();
-
                 $this->init();
-
                 $this->applyDefaults();
             }
 
             $this->bConstructed = true;
         }
-        
+
         protected function init() {
         }
 
@@ -216,6 +214,10 @@
             }
 
             foreach($this->getFields() as $oField) {
+                if ($oField->shouldIgnoreChanges()) {
+                    continue;
+                }
+
                 if ($this->fieldChanged($oField)) {
                     return true;
                 }
@@ -224,6 +226,9 @@
             return false;
         }
 
+        /**
+         * @return Field[]
+         */
         public function getFields() {
             $aFields = [];
             $aProperties = get_object_vars($this);
@@ -258,7 +263,7 @@
          * @param MySQLi_Result $oResult
          * @return Table
          */
-        public function setFromResult(MySQLi_Result $oResult) { 
+        public function setFromResult(MySQLi_Result $oResult) {
             return $this->setFromObject($oResult->fetch_object());
         }
 
@@ -402,7 +407,7 @@
                 $this->addPrimary($oField);
             }
         }
-        
+
         /**
          *
          * @return MySQLi_Result|bool
@@ -458,7 +463,7 @@
 
             return false;
         }
-        
+
         /**
          *
          * @return int
@@ -503,7 +508,7 @@
 
             return $iLastInsertId;
         }
-        
+
         /**
          * @return \DateTime
          * */
@@ -547,6 +552,10 @@
             return $aArray;
         }
 
+        public function toHash() {
+            return hash('sha1', json_encode($this->toArray()));
+        }
+
         /**
          *
          * @return String[]
@@ -579,4 +588,3 @@
         }
 
     }
-?>

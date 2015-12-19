@@ -12,31 +12,24 @@
         /** @var string  */
         public $sTableClass;
 
-        /**
-         * @var string
-         */
+        /** @var string  */
         public $sColumn;
 
-        /**
-         * @var mixed
-         */
+        /** @var mixed  */
         public $sValue;
 
-        /**
-         * @var mixed
-         */
+        /** @var mixed  */
         public $sDefault;
 
-        /**
-         * @var string
-         */
+        /** @var string  */
         public $sAlias;
 
-        /**
-         * @var boolean
-         */
-        public $bPrimary;
-        
+        /** @var boolean  */
+        private $bPrimary;
+
+        /** @var  boolean */
+        private $bIgnoreChanges;
+
         /**
          *
          * @param string $sTable Can also be column name if no table is to be specified
@@ -48,20 +41,21 @@
                 $sTable  = null;
             }
 
-            $this->sTable   = $sTable;
-            $this->sColumn  = $sColumn;
-            $this->bPrimary = false;
-            $this->sDefault = null;
-            $this->sValue   = null;
-            $this->sAlias   = null;
+            $this->sTable           = $sTable;
+            $this->sColumn          = $sColumn;
+            $this->bPrimary         = false;
+            $this->bIgnoreChanges   = false;
+            $this->sDefault         = null;
+            $this->sValue           = null;
+            $this->sAlias           = null;
         }
-        
+
         /**
          *
          * @return string|integer
          */
         abstract public function __toString();
-        
+
         /**
          *
          * @return string
@@ -88,7 +82,7 @@
                     return implode('.', array($this->sTable, $this->sColumn));
                 }
             }
-            
+
             return $this->sColumn;
         }
 
@@ -159,7 +153,7 @@
             if ($sValue instanceof Field) {
                 $sValue = $sValue->getValue();
             }
-            
+
             $this->sValue = $sValue;
 
             return $this;
@@ -191,6 +185,13 @@
         }
 
         /**
+         * @return bool
+         */
+        public function hasAlias() {
+            return $this->sAlias !== null;
+        }
+
+        /**
          * @param boolean $bPrimary
          */
         public function setPrimary($bPrimary) {
@@ -204,11 +205,15 @@
             return $this->bPrimary;
         }
 
+        public function ignoreChanges() {
+            $this->bIgnoreChanges = true;
+        }
+
         /**
          * @return bool
          */
-        public function hasAlias() {
-            return $this->sAlias !== null;
+        public function shouldIgnoreChanges() {
+            return $this->bIgnoreChanges;
         }
         
         /**
@@ -302,4 +307,3 @@
             }
         }
     }
-?>

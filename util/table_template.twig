@@ -47,6 +47,14 @@
             $this->{{field.name}}->setDefault({{field.default|raw}});
 {% endif %}
 {% endfor %}
+{% if date_added or date_updated %}
+{% if date_added %}
+            $this->{{date_added.name}}->ignoreChanges();
+{% endif %}
+{% if date_updated %}
+            $this->{{date_updated.name}}->ignoreChanges();
+{% endif %}
+{% endif %}
         }
 
 {% if primary %}
@@ -91,10 +99,10 @@
          */
         public function insert() {
 {% if date_added %}
-            $this->{{date_added.name}}   = $this->now();
+            $this->{{date_added.name}}->setValue($this->now());
 {% endif %}
 {% if date_updated %}
-            $this->{{date_updated.name}} = $this->now();
+            $this->{{date_updated.name}}->setValue($this->now());
 {% endif %}
             return parent::insert();
         }
@@ -107,7 +115,7 @@
         public function update() {
             if ($this->primaryHasValue()) {
 {% if date_updated %}
-                $this->{{date_updated.name}} = $this->now();
+                $this->{{date_updated.name}}->setValue($this->now());
 {% endif %}
                 return parent::update();
             }

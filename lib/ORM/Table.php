@@ -214,10 +214,6 @@
             }
 
             foreach($this->getFields() as $oField) {
-                if ($oField->shouldIgnoreChanges()) {
-                    continue;
-                }
-
                 if ($this->fieldChanged($oField)) {
                     return true;
                 }

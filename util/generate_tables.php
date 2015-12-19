@@ -117,9 +117,9 @@
                 switch(true) {
                     case strpos($oField->Type, 'int') !== false:
                         if ($oField->Key == 'PRI') {
-                            $oTemplateField['type'] = 'F_Id';
+                            $oTemplateField['type'] = 'Field\\Id';
                         } else {
-                            $oTemplateField['type'] = 'F_Integer';
+                            $oTemplateField['type'] = 'Field\\Integer';
                         }
                         $oTemplateField['var']  = 'i' . $oTemplateField['var'];
 
@@ -138,14 +138,14 @@
 
                     case strpos($oField->Type, 'float')   !== false:
                     case strpos($oField->Type, 'decimal') !== false:
-                        $oTemplateField['type'] = 'F_Decimal';
+                        $oTemplateField['type'] = 'Field\\Decimal';
                         $oTemplateField['var']  = 'f' . $oTemplateField['var'];
                         break;
                     
                     case strpos($oField->Type, 'varchar') !== false:
                     case strpos($oField->Type, 'text')    !== false:
                     case strpos($oField->Type, 'char')    !== false:
-                        $oTemplateField['type']     = 'F_Text';
+                        $oTemplateField['type']     = 'Field\\Text';
                         $oTemplateField['var']      = 's' . $oTemplateField['var'];
                         if ($oField->Default) {
                             $oTemplateField['default'] = '"' . $oField->Default . '"';
@@ -155,15 +155,15 @@
                     case strpos($oField->Type, 'binary') !== false:
                         if (strpos($oField->Type, '20') !== false) {
                             if ($oField->Key == 'PRI') {
-                                $oTemplateField['type'] = 'F_Hash';
+                                $oTemplateField['type'] = 'Field\\Hash';
                             } else {
-                                $oTemplateField['type'] = 'F_HashNullable';
+                                $oTemplateField['type'] = 'Field\\HashNullable';
                             }
                         } else if (strpos($oField->Type, '16') !== false) {
                             if ($oField->Key == 'PRI') {
-                                $oTemplateField['type'] = 'F_UUID';
+                                $oTemplateField['type'] = 'Field\\UUID';
                             } else {
-                                $oTemplateField['type'] = 'F_UUIDNullable';
+                                $oTemplateField['type'] = 'Field\\UUIDNullable';
                             }
                         }
 
@@ -183,7 +183,7 @@
                         break;
 
                     case strpos($oField->Type, 'datetime') !== false:
-                        $oTemplateField['type'] = 'F_DateTime';
+                        $oTemplateField['type'] = 'Field\\DateTime';
                         $oTemplateField['var']  = 'd' . $oTemplateField['var'];
 
                         switch (true) {
@@ -202,7 +202,7 @@
                         break;
 
                     case strpos($oField->Type, 'date') !== false:
-                        $oTemplateField['type']     = 'F_Date';
+                        $oTemplateField['type']     = 'Field\\Date';
                         $oTemplateField['var']      = 'd' . $oTemplateField['var'];
 
                         if ($oField->Default) {
@@ -211,7 +211,7 @@
                         break;
 
                     case strpos($oField->Type, 'time') !== false:
-                        $oTemplateField['type']     = 'F_Time';
+                        $oTemplateField['type']     = 'Field\\Time';
                         $oTemplateField['var']      = 'd' . $oTemplateField['var'];
 
                         if ($oField->Default) {
@@ -220,7 +220,7 @@
                         break;
                     
                     case strpos($oField->Type, 'enum') !== false:
-                        $oTemplateField['type']    = 'F_Enum';
+                        $oTemplateField['type']    = 'Field\\Enum';
                         $oTemplateField['var']     = 's' . $oTemplateField['var'];
                         $oTemplateField['values']  = array();
 
@@ -268,7 +268,7 @@
 
                 $aData['fields'][] = $oTemplateField;
 
-                $sType = str_replace('F_', '', $oTemplateField['type']);
+                $sType = str_replace('Field\\', '', $oTemplateField['type']);
                 if (!in_array($sType, $aData['types'])) {
                     $aData['types'][] = $sType;
                 }

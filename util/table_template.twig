@@ -2,15 +2,13 @@
     namespace {{ namespace }};
 
     use Enobrev\ORM\Table;
-{% for type in types %}
-    use Enobrev\ORM\Field\{{type}} as F_{{type}};
-{% endfor %}
+    use Enobrev\ORM\Field;
 
     class {{table.title}} extends Table {
         protected $sTitle = '{{table.name}}';
 
 {% for field in fields %}
-{% if field.type == 'F_Enum' %}
+{% if field.type == 'Field\Enum' %}
 {% for value in field.values %}
         const {{value.const_padded}}= '{{value.name}}';
 {% endfor %}
@@ -33,7 +31,7 @@
             $this->addFields(
 {% for field in fields %}
 {% if field.primary == false %}
-{% if field.type == 'F_Enum' %}
+{% if field.type == 'Field\Enum' %}
                 new {{field.type}}('{{field.name}}', [{% for value in field.values %}self::{{value.const}}{% if not loop.last %}, {% endif %}{% endfor %}]){% if not loop.last %},{% endif %}
 
 {% else %}

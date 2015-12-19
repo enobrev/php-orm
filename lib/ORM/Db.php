@@ -152,7 +152,7 @@
                 $sName = implode('.', $sName);
             }
 
-            $sName = str_replace('\\', '.', str_replace('/', '.', implode('.', $sName)));
+            $sName = str_replace('\\', '.', str_replace('/', '.', $sName));
             return $this->query($sQuery, $iResultMode, $sName);
         }
 

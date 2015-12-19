@@ -141,13 +141,17 @@
         }
 
         /**
-         * @param string $sName
-         * @param string $sQuery
-         * @param int    $iResultMode
+         * @param string|array $sName
+         * @param string       $sQuery
+         * @param int          $iResultMode
          *
          * @return bool|\mysqli_result
          */
         public function namedQuery($sName, $sQuery, $iResultMode = MYSQLI_STORE_RESULT) {
+            if (is_array($sName)) {
+                $sName = implode('.', $sName);
+            }
+
             return $this->query($sQuery, $iResultMode, $sName);
         }
 

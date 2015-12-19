@@ -408,6 +408,9 @@
             }
         }
 
+        protected function preUpdate() {}
+        protected function postUpdate() {}
+
         /**
          *
          * @return MySQLi_Result|bool
@@ -425,9 +428,11 @@
 
                 $oConditions = Conditions::also($this->getPrimary());
 
+                $this->preUpdate();
                 $oReturn = $this->DB->namedQuery($sFromTable . '.update',
                     SQL::update($this, $oConditions)
                 );
+                $this->postUpdate();
 
                 return $oReturn;
             }
@@ -464,17 +469,22 @@
             return false;
         }
 
+        protected function preInsert() {}
+        protected function postInsert() {}
+
         /**
          *
          * @return int
          */
         public function insert() {
+            $this->preInsert();
             $this->DB->namedQuery(get_class($this) . '.insert',
                 SQL::insert($this)
             );
 
             $iLastInsertId = $this->DB->getLastInsertId();
             $this->updatePrimary($iLastInsertId);
+            $this->postInsert();
 
             return $iLastInsertId;
         }
@@ -494,17 +504,22 @@
             }
         }
 
+        protected function preUpsert() {}
+        protected function postUpsert() {}
+
         /**
          *
          * @return int
          */
         public function upsert() {
+            $this->preUpsert();
             $this->DB->namedQuery(get_class($this) . '.upsert',
                 SQL::upsert($this)
             );
 
             $iLastInsertId = $this->DB->getLastInsertId();
             $this->updatePrimary($iLastInsertId);
+            $this->postUpsert();
 
             return $iLastInsertId;
         }

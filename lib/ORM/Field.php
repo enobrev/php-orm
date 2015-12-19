@@ -27,9 +27,6 @@
         /** @var boolean  */
         private $bPrimary;
 
-        /** @var  boolean */
-        private $bIgnoreChanges;
-
         /**
          *
          * @param string $sTable Can also be column name if no table is to be specified
@@ -44,7 +41,6 @@
             $this->sTable           = $sTable;
             $this->sColumn          = $sColumn;
             $this->bPrimary         = false;
-            $this->bIgnoreChanges   = false;
             $this->sDefault         = null;
             $this->sValue           = null;
             $this->sAlias           = null;
@@ -205,17 +201,6 @@
             return $this->bPrimary;
         }
 
-        public function ignoreChanges() {
-            $this->bIgnoreChanges = true;
-        }
-
-        /**
-         * @return bool
-         */
-        public function shouldIgnoreChanges() {
-            return $this->bIgnoreChanges;
-        }
-        
         /**
          *
          * @return mixed

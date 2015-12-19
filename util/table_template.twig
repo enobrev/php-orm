@@ -47,14 +47,6 @@
             $this->{{field.name}}->setDefault({{field.default|raw}});
 {% endif %}
 {% endfor %}
-{% if date_added or date_updated %}
-{% if date_added %}
-            $this->{{date_added.name}}->ignoreChanges();
-{% endif %}
-{% if date_updated %}
-            $this->{{date_updated.name}}->ignoreChanges();
-{% endif %}
-{% endif %}
         }
 
 {% if primary %}
@@ -93,32 +85,30 @@
 {% endfor %}
 {% if date_added or date_updated %}
 
-        /**
-         *
-         * @return int
-         */
-        public function insert() {
+        public function preInsert() {
 {% if date_added %}
             $this->{{date_added.name}}->setValue($this->now());
 {% endif %}
 {% if date_updated %}
             $this->{{date_updated.name}}->setValue($this->now());
 {% endif %}
-            return parent::insert();
         }
-{% endif %}
-{% if primary or date_updated %}
 
-        /**
-         * @return \MySQLi_Result
-         */
-        public function update() {
-            if ($this->primaryHasValue()) {
-{% if date_updated %}
-                $this->{{date_updated.name}}->setValue($this->now());
+        public function preUpsert() {
+{% if date_added %}
+            $this->{{date_added.name}}->setValue($this->now());
 {% endif %}
-                return parent::update();
-            }
+{% if date_updated %}
+            $this->{{date_updated.name}}->setValue($this->now());
+{% endif %}
         }
+{% if date_updated %}
+
+        public function preUpdate() {
+{% if date_updated %}
+            $this->{{date_updated.name}}->setValue($this->now());
+{% endif %}
+        }
+{% endif %}
 {% endif %}
     }

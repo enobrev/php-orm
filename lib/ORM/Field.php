@@ -222,6 +222,10 @@
          * @return bool
          */
         public function is($mValue) {
+            if ($mValue instanceof Table) {
+                $mValue = $mValue->{$this->sColumn};
+            }
+
             if ($mValue instanceof self) {
                 return $this->is($mValue->getValue());
             }

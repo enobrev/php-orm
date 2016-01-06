@@ -129,7 +129,7 @@
                                     $sClass = getClassName($aReferences[$sTable][$sField]['table']);
                                     $oTemplateField['reference'] = array(
                                         'title' => getClassName(str_replace($aReferences[$sTable][$sField]['field'], '', $sField) . $sClass),
-                                        'class' => 'Table_' . $sClass
+                                        'class' => 'Table\\' . $sClass
                                     );
                                 }
                             }
@@ -175,7 +175,7 @@
                                     $sClass = getClassName($aReferences[$sTable][$sField]['table']);
                                     $oTemplateField['reference'] = array(
                                         'title' => getClassName(str_replace($aReferences[$sTable][$sField]['field'], '', $sField) . $sClass),
-                                        'class' => 'Table_' . $sClass
+                                        'class' => 'Table\\' . $sClass
                                     );
                                 }
                             }

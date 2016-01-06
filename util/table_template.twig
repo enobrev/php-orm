@@ -111,4 +111,16 @@
         }
 {% endif %}
 {% endif %}
+
+        // ResponseHeadersTable
+
+        public function getEtag() {
+            return $this->toHash();
+        }
+{% if date_updated %}
+
+        public function getLastModified() {
+            return $this->{{date_updated.name}}->getValue();
+        }
+{% endif %}
     }

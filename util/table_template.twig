@@ -122,5 +122,10 @@
         public function getLastModified() {
             return $this->{{date_updated.name}}->getValue();
         }
+{% elif date_added %}
+
+        public function getLastModified() {
+            return $this->{{date_added.name}}->getValue();
+        }
 {% endif %}
     }

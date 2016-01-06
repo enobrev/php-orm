@@ -39,4 +39,23 @@
             return new DateTime($oResults->fetch_object()->{{ date_updated.name }});
         }
 {% endif %}
+{% if date_added %}
+
+        /**
+         * @return DateTime
+         * @throws \Enobrev\ORM\DbException
+         * @throws \Enobrev\SQLMissingTableOrFieldsException
+         */
+        public static function getMostRecentAddedDate() {
+            $oTable = new {{table.title}}();
+            $oSQL = SQL::select(
+                $oTable->{{ date_added.name }},
+                SQL::desc($oTable->{{ date_added.name }}),
+                SQL::limit(1)
+            );
+
+            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
+            return new DateTime($oResults->fetch_object()->{{ date_added.name }});
+        }
+{% endif %}
     }

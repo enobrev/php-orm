@@ -1,6 +1,6 @@
 <?php
     namespace {{ namespace }};
-{% if date_updated  %}
+{% if date_updated || date_added  %}
 
     use DateTime;
 {% endif %}
@@ -20,42 +20,36 @@
             $oResults = Db::getInstance()->namedQuery('{{table.plural}}.get', $oSQL);
             return self::fromResults($oResults, $oTable);
         }
-{% if date_updated  %}
+{% if date_updated || date_added  %}
 
         /**
          * @return DateTime
          * @throws \Enobrev\ORM\DbException
          * @throws \Enobrev\SQLMissingTableOrFieldsException
          */
+{% if date_updated %}
         public static function getMostRecentUpdatedDate() {
+{% else %}
+        public static function getMostRecentAddedDate() {
+{% endif %}
             $oTable = new {{table.title}}();
             $oSQL = SQL::select(
+{% if date_updated %}
                 $oTable->{{ date_updated.name }},
                 SQL::desc($oTable->{{ date_updated.name }}),
-                SQL::limit(1)
-            );
-
-            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
-            return new DateTime($oResults->fetch_object()->{{ date_updated.name }});
-        }
-{% endif %}
-{% if date_added %}
-
-        /**
-         * @return DateTime
-         * @throws \Enobrev\ORM\DbException
-         * @throws \Enobrev\SQLMissingTableOrFieldsException
-         */
-        public static function getMostRecentAddedDate() {
-            $oTable = new {{table.title}}();
-            $oSQL = SQL::select(
+{% else %}
                 $oTable->{{ date_added.name }},
                 SQL::desc($oTable->{{ date_added.name }}),
+{% endif %}
                 SQL::limit(1)
             );
 
             $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
+{% if date_updated %}
+            return new DateTime($oResults->fetch_object()->{{ date_updated.name }});
+{% else %}
             return new DateTime($oResults->fetch_object()->{{ date_added.name }});
+{% endif %}
         }
 {% endif %}
     }

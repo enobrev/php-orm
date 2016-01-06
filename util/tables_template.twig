@@ -1,6 +1,6 @@
 <?php
     namespace {{ namespace }};
-{% if date_updated || date_added  %}
+{% if date_updated or date_added  %}
 
     use DateTime;
 {% endif %}
@@ -20,7 +20,7 @@
             $oResults = Db::getInstance()->namedQuery('{{table.plural}}.get', $oSQL);
             return self::fromResults($oResults, $oTable);
         }
-{% if date_updated || date_added  %}
+{% if date_updated or date_added  %}
 
         /**
          * @return DateTime

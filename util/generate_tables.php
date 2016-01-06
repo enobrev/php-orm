@@ -36,7 +36,7 @@
         
         $aTables[$sTable] = $aFields;
 
-        $sSQL = "SELECT column_name, referenced_table_name, referenced_column_name FROM information_schema.KEY_COLUMN_USAGE WHERE table_schema = '" . $oConfig->NAME . "' AND table_name = '" . $sTable . "' AND LENGTH(referenced_table_name) > 0;";
+        $sSQL = "SELECT column_name, referenced_table_name, referenced_column_name FROM information_schema.KEY_COLUMN_USAGE WHERE table_schema = '" . $sName . "' AND table_name = '" . $sTable . "' AND LENGTH(referenced_table_name) > 0;";
         $oReferences = $Db->query($sSQL);
         if ($oReferences->num_rows) {
             $aReferences[$sTable] = array();

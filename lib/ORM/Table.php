@@ -90,12 +90,13 @@
         /**
          * @param array $aData
          * @param array $aMap
+         * @param array $aOverride
          * @return Table
          */
-        public static function createAndUpdateFromMap(Array $aData, Array $aMap) {
+        public static function createAndUpdateFromMap(Array $aData, Array $aMap, Array $aOverride = []) {
             /** @var Table $oTable */
             $oTable = new static;
-            $oTable->mapArrayToFields($aData, $aMap);
+            $oTable->mapArrayToFields($aData, $aMap, $aOverride);
 
             if ($oTable->primaryHasValue()) {
                 /** @var Table $oExisting */
@@ -295,8 +296,9 @@
         /**
          * @param array $aData data_field => value
          * @param array $aMap  data_field => column
+         * @param array $aOverride Data that overrides the map
          */
-        public function mapArrayToFields(Array $aData, Array $aMap) {
+        public function mapArrayToFields(Array $aData, Array $aMap, Array $aOverride = []) {
             $aMappedData = array();
             foreach($aMap as $sDataField => $mField) {
                 if (isset($aData[$sDataField])) {
@@ -306,6 +308,18 @@
 
                     $aMappedData[$mField] = $aData[$sDataField];
                 }
+            }
+
+            foreach($aOverride as $sField => $mData) {
+                if ($mData instanceof Table) {
+                    $mData = $mData->$sField;
+                }
+
+                if ($mData instanceof Field) {
+                    $mData = $mData->getValue();
+                }
+
+                $aMappedData[$sField] = $mData;
             }
 
             if (count($aMappedData)) {

@@ -330,7 +330,7 @@
          * @return Table
          */
         public function getByPrimary() {
-            return $this->getBy($this->getPrimary());
+            return $this->getBy(...$this->getPrimary());
         }
 
         /**

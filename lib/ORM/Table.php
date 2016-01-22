@@ -102,7 +102,7 @@
                 /** @var Table $oExisting */
                 $oExisting = $oTable->getByPrimary();
                 if ($oExisting instanceof static) {
-                    $oExisting->mapArrayToFields($aData, $aMap);
+                    $oExisting->mapArrayToFields($aData, $aMap, $aOverride);
                     $oExisting->update();
                     return $oExisting;
                 }
@@ -253,6 +253,15 @@
             }
 
             return $aPrimary;
+        }
+
+        public function getPrimaryFieldNames() {
+            $aNames = [];
+            foreach($this->getPrimary() as $oPrimary) {
+                $aNames[] = $oPrimary->sColumn;
+            }
+
+            return $aNames;
         }
 
         /**

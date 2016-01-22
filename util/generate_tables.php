@@ -35,8 +35,7 @@
     if ($sChosen === 'ALL') {
         $aChosenTables = $aDatabase['tables'];
     } else {
-        $aChosen = explode(',', $sChosen);
-        $aChosen = array_map('trim', $aChosen);
+        $aChosen = array_map('trim', explode(',', $sChosen));
         if (count($aChosen)) {
             foreach($aChosen as $sChosenTable) {
                 if (isset($aDatabase['tables'][$sChosenTable])) {
@@ -46,14 +45,6 @@
         }
     }
 
-    function getClassName($sTable) {
-        return depluralize(str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable)))));
-    }
-
-    function getClassNamePlural($sTable) {
-        return str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable))));
-    }
-
     if (count($aChosenTables)) {
         $aFiles = array();
 
@@ -61,6 +52,10 @@
             $aData['namespace']     = $sNamespace;
             $aFiles[$aData['table']['title']  . '.php'] = $oTemplate->render($aData);
             $aFiles[$aData['table']['plural'] . '.php'] = $oTemplates->render($aData);
+        }
+
+        if (!file_exists($sPath)) {
+            mkdir($sPath, 0777, true);
         }
 
         foreach($aFiles as $sFile => $sOutput) {

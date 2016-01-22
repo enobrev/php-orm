@@ -397,7 +397,7 @@
         $aAllData['tables'][$aData['table']['name']] = $aData;
     }
 
-    $sJsonFile = __DIR__ . '/sql.json';
+    $sJsonFile = getcwd() . '/sql.json';
     file_put_contents($sJsonFile, json_encode($aAllData, JSON_PRETTY_PRINT));
     echo 'Created ' . $sJsonFile . "\n";
 

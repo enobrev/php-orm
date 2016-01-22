@@ -621,4 +621,11 @@
             return $aFields;
         }
 
+        /**
+         * @return bool
+         */
+        public function isPublic() {
+            return true;
+        }
+
     }

@@ -11,15 +11,57 @@
 
     class {{table.plural}} extends Tables {
         /**
-         * @return {{table.plural}}
+         * @return {{table.title}}[]
          */
         public static function get() {
             $oTable = new {{table.title}}();
             $oSQL = SQL::select($oTable);
 
-            $oResults = Db::getInstance()->namedQuery('{{table.plural}}.get', $oSQL);
+            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
             return self::fromResults($oResults, $oTable);
         }
+{% if count.outbound %}
+{% for field in fields %}
+{% if field.reference %}
+    
+        /**
+         * @param int|{{field.reference.title}} $i{{field.reference.title}}Id
+         * @return {{table.title}}[]
+         * @throws \Enobrev\ORM\DbException
+         * @throws \Enobrev\SQLMissingTableOrFieldsException
+         */
+        public static function getBy{{field.reference.title}}($i{{field.reference.title}}Id) {
+            $oTable = new {{table.title}}();
+            $oSQL = SQL::select(
+                $oTable,
+                SQL::eq($oTable->{{field.reference.name_singular}}_id->setValue($i{{field.reference.title}}Id))
+            );
+
+            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
+            return self::fromResults($oResults, $oTable);
+        }
+
+        /**
+         * @param int[] $a{{field.reference.title}}Ids
+         * @return {{table.title}}[]
+         * @throws \Enobrev\ORM\DbException
+         * @throws \Enobrev\SQLMissingTableOrFieldsException
+         */
+        public static function getBy{{field.reference.title_plural}}(Array $a{{field.reference.title}}Ids) {
+            $oTable = new {{table.title}}();
+            $oSQL = SQL::select(
+                $oTable,
+                SQL::in($oTable->{{field.reference.name_singular}}_id, $a{{field.reference.title}}Ids)
+            );
+
+            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
+            return self::fromResults($oResults, $oTable);
+        }
+{% endif %}
+{% endfor %}
+{% endif %}
+{% for field in fields %}
+
 {% if date_updated or date_added  %}
 
         /**

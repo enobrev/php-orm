@@ -70,19 +70,38 @@
         }
 {% endif %}
 
+{% if count.outbound %}
 {% for field in fields %}
 {% if field.reference %}
         /**
          * @return {{field.reference.class}}
          */
+
+{% if field.reference.title == 'User' %}
+        public function getOwner() {
+{% else %}
         public function get{{field.reference.title}}() {
+{% endif %}
             if ($this->{{field.name}}->hasValue()) {
                 return {{field.reference.class}}::getById($this->{{field.name}}->getValue());
             }
         }
 
+        /**
+         * @param {{field.reference.title}}|null $o{{field.reference.title}}
+         * @return bool
+         */
+{% if field.reference.title == 'User' %}
+        public function hasOwner({{field.reference.title}} $o{{field.reference.title}} = null) {
+{% else %}
+        public function has{{field.reference.title}}({{field.reference.title}} $o{{field.reference.title}} = null) {
+{% endif %}
+            return $o{{field.reference.title}} instanceof {{field.reference.title}}
+                && $this->{{field.reference.name_singular}}_id->is($o{{field.reference.title}});
+        }
 {% endif %}
 {% endfor %}
+{% endif %}
 {% if date_added or date_updated %}
 
         public function preInsert() {

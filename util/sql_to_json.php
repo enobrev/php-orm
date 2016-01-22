@@ -342,6 +342,7 @@
                         $sClass = getClassName($aReferences[$sTable][$sField]['table']);
                         $oTemplateField['reference'] = array(
                             'title'                 => getClassName(str_replace($aReferences[$sTable][$sField]['field'], '', $sField) . $sClass),
+                            'title_plural'          => getClassNamePlural(str_replace($aReferences[$sTable][$sField]['field'], '', $sField) . $aReferences[$sTable][$sField]['table']),
                             'name'                  => $aReferences[$sTable][$sField]['table'],
                             'name_singular'         => depluralize($aReferences[$sTable][$sField]['table']),
                             'name_spaced'           => str_replace('_', ' ', $aReferences[$sTable][$sField]['table']),

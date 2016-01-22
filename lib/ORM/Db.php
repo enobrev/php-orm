@@ -37,7 +37,7 @@
          */
         public static function getInstance($sServer = '', $sUser = '', $sPassword = '', $sDatabase = '') {
             if (!self::$oInstance instanceof self) {
-                if (self::$oInstance = new self($sServer, $sUser, $sPassword, $sDatabase)) {
+                if (self::$oInstance = @new self($sServer, $sUser, $sPassword, $sDatabase)) {
                     self::$bConnected = true;
                 } else {
                     throw new DbException(self::$oInstance->error, self::$oInstance->errno);
@@ -127,7 +127,7 @@
                 $this->close();
             }
             
-            parent::connect($host, $username, $passwd, $dbname, $port, $socket);
+            @parent::connect($host, $username, $passwd, $dbname, $port, $socket);
             $this->checkErrors();
             $this->set_charset("utf8");
             

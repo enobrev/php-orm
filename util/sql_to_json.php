@@ -8,18 +8,89 @@
     }
 
     use Enobrev\ORM\Db;
+    use Enobrev\ORM\DbException;
 
-    if ($argc < 5) {
-        echo 'Usage: php generate_tables.php host user pass database' . "\n";
-        exit();
+    $oOptions = new \Commando\Command();
+
+    $oOptions->option('h')
+        ->aka('host')
+        ->describedAs('The hostname or IP of the mysql server you are trying to connect to');
+
+    $oOptions->option('u')
+        ->aka('user')
+        ->describedAs('The username to log into the database with');
+
+    $oOptions->option('p')
+        ->boolean()
+        ->aka('password')
+        ->describedAs('Prompt for a password');
+
+    $oOptions->option('d')
+        ->aka('n')
+        ->aka('name')
+        ->aka('database')
+        ->describedAs('The name of the database you are connecting to');
+
+    $sPass = '';
+    $sHost = $oOptions['host'];
+    $sUser = $oOptions['user'];
+    $sName = $oOptions['name'];
+    $bPass = $oOptions['password'];
+    $bConnected = false;
+
+    $Db    = Db::getInstance();
+
+    while ($bConnected === false) {
+        if (!$sHost) {
+            $sHost = readline('Host [localhost]: ');
+            if (!$sHost) {
+                $sHost = 'localhost';
+            }
+        }
+
+        if (!$sUser) {
+            while (strlen($sUser) == 0) {
+                $sUser = readline('User: ');
+            }
+        }
+
+        if ($bPass) {
+            while (strlen($sPass) == 0) {
+                $sPass = readline('Password: ');
+            }
+        }
+
+        try {
+            $Db->connect($sHost, $sUser, $sPass);
+            $bConnected = true;
+        } catch (DbException $e) {
+            echo $e->getMessage() . "\n";
+            $sHost = '';
+            $sUser = '';
+            $sPass = '';
+        }
+
+        if ($bConnected && !$sName) {
+            $oDatabases = $Db->query("SELECT schema_name FROM information_schema.schemata;");
+            $aDatabases = array();
+
+            while ($oDatabase = $oDatabases->fetch_object()) {
+                $aDatabases[] = $oDatabase->schema_name;
+            }
+
+            foreach ($aDatabases as $iIndex => $sDatabase) {
+                echo str_pad($iIndex + 1, 3, ' ', STR_PAD_LEFT) . ': ' . $sDatabase . "\n";
+            }
+
+            while (strlen($sName) == 0) {
+                $iSelected = (int) readline('Database: ');
+                if (isset($aDatabases[$iSelected - 1])) {
+                    $sName = $aDatabases[$iSelected - 1];
+                }
+            }
+        }
     }
 
-    $sHost = $argv[1];
-    $sUser = $argv[2];
-    $sPass = $argv[3];
-    $sName = $argv[4];
-
-    $Db = Db::getInstance($sHost, $sUser, $sPass);
     $oTables = $Db->query("SELECT table_name, table_comment FROM information_schema.tables WHERE table_schema = '$sName' AND table_type = 'BASE TABLE';");
     $aTables = array();
     $aReferences = array();

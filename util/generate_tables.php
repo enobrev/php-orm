@@ -18,8 +18,8 @@
 
     $oLoader    = new Twig_Loader_Filesystem(dirname(__FILE__));
     $oTwig      = new Twig_Environment($oLoader, array('debug' => true));
-    $oTemplate  = $oTwig->loadTemplate('table_template.twig');
-    $oTemplates = $oTwig->loadTemplate('tables_template.twig');
+    $oTemplate  = $oTwig->loadTemplate('template_table.twig');
+    $oTemplates = $oTwig->loadTemplate('template_tables.twig');
 
     $aDatabase  = json_decode(file_get_contents($sPathJsonSQL), true);
 

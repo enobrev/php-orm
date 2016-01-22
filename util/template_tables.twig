@@ -23,7 +23,7 @@
 {% if count.outbound %}
 {% for field in fields %}
 {% if field.reference %}
-    
+
         /**
          * @param int|{{field.reference.title}} $i{{field.reference.title}}Id
          * @return {{table.title}}[]
@@ -60,7 +60,6 @@
 {% endif %}
 {% endfor %}
 {% endif %}
-{% for field in fields %}
 
 {% if date_updated or date_added  %}
 

@@ -74,7 +74,7 @@
 {% for field in fields %}
 {% if field.reference %}
         /**
-         * @return {{field.reference.class}}
+         * @return {{field.reference.title}}
          */
 
 {% if field.reference.title == 'User' %}
@@ -83,7 +83,7 @@
         public function get{{field.reference.title}}() {
 {% endif %}
             if ($this->{{field.name}}->hasValue()) {
-                return {{field.reference.class}}::getById($this->{{field.name}}->getValue());
+                return {{field.reference.title}}::getById($this->{{field.name}}->getValue());
             }
         }
 

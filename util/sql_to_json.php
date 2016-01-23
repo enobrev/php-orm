@@ -364,6 +364,7 @@
                             $oTemplateField['inbound_reference'][$sName] = array(
                                 'title'                => getClassName($sClass),
                                 'name'                 => $sName,
+                                'table'                => $aReverseReference['table'],
                                 'name_singular'        => depluralize($aReverseReference['table']),
                                 'name_spaced'          => str_replace('_', ' ', str_replace($aData['table']['singular'] . '_', '', $aReverseReference['table'])),
                                 'name_spaced_singular' => depluralize(str_replace('_', ' ', $aReverseReference['table'])),

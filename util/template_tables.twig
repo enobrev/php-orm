@@ -48,7 +48,7 @@
          * @throws \Enobrev\SQLMissingTableOrFieldsException
          */
         public static function getBy{{field.reference.title_plural}}($a{{field.reference.title}}Ids) {
-            if ($a{{field.reference.title}}s instanceof {field.reference.title_plural}}) {
+            if ($a{{field.reference.title}}s instanceof [{field.reference.title_plural}}) {
                 $a{{field.reference.title}}s = $a{{field.reference.title}}s->toPrimaryArray();
             }
 

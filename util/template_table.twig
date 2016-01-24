@@ -4,7 +4,7 @@
     use Enobrev\ORM\Table;
     use Enobrev\ORM\Field;
 
-    class {{table.title}} extends Table {
+    class {{table.title}} extends Table {% if has_date and has_owner %}implements OwnerColumn, ModifiedDateColumn{% else if has_date %}implements ModifiedDateColumn{% else if has_owner %}implements OwnerColumn{% endif %}  {
         protected $sTitle = '{{table.name}}';
 
 {% for field in fields %}

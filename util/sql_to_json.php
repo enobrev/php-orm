@@ -200,6 +200,8 @@
                 'primary'   => 0
             ],
             'm2m'            => isset($aM2MTables[$sTable]),
+            'has_owner'      => false,
+            'has_date'       => false,
             'fields'         => array(),
             'types'          => array(),
             'primary'        => array(),
@@ -281,10 +283,12 @@
                     switch (true) {
                         case strpos($sField, 'added') !== false:
                             $aData['date_added'] = $oTemplateField;
+                            $aData['has_date']   = true;
                             break;
 
                         case strpos($sField, 'updated') !== false:
                             $aData['date_updated'] = $oTemplateField;
+                            $aData['has_date']     = true;
                             break;
                     }
 
@@ -377,6 +381,10 @@
                             'subclass_plural'       => $sClassPlural
                         );
                         $aData['count']['outbound']++;
+
+                        if ($sField == 'user_id') {
+                            $aData['has_owner'] = true;
+                        }
                     }
                 }
             }

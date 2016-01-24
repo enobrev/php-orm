@@ -340,6 +340,7 @@
                 if (count($aReferences[$sTable])) {
                     if (isset($aReferences[$sTable][$sField])) {
                         $sClass = getClassName($aReferences[$sTable][$sField]['table']);
+                        $sClassPlural = getClassNamePlural($aReferences[$sTable][$sField]['table']);
                         $oTemplateField['reference'] = array(
                             'title'                 => getClassName(str_replace($aReferences[$sTable][$sField]['field'], '', $sField) . $sClass),
                             'title_plural'          => getClassNamePlural(str_replace($aReferences[$sTable][$sField]['field'], '', $sField) . $aReferences[$sTable][$sField]['table']),
@@ -348,7 +349,9 @@
                             'name_spaced'           => str_replace('_', ' ', $aReferences[$sTable][$sField]['table']),
                             'name_spaced_singular'  => depluralize(str_replace('_', ' ', $aReferences[$sTable][$sField]['table'])),
                             'class'                 => 'Table\\' . $sClass,
-                            'subclass'              => $sClass
+                            'class_plural'          => 'Table\\' . $sClassPlural,
+                            'subclass'              => $sClass,
+                            'subclass_plural'       => $sClassPlural
                         );
                         $aData['count']['outbound']++;
                     }

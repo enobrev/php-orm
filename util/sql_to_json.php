@@ -434,7 +434,7 @@
             $aField['name_pad']  = str_replace($aField['name'],  '', str_pad($aField['name'],  $iFieldNameLength,      ' ', STR_PAD_RIGHT));
         }
 
-        $aData['interfaces'] = implode(', ', $aData['interfaces']);
+        $aData['interfaces'] = implode(', ', array_unique($aData['interfaces']));
 
         $aAllData['tables'][$aData['table']['name']] = $aData;
     }

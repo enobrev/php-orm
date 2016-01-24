@@ -93,6 +93,7 @@
 
     $oTables = $Db->query("SELECT table_name, table_comment FROM information_schema.tables WHERE table_schema = '$sName' AND table_type = 'BASE TABLE';");
     $aTables = array();
+    $aTableNames = array();
     $aReferences = array();
     $aReverseReferences = array();
     
@@ -100,6 +101,7 @@
         $sTable  = $oTable->table_name;
         $oFields = $Db->query("SELECT table_name, column_name, ordinal_position, is_nullable, data_type, column_key, column_type, column_default, column_comment FROM information_schema.columns WHERE table_schema = '$sName' AND table_name = '$sTable' ORDER BY ordinal_position ASC");
         $aFields = array();
+        $aTableNames[] = $sTable;
         
         while ($oField = $oFields->fetch_object()) {
             $aFields[$oField->column_name] = $oField;
@@ -153,6 +155,26 @@
         return str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable))));
     }
 
+    echo str_pad('0', 3, ' ', STR_PAD_LEFT) . ': ALL' . "\n";
+    foreach($aTableNames as $iIndex => $sTable) {
+        echo str_pad($iIndex + 1, 3, ' ', STR_PAD_LEFT) . ': ' . $sTable . "\n";
+    }
+
+    $aM2MTables = [];
+    $sM2M = trim(readline('Which Tables are M2M: '));
+
+    if ($sM2M) {
+        // http://stackoverflow.com/a/7698869/14651
+        $aM2MIndices = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
+            return implode(',', range($m[1], $m[2]));
+        }, $sM2M);
+
+        $aM2MIndices = array_unique(explode(',', $aM2MIndices));
+        foreach($aM2MIndices as $iIndex) {
+            $aM2MTables[$aTableNames[$iIndex - 1]] = 1;
+        }
+    }
+
     $aFiles = array();
     $aAllData = array(
         'tables' => array()
@@ -177,6 +199,7 @@
                 'enum'      => 0,
                 'primary'   => 0
             ],
+            'm2m'            => isset($aM2MTables[$sTable]),
             'fields'         => array(),
             'types'          => array(),
             'primary'        => array(),

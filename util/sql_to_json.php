@@ -207,7 +207,7 @@
             'primary'        => array(),
             'date_added'     => false,
             'date_updated'   => false,
-            'interfaces'     => []
+            'interfaces'     => array()
         );
 
         $iFieldNameLength      = 0;
@@ -427,18 +427,14 @@
             if (!in_array($sType, $aData['types'])) {
                 $aData['types'][] = $sType;
             }
-
-            if (count($aData['interfaces'])) {
-                $aData['interfaces'] = implode(', ', $aData['interfaces']);
-            } else {
-                $aData['interfaces'] = '';
-            }
         }
 
         foreach($aData['fields'] as &$aField) {
             $aField['short_pad'] = str_replace($aField['short'], '', str_pad($aField['short'], $iFieldNameShortLength, ' ', STR_PAD_RIGHT));
             $aField['name_pad']  = str_replace($aField['name'],  '', str_pad($aField['name'],  $iFieldNameLength,      ' ', STR_PAD_RIGHT));
         }
+
+        $aData['interfaces'] = implode(', ', $aData['interfaces']);
 
         $aAllData['tables'][$aData['table']['name']] = $aData;
     }

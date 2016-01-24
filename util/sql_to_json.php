@@ -428,7 +428,11 @@
                 $aData['types'][] = $sType;
             }
 
-            $aData['interfaces'] = implode(', ', $aData['interfaces']);
+            if (count($aData['interfaces'])) {
+                $aData['interfaces'] = implode(', ', $aData['interfaces']);
+            } else {
+                $aData['interfaces'] = '';
+            }
         }
 
         foreach($aData['fields'] as &$aField) {

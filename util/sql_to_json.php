@@ -206,7 +206,8 @@
             'types'          => array(),
             'primary'        => array(),
             'date_added'     => false,
-            'date_updated'   => false
+            'date_updated'   => false,
+            'interfaces'     => []
         );
 
         $iFieldNameLength      = 0;
@@ -282,13 +283,15 @@
 
                     switch (true) {
                         case strpos($sField, 'added') !== false:
-                            $aData['date_added'] = $oTemplateField;
-                            $aData['has_date']   = true;
+                            $aData['date_added']   = $oTemplateField;
+                            $aData['has_date']     = true;
+                            $aData['interfaces'][] = 'ModifiedDateColumn';
                             break;
 
                         case strpos($sField, 'updated') !== false:
                             $aData['date_updated'] = $oTemplateField;
                             $aData['has_date']     = true;
+                            $aData['interfaces'][] = 'ModifiedDateColumn';
                             break;
                     }
 
@@ -383,7 +386,8 @@
                         $aData['count']['outbound']++;
 
                         if ($sField == 'user_id') {
-                            $aData['has_owner'] = true;
+                            $aData['has_owner']    = true;
+                            $aData['interfaces'][] = 'OwnerColumn';
                         }
                     }
                 }
@@ -423,6 +427,8 @@
             if (!in_array($sType, $aData['types'])) {
                 $aData['types'][] = $sType;
             }
+
+            $aData['interfaces'] = implode(', ', $aData['interfaces']);
         }
 
         foreach($aData['fields'] as &$aField) {

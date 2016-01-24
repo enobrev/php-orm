@@ -25,16 +25,16 @@
 {% if field.reference %}
 
         /**
-         * @param int|{{field.reference.title}} $i{{field.reference.title}}Id
+         * @param int|{{field.reference.subclass}} $i{{field.reference.subclass}}Id
          * @return {{table.plural}}
          * @throws \Enobrev\ORM\DbException
          * @throws \Enobrev\SQLMissingTableOrFieldsException
          */
-        public static function getBy{{field.reference.title}}($i{{field.reference.title}}Id) {
+        public static function getBy{{field.reference.title}}($i{{field.reference.subclass}}Id) {
             $oTable = new {{table.title}}();
             $oSQL = SQL::select(
                 $oTable,
-                SQL::eq($oTable->{{field.name}}->setValue($i{{field.reference.title}}Id))
+                SQL::eq($oTable->{{field.name}}->setValue($i{{field.reference.subclass}}Id))
             );
 
             $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
@@ -42,20 +42,20 @@
         }
 
         /**
-         * @param {{ field.reference.subclass_plural }}|int[] $a{{ field.reference.title }}Ids
+         * @param {{ field.reference.subclass_plural }}|int[] $a{{ field.reference.subclass }}Ids
          * @return {{ table.plural }}
          * @throws \Enobrev\ORM\DbException
          * @throws \Enobrev\SQLMissingTableOrFieldsException
          */
-        public static function getBy{{field.reference.title_plural}}($a{{ field.reference.title }}Ids) {
-            if ($a{{ field.reference.title }}Ids instanceof {{field.reference.subclass_plural}}) {
-                $a{{ field.reference.title }}Ids = $a{{ field.reference.title }}Ids->toPrimaryArray();
+        public static function getBy{{field.reference.title_plural}}($a{{ field.reference.subclass }}Ids) {
+            if ($a{{ field.reference.subclass }}Ids instanceof {{field.reference.subclass_plural}}) {
+                $a{{ field.reference.subclass }}Ids = $a{{ field.reference.subclass }}Ids->toPrimaryArray();
             }
 
             $oTable = new {{table.title}}();
             $oSQL = SQL::select(
                 $oTable,
-                SQL::in($oTable->{{field.name}}, $a{{field.reference.title}}Ids)
+                SQL::in($oTable->{{field.name}}, $a{{field.reference.subclass}}Ids)
             );
 
             $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);

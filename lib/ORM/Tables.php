@@ -18,7 +18,7 @@
          * @return Tables
          */
         public static function createAndUpdateFromMap(Table $oTable, Array $aData, Array $aMap) {
-            $aOutput = new self;
+            $aOutput = new static;
             foreach($aData as $aDatum) {
                 /** @var Table $sTable */
                 $sTable = get_class($oTable);
@@ -34,7 +34,7 @@
          * @return Tables
          */
         public static function createAndUpdate(Table $oTable, Array $aData) {
-            $aOutput = new self;
+            $aOutput = new static;
             foreach($aData as $aDatum) {
                 /** @var Table $sTable */
                 $sTable = get_class($oTable);
@@ -50,7 +50,7 @@
          * @return Tables
          */
         protected static function fromResults(MySQLi_Result $oResults, ...$aTables) {
-            $oOutput = new self;
+            $oOutput = new static;
             while ($oResult = $oResults->fetch_object()) {
                 if (count($aTables) > 1) {
                     $aRow = array();

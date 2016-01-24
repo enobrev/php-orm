@@ -146,6 +146,10 @@
     }
 
     function getClassNamePlural($sTable) {
+        if (depluralize($sTable) == $sTable) {
+            $sTable .= 's'; // force plural
+        }
+
         return str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable))));
     }
 
@@ -179,10 +183,6 @@
             'date_added'     => false,
             'date_updated'   => false
         );
-
-        if ($aData['table']['title'] == $aData['table']['plural']) {
-            $aData['table']['plural'] .= 's';
-        }
 
         $iFieldNameLength      = 0;
         $iFieldNameShortLength = 0;

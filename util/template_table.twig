@@ -94,15 +94,15 @@
 
 {% if field.reference.title == 'User' %}
         /**
-        * @param Table|{{field.reference.subclass}}|null $o{{field.reference.title}}
-        * @return bool
-        */
+         * @param Table|{{field.reference.subclass}}|null $o{{field.reference.title}}
+         * @return bool
+         */
         public function hasOwner(Table $o{{field.reference.title}} = null) {
 {% else %}
         /**
-        * @param {{field.reference.subclass}}|null $o{{field.reference.title}}
-        * @return bool
-        */
+         * @param {{field.reference.subclass}}|null $o{{field.reference.title}}
+         * @return bool
+         */
         public function has{{field.reference.title}}({{field.reference.subclass}} $o{{field.reference.title}} = null) {
 {% endif %}
             return $o{{field.reference.title}} instanceof {{field.reference.subclass}}

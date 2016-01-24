@@ -42,14 +42,14 @@
         }
 
         /**
-         * @param {field.reference.title_plural}}|int[] $a{{field.reference.title}}Ids
-         * @return {{table.plural}}
+         * @param {{ field.reference.title_plural }}|int[] $a{{ field.reference.title }}Ids
+         * @return {{ table.plural }}
          * @throws \Enobrev\ORM\DbException
          * @throws \Enobrev\SQLMissingTableOrFieldsException
          */
-        public static function getBy{{field.reference.title_plural}}($a{{field.reference.title}}Ids) {
-            if ($a{{field.reference.title}}s instanceof {{field.reference.title_plural}}) {
-                $a{{field.reference.title}}s = $a{{field.reference.title}}s->toPrimaryArray();
+        public static function getBy{{field.reference.title_plural}}($a{{ field.reference.title }}Ids) {
+            if ($a{{ field.reference.title }}Ids instanceof {{field.reference.title_plural}}) {
+                $a{{ field.reference.title }}Ids = $a{{ field.reference.title }}Ids->toPrimaryArray();
             }
 
             $oTable = new {{table.title}}();

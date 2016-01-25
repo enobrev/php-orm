@@ -6,6 +6,7 @@
     use DateTime;
     use Enobrev\Log;
     use Enobrev\SQL;
+    use Enobrev\SQLBuilder;
 
     class Db extends MySQLi {
         /** @var Db */
@@ -170,9 +171,8 @@
             }
 
             $sSQL = $sQuery;
-            if ($sSQL instanceof SQL) {
-                /** @var SQL $sQuery */
-                $sSQL = $sQuery->sSQL;
+            if ($sSQL instanceof SQL || $sSQL instanceof SQLBuilder) {
+                $sSQL = (string) $sQuery;
             }
                         
             $mResult = $this->parentQuery($sSQL, $iResultMode);

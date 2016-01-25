@@ -265,6 +265,25 @@
         }
 
         /**
+         * @param Table $oTable
+         * @return Field
+         */
+        public function getFieldThatReferencesTable(Table $oTable) {
+            $aProperties = get_object_vars($this);
+            foreach(array_keys($aProperties) as $sProperty) {
+                if ($this->$sProperty instanceof Field) {
+                    if ($this->$sProperty->hasReference()) {
+                        /** @var Field $oReference */
+                        $oReference = $this->$sProperty->getReference();
+                        if ($oReference->getTable()->getTitle() == $oTable->getTitle()) {
+                            return $oReference;
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
          *
          * @param MySQLi_Result $oResult
          * @return Table

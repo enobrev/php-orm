@@ -274,7 +274,7 @@
                 if ($this->$sProperty instanceof Field) {
                     if ($this->$sProperty->hasReference()) {
                         if ($this->$sProperty->referencesTable($oTable)) {
-                            return $this->$sProperty->reference();
+                            return $this->$sProperty;
                         }
                     }
                 }

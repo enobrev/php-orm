@@ -279,7 +279,9 @@
          * @return SQLBuilder
          */
         public function fields(...$aFields) {
-            if ($aFields instanceof ORM\Table) {
+            if (is_array($aFields) && count($aFields) && $aFields[0] instanceof ORM\Table) {
+                /** @var ORM\Table $aFields */
+                $aFields = $aFields[0];
                 $aFields = $aFields->getFields();
             }
 

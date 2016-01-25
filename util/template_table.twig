@@ -57,7 +57,7 @@
 
 {% for field in fields %}
 {% if field.reference %}
-            $this->{{field.name}}->references('{{ field.reference.title }}', '{{ field.reference.field }}');
+            $this->{{field.name}}->references('{{ field.reference.subclass }}', '{{ field.reference.field }}');
 {% endif %}
 {% endfor %}
 {% endif %}

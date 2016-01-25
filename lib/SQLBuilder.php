@@ -275,11 +275,15 @@
         }
 
         /**
-         * @param ORM\Field[] $aFields
+         * @param ORM\Table|ORM\Field[] $aFields
          * @return SQLBuilder
          */
         public function fields(...$aFields) {
-            foreach($aFields as $oField) {
+            if ($aFields instanceof ORM\Table) {
+                $aField = $aFields->getFields();
+            }
+
+            foreach ($aFields as $oField) {
                 $this->field($oField);
             }
 

@@ -320,7 +320,7 @@
          * @return bool
          */
         public function referencesTable(Table $oTable) {
-            return $this->sReferenceTable == $oTable->getTitle();
+            return $this->sReferenceTable == (new \ReflectionClass($oTable))->getShortName();
         }
 
         /**

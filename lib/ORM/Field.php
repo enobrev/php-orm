@@ -181,6 +181,13 @@
         }
 
         /**
+         * @return bool
+         */
+        public function isDefault() {
+            return $this->getValue() == $this->sDefault;
+        }
+
+        /**
          * @param string $sAlias
          */
         public function setAlias($sAlias) {

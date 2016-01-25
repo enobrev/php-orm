@@ -273,7 +273,7 @@
             foreach(array_keys($aProperties) as $sProperty) {
                 if ($this->$sProperty instanceof Field) {
                     if ($this->$sProperty->hasReference()) {
-                        if ($this->$sProperty->referncesTable($oTable)) {
+                        if ($this->$sProperty->referencesTable($oTable)) {
                             return $this->$sProperty->reference();
                         }
                     }

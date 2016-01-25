@@ -280,7 +280,7 @@
          */
         public function fields(...$aFields) {
             if ($aFields instanceof ORM\Table) {
-                $aField = $aFields->getFields();
+                $aFields = $aFields->getFields();
             }
 
             foreach ($aFields as $oField) {

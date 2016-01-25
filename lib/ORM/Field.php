@@ -27,6 +27,9 @@
         /** @var boolean  */
         private $bPrimary;
 
+        /** @var Field  */
+        private $oReference;
+
         /**
          *
          * @param string $sTable Can also be column name if no table is to be specified
@@ -44,6 +47,7 @@
             $this->sDefault         = null;
             $this->sValue           = null;
             $this->sAlias           = null;
+            $this->oReference       = null;
         }
 
         /**
@@ -290,9 +294,33 @@
             }
         }
 
+        /**
+         * @return Table|null
+         */
         public function getTable() {
             if ($this->sTableClass) {
                 return new $this->sTableClass;
             }
+        }
+
+        /**
+         * @param Field $oField
+         */
+        public function references(Field $oField) {
+            $this->oReference = $oField;
+        }
+
+        /**
+         * @return bool
+         */
+        public function hasReference() {
+            return $this->oReference instanceof Field;
+        }
+
+        /**
+         * @return Field|null
+         */
+        public function reference() {
+            return $this->oReference;
         }
     }

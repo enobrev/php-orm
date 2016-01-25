@@ -53,6 +53,15 @@
             $this->{{field.name}}->setDefault({{field.default|raw}});
 {% endif %}
 {% endfor %}
+{% if count.outbound %}
+
+{% for field in fields %}
+{% if field.reference %}
+            $this->{{field.name}}->references({{ field.reference.title }}::Field('{{ field.reference.field }}'));
+{% endif %}
+{% endfor %}
+{% endif %}
+
         }
 
 {% if primary %}

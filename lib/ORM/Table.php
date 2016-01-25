@@ -273,10 +273,8 @@
             foreach(array_keys($aProperties) as $sProperty) {
                 if ($this->$sProperty instanceof Field) {
                     if ($this->$sProperty->hasReference()) {
-                        /** @var Field $oReference */
-                        $oReference = $this->$sProperty->getReference();
-                        if ($oReference->getTable()->getTitle() == $oTable->getTitle()) {
-                            return $this->$sProperty;
+                        if ($this->$sProperty->referncesTable($oTable)) {
+                            return $this->$sProperty->reference();
                         }
                     }
                 }

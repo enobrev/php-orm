@@ -27,8 +27,11 @@
         /** @var boolean  */
         private $bPrimary;
 
-        /** @var Field  */
-        private $oReference;
+        /** @var string */
+        private $sReferenceTable;
+
+        /** @var string */
+        private $sReferenceField;
 
         /**
          *
@@ -304,23 +307,35 @@
         }
 
         /**
-         * @param Field $oField
+         * @param string $sTable
+         * @param string $sField
          */
-        public function references(Field $oField) {
-            $this->oReference = $oField;
+        public function references($sTable, $sField) {
+            $this->sReferenceTable = $sTable;
+            $this->sReferenceField = $sField;
+        }
+
+        /**
+         * @param Table $oTable
+         * @return bool
+         */
+        public function referencesTable(Table $oTable) {
+            return $this->sReferenceTable == $oTable->getTitle();
         }
 
         /**
          * @return bool
          */
         public function hasReference() {
-            return $this->oReference instanceof Field;
+            return $this->sReferenceTable !== null
+                && $this->sReferenceField !== null;
         }
 
         /**
          * @return Field|null
          */
         public function reference() {
-            return $this->oReference;
+            $sField = $this->sReferenceField;
+            return (new $this->sReferenceTable)->$sField;
         }
     }

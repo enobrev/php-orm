@@ -276,7 +276,7 @@
                         /** @var Field $oReference */
                         $oReference = $this->$sProperty->getReference();
                         if ($oReference->getTable()->getTitle() == $oTable->getTitle()) {
-                            return $oReference;
+                            return $this->$sProperty;
                         }
                     }
                 }

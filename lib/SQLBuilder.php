@@ -387,30 +387,6 @@
                 $aSQL[] = self::toSQLColumnsForSelect($this->aFields);
             }
 
-            return $this->buildSelectFrom($aSQL);
-        }
-
-        /**
-         * @return SQLBuilder
-         */
-        private function buildCount() {
-            $aSQL     = array(self::TYPE_SELECT);
-            $aPrimary = $this->oTable->getPrimary();
-
-            if (count($aPrimary) == 1) {
-                $aSQL[] = 'COUNT(' . self::toSQLColumnsForCount($aPrimary) . ') AS row_count';
-            } else {
-                $aSQL[] = 'COUNT(*) AS row_count';
-            }
-
-            return $this->buildSelectFrom($aSQL);
-        }
-
-        /**
-         * @param array $aSQL
-         * @return SQLBuilder
-         */
-        private function buildSelectFrom(array $aSQL) {
             $aSQL[] = 'FROM';
             $aSQL[] = $this->oTable->getTitle();
 
@@ -449,6 +425,49 @@
             if ($this->oLimit instanceof ORM\Limit) {
                 $aSQL[]    = $this->oLimit->toSQL();
                 $aSQLLog[] = $this->oLimit->toSQL();
+            }
+
+            $this->sSQL      = implode(' ', $aSQL);
+            $this->sSQLGroup = implode(' ', $aSQLLog);
+
+            return $this;
+        }
+
+        /**
+         * @return SQLBuilder
+         */
+        private function buildCount() {
+            $aSQL     = array(self::TYPE_SELECT);
+            $aPrimary = $this->oTable->getPrimary();
+
+            if (count($aPrimary) == 1) {
+                $aSQL[] = 'COUNT(' . self::toSQLColumnsForCount($aPrimary) . ') AS row_count';
+            } else {
+                $aSQL[] = 'COUNT(*) AS row_count';
+            }
+
+            $aSQL[] = 'FROM';
+            $aSQL[] = $this->oTable->getTitle();
+
+            if (count($this->aJoins)) {
+                foreach($this->aJoins as $oJoin) {
+                    $aSQL[] = $oJoin->toSQL();
+                }
+            }
+
+            $aSQLLog = $aSQL;
+            if ($this->oConditions->count()) {
+                $aSQL[] = 'WHERE';
+                $aSQL[] = $this->oConditions->toSQL();
+
+                $aSQLLog[] = 'WHERE';
+                $aSQLLog[] = $this->oConditions->toSQLLog();
+            }
+
+            if ($this->oGroup) {
+                $aGroup  = ['GROUP BY', $this->oGroup->toSQL()];
+                $aSQL    = array_merge($aSQL, $aGroup);
+                $aSQLLog = array_merge($aSQL, $aGroup);
             }
 
             $this->sSQL      = implode(' ', $aSQL);

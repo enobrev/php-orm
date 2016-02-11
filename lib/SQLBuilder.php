@@ -229,7 +229,7 @@
          * @return SQLBuilder
          */
         public function limit($iStart = null, $iOffset = null) {
-            $this->oLimit = SQL::limit($iStart. $iOffset);
+            $this->oLimit = SQL::limit($iStart, $iOffset);
             return $this;
         }
 
@@ -426,6 +426,8 @@
             if ($this->oLimit instanceof ORM\Limit) {
                 $aSQL[]    = $this->oLimit->toSQL();
                 $aSQLLog[] = $this->oLimit->toSQL();
+
+                print_r($this->oLimit->toSQL());
             }
 
             $this->sSQL      = implode(' ', $aSQL);

@@ -63,7 +63,7 @@
              )->asc($oUser->user_name)
              ->desc($oUser->user_email)
              ->group($oUser->user_id)
-             ->limit(5);
+             ->limit(5, 10);
 
             $this->assertEquals('SELECT users.user_id, users.user_name, users.user_email, billing.address_city AS billing_address_city, shipping.address_city AS shipping_address_city'
                                 . ' FROM users'
@@ -73,7 +73,7 @@
                                 . ' OR users.user_date_added BETWEEN "2015-01-01 00:00:00" AND "2015-06-01 00:00:00"'
                                 . ' GROUP BY users.user_id'
                                 . ' ORDER BY users.user_name ASC, users.user_email DESC'
-                                . ' LIMIT 5', (string) $oSQL);
+                                . ' LIMIT 5, 10', (string) $oSQL);
         }
     }
 

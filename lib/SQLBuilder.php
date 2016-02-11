@@ -56,8 +56,15 @@
         private $oConditions;
 
         public function __construct($sMethod) {
-            $this->sSQLType     = $sMethod;
+            $this->setType($sMethod);
             $this->oConditions  = new ORM\Conditions;
+        }
+
+        /**
+         * @param $sType
+         */
+        public function setType($sType) {
+            $this->sSQLType = $sType;
         }
 
         /**

@@ -65,6 +65,7 @@
          */
         public function setType($sType) {
             $this->sSQLType = $sType;
+            $this->sSQL     = null; // Reset SQL so it will be regenerated when using (string) self
         }
 
         /**

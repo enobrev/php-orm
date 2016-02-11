@@ -229,7 +229,7 @@
          * @return SQLBuilder
          */
         public function limit($iStart = null, $iOffset = null) {
-            $this->oLimit = SQL::limit($iStart. $iOffset);
+            $this->oLimit = SQL::limit($iStart, $iOffset);
             return $this;
         }
 

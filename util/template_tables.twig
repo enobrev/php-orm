@@ -11,29 +11,10 @@
 
     class {{table.plural}} extends Tables {
         /**
-         * @return {{table.plural}}
+         * @return {{table.title}}
          */
-        public static function get() {
-            $oTable = new {{table.title}}();
-            $oSQL = SQL::select($oTable);
-
-            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
-            return self::fromResults($oResults, $oTable);
-        }
-
-        /**
-         * @return int
-         */
-        public static function total() {
-            $oTable = new {{table.title}}();
-            $oSQL = SQL::count($oTable);
-
-            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
-            if ($oResults->num_rows > 0) {
-                return $oResults->fetch_object()->row_count;
-            }
-
-            return 0;
+        public static function getTable() {
+            return new {{table.title}};
         }
 {% if count.outbound %}
 {% for field in fields %}
@@ -46,7 +27,7 @@
          * @throws \Enobrev\SQLMissingTableOrFieldsException
          */
         public static function getBy{{field.reference.title}}($i{{field.reference.subclass}}Id) {
-            $oTable = new {{table.title}}();
+            $oTable = self::getTable();
             $oSQL = SQL::select(
                 $oTable,
                 SQL::eq($oTable->{{field.name}}->setValue($i{{field.reference.subclass}}Id))
@@ -67,7 +48,7 @@
                 $a{{ field.reference.subclass }}Ids = $a{{ field.reference.subclass }}Ids->toPrimaryArray();
             }
 
-            $oTable = new {{table.title}}();
+            $oTable = self::getTable();
             $oSQL = SQL::select(
                 $oTable,
                 SQL::in($oTable->{{field.name}}, $a{{field.reference.subclass}}Ids)
@@ -92,7 +73,7 @@
 {% else %}
         public static function getMostRecentAddedDate() {
 {% endif %}
-            $oTable = new {{table.title}}();
+            $oTable = self::getTable();
             $oSQL = SQL::select(
 {% if date_updated %}
                 $oTable->{{ date_updated.name }},

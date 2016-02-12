@@ -9,7 +9,39 @@
     class TablesMultiplePrimaryException extends TablesException {}
 
     class Tables extends ArrayIterator {
-        protected static $sTable = null;
+        /**
+         * @return Table
+         * @throws TablesException
+         */
+        public static function getTable() {
+            throw new TablesException('This Method Should Have Been Overridden');
+        }
+
+        /**
+         * @return Tables
+         */
+        public static function get() {
+            $oTable = self::getTable();
+            $oSQL = SQL::select($oTable);
+
+            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
+            return self::fromResults($oResults, $oTable);
+        }
+
+        /**
+         * @return int
+         */
+        public static function total() {
+            $oTable = self::getTable();
+            $oSQL = SQL::count($oTable);
+
+            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
+            if ($oResults->num_rows > 0) {
+                return (int) $oResults->fetch_object()->row_count;
+            }
+
+            return 0;
+        }
 
         /**
          * @param Table $oTable

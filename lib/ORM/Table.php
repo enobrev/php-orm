@@ -52,7 +52,7 @@
          * @return Tables
          * @throws TableException
          */
-        public function getTables() {
+        public static function getTables() {
             throw new TableException('This Method Should Have Been Overridden');
         }
 

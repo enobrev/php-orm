@@ -63,6 +63,13 @@
 {% endif %}
         }
 
+        /**
+         * @return {{table.plural}}
+         */
+        public static function getTables() {
+            return new {{table.plural}};
+        }
+
 {% if primary %}
         /**
 {% for field in primary %}

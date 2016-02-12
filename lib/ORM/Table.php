@@ -47,12 +47,12 @@
             
             throw new TableFieldNotFoundException($sField);
         }
-        
+
         /**
          * @return Tables
          * @throws TableException
          */
-        public static function getTables() {
+        public function getTables() {
             throw new TableException('This Method Should Have Been Overridden');
         }
 

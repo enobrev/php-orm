@@ -21,7 +21,7 @@
          * @return Tables
          */
         public static function get() {
-            $oTable = self::getTable();
+            $oTable = static::getTable();
             $oSQL = SQL::select($oTable);
 
             $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
@@ -32,7 +32,7 @@
          * @return int
          */
         public static function total() {
-            $oTable = self::getTable();
+            $oTable = static::getTable();
             $oSQL = SQL::count($oTable);
 
             $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);

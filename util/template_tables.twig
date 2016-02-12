@@ -20,6 +20,21 @@
             $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
             return self::fromResults($oResults, $oTable);
         }
+
+        /**
+         * @return int
+         */
+        public static function total() {
+            $oTable = new {{table.title}}();
+            $oSQL = SQL::count($oTable);
+
+            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
+            if ($oResults->num_rows > 0) {
+                return $oResults->fetch_object()->row_count;
+            }
+
+            return 0;
+        }
 {% if count.outbound %}
 {% for field in fields %}
 {% if field.reference %}

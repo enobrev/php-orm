@@ -249,7 +249,12 @@
                 case strpos($oField->data_type, 'varchar') !== false:
                 case strpos($oField->data_type, 'text')    !== false:
                 case strpos($oField->data_type, 'char')    !== false:
-                    $oTemplateField['type']     = 'Field\\Text';
+                    if ($oField->$oField->is_nullable) {
+                        $oTemplateField['type'] = 'Field\\TextNullable';
+                    } else {
+                        $oTemplateField['type'] = 'Field\\Text';
+                    }
+
                     $oTemplateField['qltype']   = 'string';
                     $oTemplateField['var']      = 's' . $oTemplateField['var'];
                     if ($oField->column_default) {

@@ -27,7 +27,7 @@
          * @throws \Enobrev\SQLMissingTableOrFieldsException
          */
         public static function getBy{{field.reference.title}}($i{{field.reference.subclass}}Id) {
-            $oTable = self::getTable();
+            $oTable = static::getTable();
             $oSQL = SQL::select(
                 $oTable,
                 SQL::eq($oTable->{{field.name}}->setValue($i{{field.reference.subclass}}Id))
@@ -48,7 +48,7 @@
                 $a{{ field.reference.subclass }}Ids = $a{{ field.reference.subclass }}Ids->toPrimaryArray();
             }
 
-            $oTable = self::getTable();
+            $oTable = static::getTable();
             $oSQL = SQL::select(
                 $oTable,
                 SQL::in($oTable->{{field.name}}, $a{{field.reference.subclass}}Ids)
@@ -73,7 +73,7 @@
 {% else %}
         public static function getMostRecentAddedDate() {
 {% endif %}
-            $oTable = self::getTable();
+            $oTable = static::getTable();
             $oSQL = SQL::select(
 {% if date_updated %}
                 $oTable->{{ date_updated.name }},

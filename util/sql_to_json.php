@@ -214,7 +214,7 @@
         $iFieldNameShortLength = 0;
         foreach($aTable['fields'] as $sField => $oField) {
             $oTemplateField = array(
-                'short'    => str_replace(strtolower($aData['table']['title']) . '_', '', $sField),
+                'short'    => str_replace($aData['table']['singular'] . '_', '', $sField),
                 'name'     => $sField,
                 'title'    => getFieldTitle($sField),
                 'primary'  => false,

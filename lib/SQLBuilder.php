@@ -115,6 +115,19 @@
         }
 
         /**
+         * @param mixed $mValue
+         * @return SQLBuilder
+         */
+        public function eq_in($mValue) {
+            if (strpos($mValue, ',')) {
+                $this->oConditions->add(SQL::in(explode(',', $mValue)));
+            } else {
+                $this->oConditions->add(SQL::eq($mValue));
+            }
+            return $this;
+        }
+
+        /**
          * @param array ...$aArguments
          * @return SQLBuilder
          */

@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev;
 
+    use Enobrev\ORM\Field;
     use stdClass;
 
     class SQLBuilderException extends \Exception {}
@@ -115,14 +116,16 @@
         }
 
         /**
+         * @param Field $oField
          * @param mixed $mValue
          * @return SQLBuilder
+         * @throws ORM\ConditionsNonConditionException
          */
-        public function eq_in($mValue) {
+        public function eq_in(Field $oField, $mValue) {
             if (strpos($mValue, ',')) {
-                $this->oConditions->add(SQL::in(explode(',', $mValue)));
+                $this->oConditions->add(SQL::in($oField, explode(',', $mValue)));
             } else {
-                $this->oConditions->add(SQL::eq($mValue));
+                $this->oConditions->add(SQL::eq($oField, $mValue));
             }
             return $this;
         }

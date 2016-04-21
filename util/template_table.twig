@@ -73,7 +73,7 @@
 {% if primary %}
         /**
 {% for field in primary %}
-         * @param {{ field.data_type }} ${{field.var}}
+         * @param {{ field.php_type }} ${{field.var}}
 {% endfor %}
          * @return {{table.title}}
          */

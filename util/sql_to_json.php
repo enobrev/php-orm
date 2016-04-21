@@ -187,7 +187,7 @@
             }
 
             if (count($aM2MTables)) {
-                file_put_contents($sJsonFile, json_encode(array_keys($aM2MTables), JSON_PRETTY_PRINT));
+                file_put_contents($sJsonM2MFile, json_encode(array_keys($aM2MTables), JSON_PRETTY_PRINT));
                 echo 'Created ' . $sJsonM2MFile . "\n";
             }
         }

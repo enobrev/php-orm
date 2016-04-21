@@ -253,6 +253,7 @@
 
             switch(true) {
                 case $oField->column_type == 'tinyint(1) unsigned':
+                    $aData['count']['boolean']++;
                     $oTemplateField['boolean']  = true;
                     $oTemplateField['type']     = 'Field\\Boolean';
                     $oTemplateField['qltype']   = 'bool';

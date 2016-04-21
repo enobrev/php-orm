@@ -107,6 +107,7 @@
 {% endif %}
 {% if count.boolean %}
 {% for field in fields %}
+{% if field.boolean %}
 
         /**
          * @return bool
@@ -114,6 +115,7 @@
         public function is{{ field.short_title }}() {
             return $this->{{ field.name }}->isTrue();
         }
+{% endif %}
 {% endfor %}
 {% endif %}
 {% if count.outbound %}

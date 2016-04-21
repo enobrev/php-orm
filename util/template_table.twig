@@ -105,6 +105,17 @@
         }
 {% endfor %}
 {% endif %}
+{% if count.boolean %}
+{% for field in fields %}
+
+        /**
+         * @return bool
+         */
+        public function is{{ field.short_title }}() {
+            return $this->{{ field.name }}->isTrue();
+        }
+{% endfor %}
+{% endif %}
 {% if count.outbound %}
 {% for field in fields %}
 {% if field.reference %}

@@ -216,7 +216,8 @@
                 'inbound'   => 0,
                 'enum'      => 0,
                 'primary'   => 0,
-                'unique'    => 0
+                'unique'    => 0,
+                'boolean'   => 0
             ],
             'm2m'            => isset($aM2MTables[$sTable]),
             'has_owner'      => false,
@@ -234,28 +235,31 @@
         $iFieldNameShortLength = 0;
         foreach($aTable['fields'] as $sField => $oField) {
             $oTemplateField = array(
-                'short'     => str_replace($aData['table']['singular'] . '_', '', $sField),
-                'name'      => $sField,
-                'title'     => getFieldTitle($sField),
-                'primary'   => false,
-                'unique'    => false,
-                'nullable'  => $oField->is_nullable == 'Yes' ? true : false,
-                'var'       => str_replace(' ', '', (ucwords(str_replace('_', ' ', $sField)))),
-                'default'   => strlen($oField->column_default) ? $oField->column_default : null,
-                'comment'   => $oField->column_comment
+                'short'       => str_replace($aData['table']['singular'] . '_', '', $sField),
+                'short_title' => str_replace(' ', '', (ucwords(str_replace($aData['table']['singular'] . '_', '', $sField)))),
+                'name'        => $sField,
+                'title'       => getFieldTitle($sField),
+                'primary'     => false,
+                'unique'      => false,
+                'boolean'     => false,
+                'nullable'    => $oField->is_nullable == 'Yes' ? true : false,
+                'var'         => str_replace(' ', '', (ucwords(str_replace('_', ' ', $sField)))),
+                'default'     => strlen($oField->column_default) ? $oField->column_default : null,
+                'comment'     => $oField->column_comment
             );
 
             $iFieldNameLength      = max($iFieldNameLength,         strlen($oTemplateField['name']));
             $iFieldNameShortLength = max($iFieldNameShortLength,    strlen($oTemplateField['short']));
 
             switch(true) {
-                case strpos($oField->data_type, 'tinyint') !== false:
+                case $oField->column_type == 'tinyint(1) unsigned':
+                    $oTemplateField['boolean']  = true;
                     $oTemplateField['type']     = 'Field\\Boolean';
                     $oTemplateField['qltype']   = 'bool';
                     $oTemplateField['php_type'] = 'bool';
                     $oTemplateField['var']      = 'b' . $oTemplateField['var'];
                     break;
-                
+
                 case strpos($oField->data_type, 'int') !== false:
                     if ($oField->column_key == 'PRI') {
                         $oTemplateField['type'] = 'Field\\Id';

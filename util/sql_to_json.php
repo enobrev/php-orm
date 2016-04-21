@@ -249,6 +249,13 @@
             $iFieldNameShortLength = max($iFieldNameShortLength,    strlen($oTemplateField['short']));
 
             switch(true) {
+                case strpos($oField->data_type, 'tinyint') !== false:
+                    $oTemplateField['type']     = 'Field\\Boolean';
+                    $oTemplateField['qltype']   = 'bool';
+                    $oTemplateField['php_type'] = 'bool';
+                    $oTemplateField['var']      = 'b' . $oTemplateField['var'];
+                    break;
+                
                 case strpos($oField->data_type, 'int') !== false:
                     if ($oField->column_key == 'PRI') {
                         $oTemplateField['type'] = 'Field\\Id';

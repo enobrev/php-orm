@@ -97,7 +97,7 @@
          * @param {{ field.data_type }} ${{field.var}}
          * @return {{table.title}}
          */
-        public static function getBy{{field.title}}(${{field.var}}) {
+        public static function getBy{{field.short_title}}(${{field.var}}) {
             $oTable = new self;
             return self::getBy(
                 $oTable->{{field.name}}->setValue(${{field.var}})

@@ -94,7 +94,7 @@
 {% for field in unique %}
 
         /**
-         * @param {{ field.data_type }} ${{field.var}}
+         * @param {{ field.php_type }} ${{field.var}}
          * @return {{table.title}}
          */
         public static function getBy{{field.short_title}}(${{field.var}}) {

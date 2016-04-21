@@ -155,23 +155,41 @@
         return str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable))));
     }
 
-    echo str_pad('0', 3, ' ', STR_PAD_LEFT) . ': ALL' . "\n";
-    foreach($aTableNames as $iIndex => $sTable) {
-        echo str_pad($iIndex + 1, 3, ' ', STR_PAD_LEFT) . ': ' . $sTable . "\n";
-    }
+    $aM2MTables   = [];
+    $sJsonM2MFile = getcwd() . '/.sql.m2m.json';
+    if (file_exists($sJsonM2MFile)) {
+        echo 'Using ' . $sJsonM2MFile . "\n";
 
-    $aM2MTables = [];
-    $sM2M = trim(readline('Which Tables are M2M: '));
+        $sJsonM2MContents = file_get_contents($sJsonM2MFile);
+        $aJsonM2M         = json_decode($sJsonM2MFile, true);
+        if (count($aJsonM2M)) {
+            foreach(array_keys($aJsonM2M) as $sTable) {
+                $aM2MTables[$sTable] = 1;
+            }
+        }
+    } else {
+        echo str_pad('0', 3, ' ', STR_PAD_LEFT) . ': ALL' . "\n";
+        foreach ($aTableNames as $iIndex => $sTable) {
+            echo str_pad($iIndex + 1, 3, ' ', STR_PAD_LEFT) . ': ' . $sTable . "\n";
+        }
 
-    if ($sM2M) {
-        // http://stackoverflow.com/a/7698869/14651
-        $aM2MIndices = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
-            return implode(',', range($m[1], $m[2]));
-        }, $sM2M);
+        $sM2M = trim(readline('Which Tables are M2M: '));
 
-        $aM2MIndices = array_unique(explode(',', $aM2MIndices));
-        foreach($aM2MIndices as $iIndex) {
-            $aM2MTables[$aTableNames[$iIndex - 1]] = 1;
+        if ($sM2M) {
+            // http://stackoverflow.com/a/7698869/14651
+            $aM2MIndices = preg_replace_callback('/(\d+)-(\d+)/', function ($m) {
+                return implode(',', range($m[1], $m[2]));
+            }, $sM2M);
+
+            $aM2MIndices = array_unique(explode(',', $aM2MIndices));
+            foreach ($aM2MIndices as $iIndex) {
+                $aM2MTables[$aTableNames[$iIndex - 1]] = 1;
+            }
+
+            if (count($aM2MTables)) {
+                file_put_contents($sJsonFile, json_encode(array_keys($aM2MTables), JSON_PRETTY_PRINT));
+                echo 'Created ' . $sJsonM2MFile . "\n";
+            }
         }
     }
 

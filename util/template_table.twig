@@ -73,7 +73,7 @@
 {% if primary %}
         /**
 {% for field in primary %}
-         * @param int ${{field.var}}
+         * @param {{ field.data_type }} ${{field.var}}
 {% endfor %}
          * @return {{table.title}}
          */
@@ -89,6 +89,21 @@
 {% endfor %}
             );
         }
+{% endif %}
+{% if unique %}
+{% for field in unique %}
+
+        /**
+         * @param {{ field.data_type }} ${{field.var}}
+         * @return {{table.title}}
+         */
+        public static function getBy{{field.title}}(${{field.var}}) {
+            $oTable = new self;
+            return self::getBy(
+                $oTable->{{field.name}}->setValue(${{field.var}})
+            );
+        }
+{% endfor %}
 {% endif %}
 {% if count.outbound %}
 {% for field in fields %}

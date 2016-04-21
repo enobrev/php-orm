@@ -215,7 +215,8 @@
                 'outbound'  => 0,
                 'inbound'   => 0,
                 'enum'      => 0,
-                'primary'   => 0
+                'primary'   => 0,
+                'unique'    => 0
             ],
             'm2m'            => isset($aM2MTables[$sTable]),
             'has_owner'      => false,
@@ -223,6 +224,7 @@
             'fields'         => array(),
             'types'          => array(),
             'primary'        => array(),
+            'unique'         => array(),
             'date_added'     => false,
             'date_updated'   => false,
             'interfaces'     => array()
@@ -232,14 +234,15 @@
         $iFieldNameShortLength = 0;
         foreach($aTable['fields'] as $sField => $oField) {
             $oTemplateField = array(
-                'short'    => str_replace($aData['table']['singular'] . '_', '', $sField),
-                'name'     => $sField,
-                'title'    => getFieldTitle($sField),
-                'primary'  => false,
-                'nullable' => $oField->is_nullable == 'Yes' ? true : false,
-                'var'      => str_replace(' ', '', (ucwords(str_replace('_', ' ', $sField)))),
-                'default'  => strlen($oField->column_default) ? $oField->column_default : null,
-                'comment'  => $oField->column_comment
+                'short'     => str_replace($aData['table']['singular'] . '_', '', $sField),
+                'name'      => $sField,
+                'title'     => getFieldTitle($sField),
+                'primary'   => false,
+                'unique'    => false,
+                'nullable'  => $oField->is_nullable == 'Yes' ? true : false,
+                'var'       => str_replace(' ', '', (ucwords(str_replace('_', ' ', $sField)))),
+                'default'   => strlen($oField->column_default) ? $oField->column_default : null,
+                'comment'   => $oField->column_comment
             );
 
             $iFieldNameLength      = max($iFieldNameLength,         strlen($oTemplateField['name']));
@@ -254,6 +257,7 @@
                         $oTemplateField['type'] = 'Field\\Integer';
                         $oTemplateField['qltype'] = 'int';
                     }
+                    $oTemplateField['php_type'] = 'int';
                     $oTemplateField['var']  = 'i' . $oTemplateField['var'];
                     break;
 
@@ -261,6 +265,7 @@
                 case strpos($oField->data_type, 'decimal') !== false:
                     $oTemplateField['type']     = 'Field\\Decimal';
                     $oTemplateField['qltype']   = 'float';
+                    $oTemplateField['php_type'] = 'float';
                     $oTemplateField['var']      = 'f' . $oTemplateField['var'];
                     break;
 
@@ -274,6 +279,7 @@
                     }
 
                     $oTemplateField['qltype']   = 'string';
+                    $oTemplateField['php_type'] = 'string';
                     $oTemplateField['var']      = 's' . $oTemplateField['var'];
                     if ($oField->column_default) {
                         $oTemplateField['default'] = '"' . $oField->column_default . '"';
@@ -296,12 +302,14 @@
                     }
 
                     $oTemplateField['qltype']   = 'string';
+                    $oTemplateField['php_type'] = 'string';
                     $oTemplateField['var']      = 's' . $oTemplateField['var'];
                     break;
 
                 case strpos($oField->data_type, 'datetime') !== false:
                     $oTemplateField['type']     = 'Field\\DateTime';
                     $oTemplateField['qltype']   = 'string';
+                    $oTemplateField['php_type'] = 'string';
                     $oTemplateField['var']      = 'd' . $oTemplateField['var'];
 
                     switch (true) {
@@ -326,6 +334,7 @@
                 case strpos($oField->data_type, 'date') !== false:
                     $oTemplateField['type']     = 'Field\\Date';
                     $oTemplateField['qltype']   = 'string';
+                    $oTemplateField['php_type'] = 'string';
                     $oTemplateField['var']      = 'd' . $oTemplateField['var'];
 
                     if ($oField->column_default) {
@@ -336,6 +345,7 @@
                 case strpos($oField->data_type, 'time') !== false:
                     $oTemplateField['type']     = 'Field\\Time';
                     $oTemplateField['qltype']   = 'string';
+                    $oTemplateField['php_type'] = 'string';
                     $oTemplateField['var']      = 'd' . $oTemplateField['var'];
 
                     if ($oField->column_default) {
@@ -344,10 +354,11 @@
                     break;
 
                 case strpos($oField->data_type, 'enum') !== false:
-                    $oTemplateField['type']    = 'Field\\Enum';
-                    $oTemplateField['qltype']  = 'enum';
-                    $oTemplateField['var']     = 's' . $oTemplateField['var'];
-                    $oTemplateField['values']  = array();
+                    $oTemplateField['type']     = 'Field\\Enum';
+                    $oTemplateField['qltype']   = 'enum';
+                    $oTemplateField['php_type'] = 'string';
+                    $oTemplateField['var']      = 's' . $oTemplateField['var'];
+                    $oTemplateField['values']   = array();
                     $aData['count']['enum']++;
 
                     $sType = $oField->column_type;
@@ -443,6 +454,12 @@
                 $oTemplateField['primary'] = true;
                 $aData['primary'][] = $oTemplateField;
                 $aData['count']['primary']++;
+            }
+
+            if ($oField->column_key == 'UNI') {
+                $oTemplateField['unique'] = true;
+                $aData['unique'][] = $oTemplateField;
+                $aData['count']['unique']++;
             }
 
             $aData['fields'][] = $oTemplateField;

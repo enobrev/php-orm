@@ -131,7 +131,7 @@
 
         public function getOwner() {
             if ($this->getOwnerField()->hasValue()) {
-                return {{field.subclass}}::getById($this->getOwnerField()->getValue());
+                return self::getById($this->getOwnerField()->getValue());
             }
         }
 

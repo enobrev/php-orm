@@ -129,6 +129,9 @@
             return $this->user_id;
         }
 
+        /**
+         * @return {{table.title}}
+         */
         public function getOwner() {
             if ($this->getOwnerField()->hasValue()) {
                 return {{table.title}}::getById($this->getOwnerField()->getValue());

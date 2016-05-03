@@ -466,6 +466,11 @@
                 $oTemplateField['primary'] = true;
                 $aData['primary'][] = $oTemplateField;
                 $aData['count']['primary']++;
+
+                if ($sField == 'user_id') {
+                    $aData['has_owner']    = true;
+                    $aData['interfaces'][] = 'OwnerColumn';
+                }
             }
 
             if ($oField->column_key == 'UNI') {

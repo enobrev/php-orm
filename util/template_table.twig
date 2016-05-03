@@ -120,7 +120,29 @@
 {% endif %}
 {% if count.outbound %}
 {% for field in fields %}
-{% if field.reference %}
+{% if field.primary and field.name == 'user_id' %}
+
+        /**
+         * @return Field
+         */
+        public function getOwnerField() {
+            return $this->user_id;
+        }
+
+        public function getOwner() {
+            if ($this->getOwnerField()->hasValue()) {
+                return {{field.subclass}}::getById($this->getOwnerField()->getValue());
+            }
+        }
+
+        /**
+         * @param Table|{{field.subclass}}|null $o{{field.title}}
+         * @return bool
+         */
+        public function hasOwner(Table $o{{field.title}} = null) {
+            return $this->getOwnerField()->is($o{{field.title}});
+        }
+{% elseif field.reference %}
 {% if field.reference.title == 'User' %}
 
         /**

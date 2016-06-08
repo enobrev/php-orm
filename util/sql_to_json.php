@@ -31,14 +31,13 @@
         ->aka('database')
         ->describedAs('The name of the database you are connecting to');
 
+    $Db    = null;
     $sPass = '';
     $sHost = $oOptions['host'];
     $sUser = $oOptions['user'];
     $sName = $oOptions['name'];
     $bPass = $oOptions['password'];
     $bConnected = false;
-
-    $Db    = Db::getInstance();
 
     while ($bConnected === false) {
         if (!$sHost) {
@@ -61,7 +60,7 @@
         }
 
         try {
-            $Db->connect($sHost, $sUser, $sPass);
+            $Db = Db::getInstance($sHost, $sUser, $sPass);
             $bConnected = true;
         } catch (DbException $e) {
             echo $e->getMessage() . "\n";

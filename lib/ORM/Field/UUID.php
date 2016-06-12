@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Db;
 
-    class UUID extends Hash {
+    class UUID extends Text {
         /**
          * @param mixed $sValue
          * @return UUID

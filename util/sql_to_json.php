@@ -272,18 +272,24 @@
                     $oTemplateField['var']  = 'i' . $oTemplateField['var'];
                     break;
 
-                case strpos($oField->data_type, 'float')   !== false:
-                case strpos($oField->data_type, 'decimal') !== false:
+                case $oField->data_type == 'float':
+                case $oField->data_type == 'decimal':
                     $oTemplateField['type']     = 'Field\\Decimal';
                     $oTemplateField['qltype']   = 'float';
                     $oTemplateField['php_type'] = 'float';
                     $oTemplateField['var']      = 'f' . $oTemplateField['var'];
                     break;
 
-                case strpos($oField->data_type, 'varchar') !== false:
-                case strpos($oField->data_type, 'text')    !== false:
-                case strpos($oField->data_type, 'char')    !== false:
-                    if ($oField->is_nullable) {
+                case $oField->data_type == 'varchar':
+                case $oField->data_type == 'text':
+                case $oField->data_type == 'char':
+                    if (strtolower($oField->column_type) == 'char(32)') {
+                        if ($oField->is_nullable) {
+                            $oTemplateField['type'] = 'Field\\UUIDNullable';
+                        } else {
+                            $oTemplateField['type'] = 'Field\\UUID';
+                        }
+                    } else if ($oField->is_nullable) {
                         $oTemplateField['type'] = 'Field\\TextNullable';
                     } else {
                         $oTemplateField['type'] = 'Field\\Text';
@@ -297,14 +303,14 @@
                     }
                     break;
 
-                case strpos($oField->data_type, 'binary') !== false:
-                    if (strpos($oField->data_type, '20') !== false) {
+                case $oField->data_type == 'binary':
+                    if ($oField->column_type == 'binary(20)') {
                         if ($oField->column_key == 'PRI') {
                             $oTemplateField['type']     = 'Field\\Hash';
                         } else {
                             $oTemplateField['type'] = 'Field\\HashNullable';
                         }
-                    } else if (strpos($oField->data_type, '16') !== false) {
+                    } else if ($oField->column_type == 'binary(16)') {
                         if ($oField->column_key == 'PRI') {
                             $oTemplateField['type'] = 'Field\\UUID';
                         } else {
@@ -317,7 +323,7 @@
                     $oTemplateField['var']      = 's' . $oTemplateField['var'];
                     break;
 
-                case strpos($oField->data_type, 'datetime') !== false:
+                case $oField->data_type == 'datetime':
                     $oTemplateField['type']     = 'Field\\DateTime';
                     $oTemplateField['qltype']   = 'string';
                     $oTemplateField['php_type'] = 'string';
@@ -342,7 +348,7 @@
                     }
                     break;
 
-                case strpos($oField->data_type, 'date') !== false:
+                case $oField->data_type == 'date':
                     $oTemplateField['type']     = 'Field\\Date';
                     $oTemplateField['qltype']   = 'string';
                     $oTemplateField['php_type'] = 'string';
@@ -353,7 +359,7 @@
                     }
                     break;
 
-                case strpos($oField->data_type, 'time') !== false:
+                case $oField->data_type == 'time':
                     $oTemplateField['type']     = 'Field\\Time';
                     $oTemplateField['qltype']   = 'string';
                     $oTemplateField['php_type'] = 'string';
@@ -364,7 +370,7 @@
                     }
                     break;
 
-                case strpos($oField->data_type, 'enum') !== false:
+                case $oField->data_type == 'enum':
                     $oTemplateField['type']     = 'Field\\Enum';
                     $oTemplateField['qltype']   = 'enum';
                     $oTemplateField['php_type'] = 'string';

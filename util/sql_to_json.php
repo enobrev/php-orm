@@ -208,6 +208,7 @@
                 'plural'            => getClassNamePlural($sTable),
                 'spaced'            => str_replace('_', ' ', $sTable),
                 'spaced_singular'   => depluralize(str_replace('_', ' ', $sTable)),
+                'spaced_title'      => ucwords(str_replace('_', ' ', $sTable)),
                 'comment'           => $aTable['comment']
             ),
             'count' => [

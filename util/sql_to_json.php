@@ -202,14 +202,15 @@
 
         $aData = array(
             'table' => array(
-                'name'              => $sTable,
-                'singular'          => depluralize($sTable),
-                'title'             => getClassName($sTable),
-                'plural'            => getClassNamePlural($sTable),
-                'spaced'            => str_replace('_', ' ', $sTable),
-                'spaced_singular'   => depluralize(str_replace('_', ' ', $sTable)),
-                'spaced_title'      => ucwords(str_replace('_', ' ', $sTable)),
-                'comment'           => $aTable['comment']
+                'name'                  => $sTable,
+                'singular'              => depluralize($sTable),
+                'title'                 => getClassName($sTable),
+                'plural'                => getClassNamePlural($sTable),
+                'spaced'                => str_replace('_', ' ', $sTable),
+                'spaced_singular'       => depluralize(str_replace('_', ' ', $sTable)),
+                'spaced_singular_title' => ucwords(depluralize(str_replace('_', ' ', $sTable))),
+                'spaced_title'          => ucwords(str_replace('_', ' ', $sTable)),
+                'comment'               => $aTable['comment']
             ),
             'count' => [
                 'outbound'  => 0,

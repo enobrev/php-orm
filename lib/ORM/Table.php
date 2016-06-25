@@ -521,13 +521,19 @@
          * @return int
          */
         public function insert() {
+            $bPrimaryAlreadySet = $this->primaryHasValue();
+
             $this->preInsert();
+            
             $this->DB->namedQuery(get_class($this) . '.insert',
                 SQL::insert($this)
             );
 
             $iLastInsertId = $this->DB->getLastInsertId();
-            $this->updatePrimary($iLastInsertId);
+            if (!$bPrimaryAlreadySet) {
+                $this->updatePrimary($iLastInsertId);
+            }
+
             $this->postInsert();
 
             return $iLastInsertId;

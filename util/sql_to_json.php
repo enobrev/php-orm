@@ -409,7 +409,7 @@
                     }
 
                     if ($oField->column_default) {
-                        $oTemplateField['default'] = 'self::' . $sEnumType . '_' . strtoupper(str_replace(' ', '_', $oField->column_default));
+                        $oTemplateField['default'] = 'self::' . $sEnumType . '_' . strtoupper(preg_replace('/[^0-9A-Za-z]/', '_', $oField->column_default));
                     }
                     break;
 

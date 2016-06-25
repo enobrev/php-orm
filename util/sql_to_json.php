@@ -390,8 +390,8 @@
                             $oTemplateField['values'][] = array(
                                 'name'  => $sEnum,
                                 'type'  => ucwords(str_replace('_', '', strtolower($sEnumType))),
-                                'const' => $sEnumType . '_' . strtoupper(str_replace(' ', '_', $sEnum)),
-                                'const_short' => strtoupper(str_replace(' ', '_', $sEnum))
+                                'const' => $sEnumType . '_' . strtoupper(preg_replace('/[^0-9A-Za-z]/', '_', $sEnum)),
+                                'const_short' => strtoupper(preg_replace('/[^0-9A-Za-z]/', '_', $sEnum))
                             );
                         }
 

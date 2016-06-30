@@ -517,6 +517,7 @@
             'oes'  => 'o',
             'ves'  => 'f',
             'ches' => 'ch',
+            'uses' => 'us',
             'sses' => 'ss',
             's'    => ''
         );

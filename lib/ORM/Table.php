@@ -524,7 +524,7 @@
             $bPrimaryAlreadySet = $this->primaryHasValue();
 
             $this->preInsert();
-            
+
             $this->DB->namedQuery(get_class($this) . '.insert',
                 SQL::insert($this)
             );

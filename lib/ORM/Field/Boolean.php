@@ -27,6 +27,12 @@
                 $sValue = $sValue->getValue();
             }
 
+            if ($sValue === 'false') {
+                $sValue = false;
+            } else if ($sValue === 'true') {
+                $sValue = true;
+            }
+
             $this->sValue = $sValue ? true : false;
 
             return $this;

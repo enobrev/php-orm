@@ -243,7 +243,7 @@
                 'primary'     => false,
                 'unique'      => false,
                 'boolean'     => false,
-                'nullable'    => $oField->is_nullable == 'Yes' ? true : false,
+                'nullable'    => strtolower($oField->is_nullable) == 'yes' ? true : false,
                 'var'         => str_replace(' ', '', (ucwords(str_replace('_', ' ', $sField)))),
                 'default'     => strlen($oField->column_default) ? $oField->column_default : null,
                 'comment'     => $oField->column_comment

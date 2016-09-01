@@ -1,5 +1,5 @@
 <?php
-    namespace Enobrev\API\Mock;
+    namespace Enobrev\ORM\Mock;
 
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;

@@ -1,14 +1,11 @@
+#!/usr/bin/env php
 <?php
-    if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-        // Development
-        require_once __DIR__ . '/../vendor/autoload.php';
-    } else {
-        // Installed
-        require_once __DIR__ . '/../../../autoload.php';
-    }
+    require_once __DIR__ . '/../vendor/autoload.php';
 
     use Enobrev\ORM\Db;
     use Enobrev\ORM\DbException;
+
+    use function Enobrev\depluralize;
 
     $oOptions = new \Commando\Command();
 
@@ -506,30 +503,6 @@
 
     $sJsonFile = getcwd() . '/sql.json';
     file_put_contents($sJsonFile, json_encode($aAllData, JSON_PRETTY_PRINT));
+
     echo 'Created ' . $sJsonFile . "\n";
-
-    function depluralize($word){
-        $rules = array(
-            'ss'   => false,
-            'os'   => 'o',
-            'ies'  => 'y',
-            'xes'  => 'x',
-            'oes'  => 'o',
-            'ves'  => 'f',
-            'ches' => 'ch',
-            'uses' => 'us',
-            'sses' => 'ss',
-            's'    => ''
-        );
-
-        foreach(array_keys($rules) as $key){
-            if(substr($word, (strlen($key) * -1)) != $key)
-                continue;
-            if($key === false)
-                return $word;
-            return substr($word, 0, strlen($word) - strlen($key)) . $rules[$key];
-        }
-
-        return $word;
-    }
 ?>

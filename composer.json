@@ -41,5 +41,9 @@
         "test": [
             "phpunit"
         ]
-    }
+    },
+    "bin": [
+        "bin/generate_tables.php",
+        "bin/sql_to_json.php"
+    ]
 }

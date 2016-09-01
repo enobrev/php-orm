@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2ca4b2f12bded906ccc91996ac65349a",
+    "hash": "28c3ae03dddd6b363f94d6e932f2e693",
     "content-hash": "9d1a8ff867e93754815afca456467da6",
     "packages": [],
     "packages-dev": [
@@ -68,12 +68,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/enobrev/tools.git",
-                "reference": "2b17f85516fe1dbe96e4e2a79a512bfcba8f0ad6"
+                "reference": "ad7130642389aea0257e1df49922c28d57368c07"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/enobrev/tools/zipball/2b17f85516fe1dbe96e4e2a79a512bfcba8f0ad6",
-                "reference": "2b17f85516fe1dbe96e4e2a79a512bfcba8f0ad6",
+                "url": "https://api.github.com/repos/enobrev/tools/zipball/ad7130642389aea0257e1df49922c28d57368c07",
+                "reference": "ad7130642389aea0257e1df49922c28d57368c07",
                 "shasum": ""
             },
             "require": {
@@ -106,7 +106,7 @@
                 "source": "https://github.com/enobrev/tools/tree/master",
                 "issues": "https://github.com/enobrev/tools/issues"
             },
-            "time": "2016-09-01 13:07:07"
+            "time": "2016-09-01 17:14:44"
         },
         {
             "name": "kevinlebrun/colors.php",

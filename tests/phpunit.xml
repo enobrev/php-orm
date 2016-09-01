@@ -1,0 +1,5 @@
+<phpunit>
+    <php>
+        <const name="PHPUNIT_ENOBREV_ORM_TESTSUITE" value="true"/>
+    </php>
+</phpunit>

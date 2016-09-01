@@ -1,6 +1,11 @@
 #!/usr/bin/env php
 <?php
-    require_once __DIR__ . '/../vendor/autoload.php';
+    foreach (array(__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php') as $file) {
+        if (file_exists($file)) {
+            require_once $file;
+            break;
+        }
+    }
 
     $oOptions = new \Commando\Command();
 

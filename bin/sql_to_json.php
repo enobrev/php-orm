@@ -2,6 +2,7 @@
 <?php
     $sAutoloadFile = current(
         array_filter([
+            __DIR__ . '/../../../autoload.php',
             __DIR__ . '/../../autoload.php',
             __DIR__ . '/../vendor/autoload.php',
             __DIR__ . '/vendor/autoload.php'
@@ -9,7 +10,7 @@
     );
 
     if (!$sAutoloadFile) {
-        fwrite(STDERR, 'Could Not Autoload');
+        fwrite(STDERR, 'Could Not Find Composer Dependencies' . PHP_EOL);
         die(1);
     }
 

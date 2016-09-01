@@ -1,18 +1,26 @@
 #!/usr/bin/env php
 <?php
-    foreach (array(__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php') as $file) {
-        if (file_exists($file)) {
-            require_once $file;
-            break;
-        }
+    $sAutoloadFile = current(
+        array_filter([
+            __DIR__ . '/../../autoload.php',
+            __DIR__ . '/../vendor/autoload.php',
+            __DIR__ . '/vendor/autoload.php'
+        ], 'file_exists')
+    );
+
+    if (!$sAutoloadFile) {
+        fwrite(STDERR, 'Could Not Autoload');
+        die(1);
     }
+
+    require $sAutoloadFile;
 
     use Enobrev\ORM\Db;
     use Enobrev\ORM\DbException;
 
     use function Enobrev\depluralize;
 
-    $oOptions = new \Commando\Command();
+    $oOptions = new Commando\Command();
 
     $oOptions->option('h')
         ->aka('host')

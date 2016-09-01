@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev;
 
-    use Enobrev\Mock\User;
+    use Enobrev\ORM\Mock\User;
 
     class SelectInTest extends \PHPUnit_Framework_TestCase {
         public function testSelectIntInValue() {

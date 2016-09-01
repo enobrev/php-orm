@@ -10,10 +10,17 @@
             "email": "src@enobrev.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "https://github.com/enobrev/tools"
+        }
+    ],
     "require": {
         "php": ">=7.0.10"
     },
     "require-dev": {
+        "enobrev/tools":  "dev-master",
         "twig/twig": "^1.23",
         "monolog/monolog": "^1.17",
         "phpunit/phpunit": "^5.1",
@@ -27,7 +34,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Enobrev\\Mock\\": "tests/Mock/"
+            "Enobrev\\ORM\\Mock\\": "tests/Mock/"
         }
     },
     "scripts": {

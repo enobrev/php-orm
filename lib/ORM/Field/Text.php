@@ -2,6 +2,7 @@
     namespace Enobrev\ORM\Field;
 
     use Enobrev\ORM\Db;
+    use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
 
@@ -32,7 +33,7 @@
             if ($this->isNull()) {
                 return '""';
             } else {
-                return '"' . Db::getInstance()->real_escape_string((string) $this) . '"';
+                return '"' . Escape::string((string) $this) . '"';
             }
         }
 

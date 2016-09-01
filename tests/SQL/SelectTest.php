@@ -1,8 +1,8 @@
 <?php
     namespace Enobrev;
 
-    use Enobrev\Mock\Address;
-    use Enobrev\Mock\User;
+    use Enobrev\ORM\Mock\Address;
+    use Enobrev\ORM\Mock\User;
 
     class SQLSelectTest extends \PHPUnit_Framework_TestCase {
         public function testSelectStar() {

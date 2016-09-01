@@ -1,5 +1,5 @@
 <?php
-    namespace Enobrev\Mock;
+    namespace Enobrev\ORM\Mock;
 
     use Enobrev\ORM\Field\Id        as F_Id;
     use Enobrev\ORM\Field\Text      as F_Text;

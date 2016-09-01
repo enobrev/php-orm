@@ -1,5 +1,5 @@
 <?php
-    namespace Enobrev\Mock;
+    namespace Enobrev\ORM\Mock;
 
     use Enobrev\ORM\Field\Boolean   as F_Boolean;
     use Enobrev\ORM\Field\DateTime  as F_DateTime;

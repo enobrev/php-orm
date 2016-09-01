@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev;
 
-    use Enobrev\Mock\User;
+    use Enobrev\ORM\Mock\User;
 
     class SQLOrderTest extends \PHPUnit_Framework_TestCase {
         public function testSelectOrderAsc() {

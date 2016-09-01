@@ -22,10 +22,8 @@
         public $oResult;
 
         /**
-         * @var \Enobrev\ORM\Db
+         * @var string
          */
-        protected $DB = NULL;
-
         public $sKey = __CLASS__;
 
         /**
@@ -161,7 +159,6 @@
                     throw new TableNamelessException;
                 }
 
-                $this->DB      = Db::getInstance();
                 $this->init();
                 $this->applyDefaults();
             }
@@ -403,7 +400,7 @@
             $aClass     = explode('\\', get_class($oTable));
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 
-            if ($oResult = $oTable->DB->namedQuery($sQueryName, SQL::select($oTable, $oConditions))) {
+            if ($oResult = Db::getInstance()->namedQuery($sQueryName, SQL::select($oTable, $oConditions))) {
                 if ($oResult->num_rows > 0) {
                     $oTable->setFromObject($oResult->fetch_object());
                     return $oTable;
@@ -473,7 +470,7 @@
                 $oConditions = Conditions::also($this->getPrimary());
 
                 $this->preUpdate();
-                $oReturn = $this->DB->namedQuery($sFromTable . '.update',
+                $oReturn = Db::getInstance()->namedQuery($sFromTable . '.update',
                     SQL::update($this, $oConditions)
                 );
                 $this->postUpdate();
@@ -503,7 +500,7 @@
             if ($this->primaryHasValue()) {
                 $oConditions = Conditions::also($this->getPrimary());
 
-                $oReturn = $this->DB->namedQuery(get_class($this) . '.delete',
+                $oReturn = Db::getInstance()->namedQuery(get_class($this) . '.delete',
                     SQL::delete($this, $oConditions)
                 );
 
@@ -525,11 +522,11 @@
 
             $this->preInsert();
 
-            $this->DB->namedQuery(get_class($this) . '.insert',
+            Db::getInstance()->namedQuery(get_class($this) . '.insert',
                 SQL::insert($this)
             );
 
-            $iLastInsertId = $this->DB->getLastInsertId();
+            $iLastInsertId = Db::getInstance()->getLastInsertId();
             if (!$bPrimaryAlreadySet) {
                 $this->updatePrimary($iLastInsertId);
             }
@@ -563,11 +560,11 @@
          */
         public function upsert() {
             $this->preUpsert();
-            $this->DB->namedQuery(get_class($this) . '.upsert',
+            Db::getInstance()->namedQuery(get_class($this) . '.upsert',
                 SQL::upsert($this)
             );
 
-            $iLastInsertId = $this->DB->getLastInsertId();
+            $iLastInsertId = Db::getInstance()->getLastInsertId();
             $this->updatePrimary($iLastInsertId);
             $this->postUpsert();
 
@@ -578,7 +575,7 @@
          * @return \DateTime
          * */
         public function now() {
-            return $this->DB->getDate();
+            return Db::getInstance()->getDate();
         }
 
         /**

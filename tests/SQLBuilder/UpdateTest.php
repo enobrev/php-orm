@@ -3,9 +3,9 @@
 
     require __DIR__ . '/../../vendor/autoload.php';
 
-    use Enobrev\Mock\User;
+    use Enobrev\ORM\Mock\User;
 
-    class SQLBuilderSelectTest extends \PHPUnit_Framework_TestCase {
+    class SQLBuilderUpdateTest extends \PHPUnit_Framework_TestCase {
         public function testOne() {
             $oUser    = new User();
             $oUser->user_id->setValue(2);

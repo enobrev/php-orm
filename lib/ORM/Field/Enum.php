@@ -2,6 +2,7 @@
     namespace Enobrev\ORM\Field;
 
     use Enobrev\ORM\Db;
+    use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\FieldInvalidValueException;
     use Enobrev\ORM\Table;
@@ -45,7 +46,7 @@
          * @return string
          */
         public function toSQL() {
-            return '"' . Db::getInstance()->real_escape_string($this->__toString()) . '"';
+            return '"' . Escape::string($this->__toString()) . '"';
         }
         /**
          *

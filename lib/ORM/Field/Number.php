@@ -2,6 +2,7 @@
     namespace Enobrev\ORM\Field;
 
     use Enobrev\ORM\Db;
+    use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
 
     abstract class Number extends Field {
@@ -18,7 +19,7 @@
          * @return string
          */
         public function toSQL() {
-            return Db::getInstance()->real_escape_string($this->__toString());
+            return Escape::string($this->__toString());
         }
     }
 ?>

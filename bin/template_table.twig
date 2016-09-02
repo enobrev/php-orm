@@ -204,6 +204,7 @@
             if ($this->{{field.name}}->isNull()) {
                 $this->{{field.name}}->generateValue();
             }
+{% endif %}
 {% endfor %}
 
 {% endif %}
@@ -222,6 +223,7 @@
             if ($this->{{field.name}}->isNull()) {
                 $this->{{field.name}}->generateValue();
             }
+{% endif %}
 {% endfor %}
 
 {% endif %}

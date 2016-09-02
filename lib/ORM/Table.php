@@ -9,21 +9,13 @@
     class TableFieldNotFoundException extends TableException {}
 
     class Table {
-        /**
-         *
-         * @var string
-         */
+        /** @var string  */
         protected $sTitle;
-        
-        /**
-         *
-         * @var stdClass
-         */
+
+        /** @var stdClass  */
         public $oResult;
 
-        /**
-         * @var string
-         */
+        /** @var string  */
         public $sKey = __CLASS__;
 
         /**
@@ -400,7 +392,7 @@
             $aClass     = explode('\\', get_class($oTable));
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 
-            if ($oResult = Db::getInstance()->namedQuery($sQueryName, SQL::select($oTable, $oConditions))) {
+            if ($oResult = $oTable->DB->namedQuery($sQueryName, SQL::select($oTable, $oConditions))) {
                 if ($oResult->num_rows > 0) {
                     $oTable->setFromObject($oResult->fetch_object());
                     return $oTable;
@@ -576,29 +568,6 @@
          * */
         public function now() {
             return Db::getInstance()->getDate();
-        }
-
-        /**
-         * @param MySQLi_Result $oResults
-         * @param string        $sKey  Column to use as array key
-         * @return Table[]
-         */
-        public static function toTables(MySQLi_Result $oResults, $sKey = null) {
-            $aTables = array();
-            if ($oResults->num_rows) {
-                /** @var Table $sTable */
-                if ($sKey) {
-                    while ($oResult = $oResults->fetch_object()) {
-                        $aTables[$oResult->$sKey] = self::createFromObject($oResult);
-                    }
-                } else {
-                    while ($oResult = $oResults->fetch_object()) {
-                        $aTables[] = self::createFromObject($oResult);
-                    }
-                }
-            }
-
-            return $aTables;
         }
 
         /**

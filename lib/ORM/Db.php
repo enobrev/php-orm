@@ -223,6 +223,16 @@
             return $mResult;
         }
 
+        /**
+         * Do not use Log class here as it will cause an infinite loop
+         * @param String $sQuery
+         * @param Integer $iResultMode
+         * @return MySQLi_Result
+         */
+        public function parentQuery($sQuery, $iResultMode = MYSQLI_STORE_RESULT) {
+            return parent::query($sQuery, $iResultMode);
+        }
+
         
         /**
          *
@@ -258,66 +268,8 @@
         }
 
         /**
-         * Do not use Log class here as it will cause an infinite loop
-         * @param String $sQuery
-         * @param Integer $iResultMode
-         * @return MySQLi_Result
+         * @throws DbException
          */
-        public function parentQuery($sQuery, $iResultMode = MYSQLI_STORE_RESULT) {                        
-            return parent::query($sQuery, $iResultMode);
-        }
-
-        /**
-         *
-         * @param string $sTable
-         * @param array $aFieldValues
-         * @return MySQLi_Result
-         */
-        public function insert($sTable, $aFieldValues) {
-            return $this->query($this->getInsert($sTable, $aFieldValues));
-        }
-        
-        /**
-         *
-         * @param string $sTable
-         * @param array $aFieldValues
-         * @return string
-         */
-        public function getInsert($sTable, $aFieldValues) {
-            $aFields = array_keys($aFieldValues);
-            $aValues = array_values($aFieldValues);
-            
-            return 'INSERT INTO ' . $sTable . '(' . implode(', ', $aFields) . ') VALUES (' . implode(', ', $aValues) . ');';
-        }
-        
-        /**
-         *
-         * @param string $sTable
-         * @param array $aFieldValues
-         * @param string $sCondition
-         * @return MySQLi_Result
-         */
-        public function update($sTable, $aFieldValues, $sCondition) {
-            $aUpdates = array();
-            foreach ($aFieldValues as $sField => $sValue) {
-                $aUpdates[] = $sField . ' = ' . $sValue;
-            }
-            
-            $sSQL = 'UPDATE ' . $sTable . ' SET ' . implode(', ', $aUpdates) . ' WHERE ' . $sCondition;        
-            return $this->query($sSQL);
-        }
-        
-        /**
-         *
-         * @param string $sTable
-         * @param string $sCondition
-         * @return MySQLi_Result
-         */
-        public function delete($sTable, $sCondition) {            
-            $sSQL = 'DELETE FROM ' . $sTable . ' WHERE ' . $sCondition;
-            return $this->query($sSQL);
-        }
-
         private function __clone() {
             throw new DbException('Cannot clone the database class');
         }

@@ -100,7 +100,7 @@
          * @return PDO
          */
         public static function defaultSQLiteFile(string $sFile) {
-            $oPDO = new PDO("sqlite::$sFile");
+            $oPDO = new PDO("sqlite:$sFile");
             $oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
             $oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 

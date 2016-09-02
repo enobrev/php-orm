@@ -60,13 +60,19 @@
         }
 
         /**
-         * @param string      $sDSN
+         * @param string      $sHost
          * @param string|null $sUsername
          * @param string|null $sPassword
+         * @param string|null $sDatabase
          * @param array       $aOptions
          * @return PDO
          */
-        public static function defaultMySQLPDO(string $sDSN, string $sUsername = null, string $sPassword = null, array $aOptions = []) {
+        public static function defaultMySQLPDO(string $sHost, string $sUsername = null, string $sPassword = null, string $sDatabase = null, array $aOptions = []) {
+            $sDSN = "mysql:host=$sHost;port=3307";
+            if ($sDatabase) {
+                $sDSN .= ";dbname=$sDatabase";
+            }
+
             $oPDO = new PDO($sDSN, $sUsername, $sPassword, $aOptions);
             $oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
             $oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);

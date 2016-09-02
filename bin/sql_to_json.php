@@ -71,7 +71,7 @@
         }
 
         try {
-            $Db = Db::getInstance($sHost, $sUser, $sPass);
+            $Db = Db::getInstance(Db::defaultMySQLPDO($sHost, $sUser, $sPass));
             $bConnected = true;
         } catch (DbException $e) {
             echo $e->getMessage() . "\n";

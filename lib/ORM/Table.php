@@ -47,18 +47,6 @@
         }
 
         /**
-         * @static
-         * @param MySQLi_Result $oResult
-         * @return Table
-         */
-        public static function createFromResult(MySQLi_Result $oResult) {
-            /** @var Table $oTable */
-            $oTable = new static;
-            $oTable->setFromResult($oResult);
-            return $oTable;
-        }
-
-        /**
          * @param array $aData
          * @return Table
          */
@@ -280,15 +268,6 @@
 
         /**
          *
-         * @param MySQLi_Result $oResult
-         * @return Table
-         */
-        public function setFromResult(MySQLi_Result $oResult) {
-            return $this->setFromObject($oResult->fetch_object());
-        }
-
-        /**
-         *
          * @param stdClass $oData
          * @return Table
          */
@@ -494,7 +473,7 @@
 
         /**
          *
-         * @return MySQLi_Result
+         * @return MySQLi_Result|bool
          */
         public function delete() {
             if ($this->primaryHasValue()) {

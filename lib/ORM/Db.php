@@ -33,9 +33,14 @@
         /**
          * @param PDO|null $oPDO
          * @return Db
+         * @throws DbException
          */
         public static function getInstance(PDO $oPDO = null) {
             if (!self::$oInstance instanceof self) {
+                if ($oPDO === null) {
+                    throw new DbException('Db Has Not been Initialized Properly');
+                }
+
                 self::$oInstance = new self($oPDO);
             }
 

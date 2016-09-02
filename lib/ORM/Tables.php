@@ -83,8 +83,8 @@
          */
         protected static function fromResults(MySQLi_Result $oResults, ...$aTables) {
             $oOutput = new static;
-            while ($oResult = $oResults->fetch_object()) {
-                if (count($aTables) > 1) {
+            if (count($aTables) > 1) {
+                while ($oResult = $oResults->fetch_object()) {
                     $aRow = array();
                     foreach ($aTables as $oTable) {
                         /** @var Table $sPrefixedTable */
@@ -92,8 +92,11 @@
                         $aRow[$oTable->getTitle()] = $sPrefixedTable::createFromObject($oResult);
                     }
                     $oOutput->append($aRow);
-                } else {
-                    $oOutput->append($aTables[0]::createFromObject($oResult));
+                }
+            } else {
+                $sPrefixedTable = get_class($aTables[0]);
+                while ($oResult = $oResults->fetch_object($sPrefixedTable)) {
+                    $oOutput->append($oResult);
                 }
             }
 

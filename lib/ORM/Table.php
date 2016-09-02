@@ -389,13 +389,15 @@
 
             /** @var Table $oTable */
             $oTable     = new static;
-            $aClass     = explode('\\', get_class($oTable));
+            $sClass     = get_class($oTable);
+            $aClass     = explode('\\', $sClass);
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 
             if ($oResult = Db::getInstance()->namedQuery($sQueryName, SQL::select($oTable, $oConditions))) {
                 if ($oResult->num_rows > 0) {
-                    $oTable->setFromObject($oResult->fetch_object());
-                    return $oTable;
+                    /** @var Table $oResponse */
+                    $oResponse = $oResult->fetch_object($sClass);
+                    return $oResponse;
                 }
             }
 

@@ -96,6 +96,18 @@
         }
 
         /**
+         * @param string $sFile
+         * @return PDO
+         */
+        public static function defaultSQLiteFile(string $sFile) {
+            $oPDO = new PDO("sqlite::$sFile");
+            $oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
+            $oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+            return $oPDO;
+        }
+
+        /**
          * @param PDO $oPDO
          */
         private function __construct(PDO $oPDO) {
@@ -200,14 +212,27 @@
                 throw $oException;
             }
             
-            $this->iLastInsertId = self::$oPDO->lastInsertId();
-
+            $this->iLastInsertId     = self::$oPDO->lastInsertId();
             $this->iLastRowsAffected = 0;
             if ($mResult instanceof PDOStatement) {
-                if (self::$oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
-                    $this->iLastRowsAffected = $mResult->rowCount();
-                } else {
-                    $this->iLastRowsAffected = self::rawQuery('SELECT FOUND_ROWS()')->fetchColumn();
+                switch(self::$oPDO->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+                    default:
+                    case 'mysql':
+                        $this->iLastRowsAffected = $mResult->rowCount();
+                        break;
+
+                    case 'sqlite':
+                        if (!preg_match('/^select/i', $sSQL)) {
+                            $this->iLastRowsAffected = $mResult->rowCount();
+                        } else {
+                            // FIXME: Yes, this is slow and relatively stupid.  But since SQLite is currently just used for testing, we'll just deal
+                            while ($oResult = $mResult->fetch()) {
+                                $this->iLastRowsAffected++;
+                            }
+
+                            $mResult = $this->rawQuery($sSQL);
+                        }
+                        break;
                 }
             }
 

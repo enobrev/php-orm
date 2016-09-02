@@ -1,17 +1,17 @@
 <?php
     namespace Enobrev\ORM\Field;
 
-    use \DateTime as PHPDateTime;
+    use DateTime as PHPDateTime;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
 
     class DateTime extends Date {
 
-        const DEFAULT_FORMAT = 'Y-m-d H:i:s';
+        const DEFAULT_FORMAT = PHPDateTime::RFC3339;
         const NULL_VALUE     = '0000-00-00 00:00:00';
 
         /**
-         * @var \DateTime
+         * @var PHPDateTime
          */
         public $sValue;
 
@@ -69,7 +69,7 @@
          * @return string|integer
          */
         public function __toString() {
-            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
+            $sValue = $this->sValue instanceof PHPDateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
             if (substr($sValue, 0, 1) == '-') {
                 $sValue = 'NULL';

@@ -409,6 +409,12 @@
         public function addField(Field $oField) {
             $oField->sTable      = $this->sTitle;
             $oField->sTableClass = get_class($this);
+
+            $mExistingValue = $this->{$oField->sColumn};
+            if ($mExistingValue) {
+                $oField->setValue($mExistingValue);
+            }
+
             $this->{$oField->sColumn} =& $oField;
         }
 

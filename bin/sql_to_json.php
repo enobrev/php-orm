@@ -446,7 +446,7 @@
                         );
                         $aData['count']['outbound']++;
 
-                        if ($sField == 'user_id') {
+                        if ($sField == 'user_id' && $sTable != 'users') {
                             $aData['has_owner']    = true;
                             $aData['interfaces'][] = 'OwnerColumn';
                         }

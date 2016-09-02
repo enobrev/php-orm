@@ -44,7 +44,7 @@
                 $sValue = NULL;
             }
 
-            $this->sValue = $sValue;
+            parent::setValue($sValue);
 
             return $this;
         }

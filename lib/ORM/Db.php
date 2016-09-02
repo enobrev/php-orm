@@ -15,9 +15,6 @@
         /** @var bool */
         private static $bConnected = false;
 
-        /** @var int */
-        public static $iRowsAffected = 0;
-
         /** @var bool */
         public static $bUpsertInserted = false;
 
@@ -193,23 +190,23 @@
 
             if ($mResult instanceof MySQLi_Result) {
                 if (preg_match('/^select/', strtolower($sSQL))) {
-                    self::$iRowsAffected = $mResult->num_rows;
+                    $iRowsAffected = $mResult->num_rows;
                 } else {
-                    self::$iRowsAffected = $this->affected_rows;
+                    $iRowsAffected = $this->affected_rows;
                 }
             } else {
-                self::$iRowsAffected = $this->affected_rows;
+                $iRowsAffected = $this->affected_rows;
             }
 
             if (stristr($sSQL, 'ON DUPLICATE KEY UPDATE') !== false) {
-                switch(self::$iRowsAffected) {
+                switch($iRowsAffected) {
                     case 1: self::$bUpsertInserted = true; break;
                     case 2: self::$bUpsertUpdated  = true; break;
                 }
             }
 
             $aParams = array(
-                'rows' => self::$iRowsAffected
+                'rows' => $iRowsAffected
             );
 
             if (strlen($sName)) {
@@ -217,7 +214,7 @@
             }
 
             if ($this->oLogger) {
-                $this->oLogger->stopQuery($sQuery, $aParams, $sName, self::$iRowsAffected);
+                $this->oLogger->stopQuery($sQuery, $aParams, $sName, $iRowsAffected);
             }
 
             return $mResult;

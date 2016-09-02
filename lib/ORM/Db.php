@@ -189,7 +189,7 @@
             $this->iLastInsertId = $this->insert_id;
 
             if ($mResult instanceof MySQLi_Result) {
-                if (preg_match('/^select/', strtolower($sSQL))) {
+                if (preg_match('/^select/i', $sSQL)) {
                     $iRowsAffected = $mResult->num_rows;
                 } else {
                     $iRowsAffected = $this->affected_rows;

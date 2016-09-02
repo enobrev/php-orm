@@ -24,6 +24,9 @@
         /** @var int */
         private $iLastInsertId;
 
+        /** @var int */
+        private $iLastRowsAffected;
+
         /** @var SQLLogger */
         private $oLogger;
 
@@ -143,6 +146,10 @@
             return $this->iLastInsertId;
         }
 
+        public function getLastRowsAffected() {
+            return $this->iLastRowsAffected;
+        }
+
         /**
          * @param string|string[]   $sName
          * @param string            $sQuery
@@ -195,20 +202,24 @@
             
             $this->iLastInsertId = self::$oPDO->lastInsertId();
 
-            $iRowsAffected = 0;
+            $this->iLastRowsAffected = 0;
             if ($mResult instanceof PDOStatement) {
-                $iRowsAffected = $mResult->rowCount();
+                if (self::$oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
+                    $this->iLastRowsAffected = $mResult->rowCount();
+                } else {
+                    $this->iLastRowsAffected = self::rawQuery('SELECT FOUND_ROWS()')->fetchColumn();
+                }
             }
 
             if (stristr($sSQL, 'ON DUPLICATE KEY UPDATE') !== false) {
-                switch($iRowsAffected) {
+                switch($this->iLastRowsAffected) {
                     case 1: self::$bUpsertInserted = true; break;
                     case 2: self::$bUpsertUpdated  = true; break;
                 }
             }
 
             $aParams = array(
-                'rows' => $iRowsAffected
+                'rows' => $this->iLastRowsAffected
             );
 
             if (strlen($sName)) {
@@ -216,7 +227,7 @@
             }
 
             if ($this->oLogger) {
-                $this->oLogger->stopQuery($sQuery, $aParams, $sName, $iRowsAffected);
+                $this->oLogger->stopQuery($sQuery, $aParams, $sName, $this->iLastRowsAffected);
             }
 
             return $mResult;

@@ -227,7 +227,7 @@
 {% endfor %}
 
 {% endif %}
-    {% if date_added %}
+{% if date_added %}
             $this->{{date_added.name}}->setValue($this->now());
 {% endif %}
 {% if date_updated %}

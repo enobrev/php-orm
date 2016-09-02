@@ -68,9 +68,9 @@
          */
         public static function defaultMySQLPDO(string $sDSN, string $sUsername = null, string $sPassword = null, array $aOptions = []) {
             $oPDO = new PDO($sDSN, $sUsername, $sPassword, $aOptions);
-            self::$oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
-            self::$oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            self::$oPDO->setAttribute(PDO::MYSQL_ATTR_FOUND_ROWS,   true);
+            $oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
+            $oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $oPDO->setAttribute(PDO::MYSQL_ATTR_FOUND_ROWS,   true);
 
             return $oPDO;
         }
@@ -80,8 +80,8 @@
          */
         public static function defaultSQLiteMemory() {
             $oPDO = new PDO('sqlite::memory');
-            self::$oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
-            self::$oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
+            $oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
             return $oPDO;
         }

@@ -125,9 +125,9 @@
 
         $sSQL = "SELECT column_name, referenced_table_name, referenced_column_name FROM information_schema.KEY_COLUMN_USAGE WHERE table_schema = '$sName' AND table_name = '$sTable' AND LENGTH(referenced_table_name) > 0;";
         $oReferences = $Db->query($sSQL);
-        if ($oReferences->num_rows) {
+        if ($oReferences->rowCount()) {
             $aReferences[$sTable] = array();
-            while($oReference = $oReferences->fetch_object()) {
+            while($oReference = $oReferences->fetchObject()) {
                 $aReferences[$sTable][$oReference->column_name] = array(
                     'table' => $oReference->referenced_table_name,
                     'field' => $oReference->referenced_column_name

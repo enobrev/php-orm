@@ -2,7 +2,8 @@
     namespace Enobrev\ORM;
 
     use ArrayIterator;
-    use MySQLi_Result;
+    use PDO;
+    use PDOStatement;
     use Enobrev\SQL;
 
     class TablesException extends DbException {}
@@ -36,8 +37,8 @@
             $oSQL = SQL::count($oTable);
 
             $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
-            if ($oResults->num_rows > 0) {
-                return (int) $oResults->fetch_object()->row_count;
+            if ($oResults->rowCount() > 0) {
+                return (int) $oResults->fetchColumn();
             }
 
             return 0;
@@ -77,14 +78,14 @@
         }
 
         /**
-         * @param MySQLi_Result $oResults
+         * @param PDOStatement $oResults
          * @param Table[] ...$aTables
          * @return Tables
          */
-        protected static function fromResults(MySQLi_Result $oResults, ...$aTables) {
+        protected static function fromResults(PDOStatement $oResults, ...$aTables) {
             if (count($aTables) > 1) {
                 $oOutput = new static;
-                while ($oResult = $oResults->fetch_object()) {
+                while ($oResult = $oResults->fetchObject()) {
                     $aRow = array();
                     foreach ($aTables as $oTable) {
                         /** @var Table $sPrefixedTable */
@@ -97,18 +98,7 @@
                 return $oOutput;
             } else {
                 $sPrefixedTable = get_class($aTables[0]);
-
-                if (method_exists($oResults, 'fetch_all')) {
-                    return $oResults->fetch_all($sPrefixedTable);
-                } else {
-                    $oOutput = new static;
-
-                    while ($oResult = $oResults->fetch_object($sPrefixedTable)) {
-                        $oOutput->append($oResult);
-                    }
-
-                    return $oOutput;
-                }
+                return new static($oResults->fetchAll(PDO::FETCH_CLASS, $sPrefixedTable));
             }
 
         }

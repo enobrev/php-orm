@@ -1,14 +1,14 @@
 <?php
     namespace Enobrev\ORM;
 
-    use MySQLi;
-    use MySQLi_Result;
+    use PDO;
+    use PDOException;
+    use PDOStatement;
     use DateTime;
-    use Enobrev\Log;
     use Enobrev\SQL;
     use Enobrev\SQLBuilder;
 
-    class Db extends MySQLi {
+    class Db {
         /** @var Db */
         private static $oInstance;
 
@@ -21,30 +21,47 @@
         /** @var bool */
         public static $bUpsertUpdated  = false;
 
-        /** @var  SQLLogger */
+        /** @var SQLLogger */
         private $oLogger;
 
-        /**
-         *
-         * @param String $sServer
-         * @param String $sUser
-         * @param String $sPassword
-         * @param String $sDatabase
-         * @return Db
-         * @throws DbException
-         */
-        public static function getInstance($sServer = '', $sUser = '', $sPassword = '', $sDatabase = '') {
-            if (!self::$oInstance instanceof self) {
-                if (self::$oInstance = @new self($sServer, $sUser, $sPassword, $sDatabase)) {
-                    self::$bConnected = true;
-                } else {
-                    throw new DbException(self::$oInstance->error, self::$oInstance->errno);
-                }
+        /** @var PDO $oPDO */
+        private static $oPDO;
 
-                self::$oInstance->checkErrors();
+        /**
+         * @param PDO|null $oPDO
+         * @return Db
+         */
+        public static function getInstance(PDO $oPDO = null) {
+            if (!self::$oInstance instanceof self) {
+                self::$oInstance = new self($oPDO);
             }
 
             return self::$oInstance;
+        }
+
+        /**
+         * @param PDO $oPDO
+         * @return Db
+         */
+        public static function replaceInstance(PDO $oPDO) {
+            if (self::$oInstance instanceof self && self::$bConnected) {
+                self::$oInstance->close();
+            }
+
+            return self::getInstance($oPDO);
+        }
+
+        /**
+         * @param PDO $oPDO
+         */
+        private function __construct(PDO $oPDO) {
+            self::$oPDO = $oPDO;
+
+            /* new PDO($sDSN, $sUsername, $sPassword, $aOptions);
+            self::$oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
+            self::$oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            self::$oPDO->setAttribute(PDO::MYSQL_ATTR_FOUND_ROWS,   true);
+            */
         }
 
         public function setLogger(SQLLogger $oLogger) {
@@ -53,25 +70,11 @@
 
         public function close() {
             if (self::$oInstance instanceof self && self::$bConnected) {
-                parent::close();
+                self::$oPDO = null;
             }
+
             self::$bConnected = false;
             self::$oInstance = null;
-        }
-
-        /**
-         * @param string $sServer
-         * @param string $sUser
-         * @param string $sPassword
-         * @param string $sDatabase
-         * @return Db
-         */
-        public static function updateInstance($sServer = '', $sUser = '', $sPassword = '', $sDatabase = '') {
-            if (self::$oInstance instanceof self && self::$bConnected) {
-                self::$oInstance->close();
-            }
-            return self::getInstance($sServer, $sUser, $sPassword, $sDatabase);
-
         }
         
         /**
@@ -98,40 +101,6 @@
             return self::$bUpsertUpdated;
         }
         
-        public function checkErrors() {
-            if ($this->connect_errno) {
-                self::$bConnected = false;
-                throw new DbException($this->connect_error, $this->connect_errno);
-            }
-
-            if ($this->errno) {
-                self::$bConnected = false;
-                throw new DbException($this->error, $this->errno);
-            }
-        }
-        
-        /**
-         * close previous connections before opening a new one
-         * @param string $host
-         * @param string $username
-         * @param string $passwd
-         * @param string $dbname
-         * @param int $port
-         * @param string $socket
-         * @return boolean 
-         */
-        public function connect ($host = NULL, $username = NULL, $passwd = NULL, $dbname = NULL, $port = NULL, $socket = NULL) {
-            if (self::$bConnected) {
-                $this->close();
-            }
-            
-            @parent::connect($host, $username, $passwd, $dbname, $port, $socket);
-            $this->checkErrors();
-            $this->set_charset("utf8");
-            
-            return true;
-        }
-        
         private $iLastInsertId;
         
         public function getLastInsertId() {
@@ -141,28 +110,26 @@
         /**
          * @param string|string[]   $sName
          * @param string            $sQuery
-         * @param int               $iResultMode
          *
-         * @return bool|\mysqli_result
+         * @return PDOStatement
          */
-        public function namedQuery($sName, $sQuery, $iResultMode = MYSQLI_STORE_RESULT) {
+        public function namedQuery($sName, $sQuery) {
             if (is_array($sName)) {
                 $sName = implode('.', $sName);
             }
 
             $sName = str_replace('\\', '.', str_replace('/', '.', $sName));
-            return $this->query($sQuery, $iResultMode, $sName);
+            return $this->query($sQuery, $sName);
         }
 
         /**
          * @param string $sQuery
-         * @param int    $iResultMode
          * @param string $sName
          *
-         * @return bool|\mysqli_result
+         * @return PDOStatement
          * @throws DbDuplicateException|DbException
          */
-        public function query($sQuery, $iResultMode = MYSQLI_STORE_RESULT, $sName = '') {
+        public function query($sQuery, $sName = '') {
             if ($this->oLogger) {
                 $this->oLogger->startQuery($sName);
             }
@@ -171,31 +138,28 @@
             if ($sSQL instanceof SQL || $sSQL instanceof SQLBuilder) {
                 $sSQL = (string) $sQuery;
             }
-                        
-            $mResult = $this->parentQuery($sSQL, $iResultMode);
 
-            if ($this->errno) {
-                if ($this->errno == 1062) {
-                    $oException = new DbDuplicateException($this->error . ' in SQL: ' . $sSQL, $this->errno);
+            try {
+                $mResult = $this->rawQuery($sSQL);
+            } catch(PDOException $e) {
+                if ($e->getCode() == 1062) {
+                    $oException = new DbDuplicateException($e->getMessage() . ' in SQL: ' . $sSQL, $e->getCode());
                 } else {
-                    $oException = new DbException($this->error . ' in SQL: ' . $sSQL, $this->errno);
+                    $oException = new DbException($e->getMessage() . ' in SQL: ' . $sSQL, $e->getCode());
                 }
+
                 if ($this->oLogger) {
                     $this->oLogger->stopQuery($sQuery, array(), $sName);
                 }
+
                 throw $oException;
             }
             
-            $this->iLastInsertId = $this->insert_id;
+            $this->iLastInsertId = self::$oPDO->lastInsertId();
 
-            if ($mResult instanceof MySQLi_Result) {
-                if (preg_match('/^select/i', $sSQL)) {
-                    $iRowsAffected = $mResult->num_rows;
-                } else {
-                    $iRowsAffected = $this->affected_rows;
-                }
-            } else {
-                $iRowsAffected = $this->affected_rows;
+            $iRowsAffected = 0;
+            if ($mResult instanceof PDOStatement) {
+                $iRowsAffected = $mResult->rowCount();
             }
 
             if (stristr($sSQL, 'ON DUPLICATE KEY UPDATE') !== false) {
@@ -222,12 +186,11 @@
 
         /**
          * Do not use Log class here as it will cause an infinite loop
-         * @param String $sQuery
-         * @param Integer $iResultMode
-         * @return MySQLi_Result
+         * @param string $sQuery
+         * @return PDOStatement
          */
-        public function parentQuery($sQuery, $iResultMode = MYSQLI_STORE_RESULT) {
-            return parent::query($sQuery, $iResultMode);
+        public function rawQuery($sQuery) {
+            return self::$oPDO->query($sQuery);
         }
 
         
@@ -236,9 +199,7 @@
          * @return DateTime
          */
         public function getDate() {
-            $mResult = $this->parentQuery('SELECT SYSDATE() AS system_date;');
-            $oResult = $mResult->fetch_object();
-            return new DateTime($oResult->system_date);
+            return new DateTime($this->rawQuery('SELECT SYSDATE()')->fetchColumn());
         }
 
         /**

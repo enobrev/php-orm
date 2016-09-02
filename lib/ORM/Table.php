@@ -2,7 +2,7 @@
     namespace Enobrev\ORM;
 
     use stdClass;
-    use MySQLi_Result;
+    use PDOStatement;
     use Enobrev\SQL;
 
     class TableNamelessException extends TableException {}
@@ -373,10 +373,8 @@
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 
             if ($oResult = Db::getInstance()->namedQuery($sQueryName, SQL::select($oTable, $oConditions))) {
-                if ($oResult->num_rows > 0) {
-                    /** @var Table $oResponse */
-                    $oResponse = $oResult->fetch_object($sClass);
-                    return $oResponse;
+                if ($oResult->rowCount() > 0) {
+                    return $oResult->fetchObject($sClass);
                 }
             }
 
@@ -433,7 +431,7 @@
 
         /**
          *
-         * @return MySQLi_Result|bool
+         * @return PDOStatement|bool
          */
         public function update() {
             if (!$this->changed()) {
@@ -473,7 +471,7 @@
 
         /**
          *
-         * @return MySQLi_Result|bool
+         * @return PDOStatement|bool
          */
         public function delete() {
             if ($this->primaryHasValue()) {

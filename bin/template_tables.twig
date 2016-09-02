@@ -87,9 +87,9 @@
 
             $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
 {% if date_updated %}
-            return new DateTime($oResults->fetch_object()->{{ date_updated.name }});
+            return new DateTime($oResults->fetchObject()->{{ date_updated.name }});
 {% else %}
-            return new DateTime($oResults->fetch_object()->{{ date_added.name }});
+            return new DateTime($oResults->fetchObject()->{{ date_added.name }});
 {% endif %}
         }
 {% endif %}

@@ -178,10 +178,12 @@
             try {
                 $mResult = $this->rawQuery($sSQL);
             } catch(PDOException $e) {
-                if ($e->getCode() == 1062) {
-                    $oException = new DbDuplicateException($e->getMessage() . ' in SQL: ' . $sSQL, $e->getCode());
+                $iCode = (int) $e->getCode();
+
+                if ($iCode == 1062) {
+                    $oException = new DbDuplicateException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
                 } else {
-                    $oException = new DbException($e->getMessage() . ' in SQL: ' . $sSQL, $e->getCode());
+                    $oException = new DbException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
                 }
 
                 if ($this->oLogger) {

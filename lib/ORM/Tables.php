@@ -82,8 +82,8 @@
          * @return Tables
          */
         protected static function fromResults(MySQLi_Result $oResults, ...$aTables) {
-            $oOutput = new static;
             if (count($aTables) > 1) {
+                $oOutput = new static;
                 while ($oResult = $oResults->fetch_object()) {
                     $aRow = array();
                     foreach ($aTables as $oTable) {
@@ -93,14 +93,24 @@
                     }
                     $oOutput->append($aRow);
                 }
+
+                return $oOutput;
             } else {
                 $sPrefixedTable = get_class($aTables[0]);
-                while ($oResult = $oResults->fetch_object($sPrefixedTable)) {
-                    $oOutput->append($oResult);
+
+                if (method_exists($oResults, 'fetch_all')) {
+                    return $oResults->fetch_all($sPrefixedTable);
+                } else {
+                    $oOutput = new static;
+
+                    while ($oResult = $oResults->fetch_object($sPrefixedTable)) {
+                        $oOutput->append($oResult);
+                    }
+
+                    return $oOutput;
                 }
             }
 
-            return $oOutput;
         }
 
         /**

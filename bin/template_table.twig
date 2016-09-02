@@ -198,6 +198,15 @@
 {% if date_added or date_updated %}
 
         public function preInsert() {
+{% if primary %}
+{% for field in primary %}
+{% if field.type == 'Field\\UUID' or field.type == 'Field\\UUIDNullable' %}
+            if ($this->{{field.name}}->isNull()) {
+                $this->{{field.name}}->generateValue();
+            }
+{% endfor %}
+
+{% endif %}
 {% if date_added %}
             $this->{{date_added.name}}->setValue($this->now());
 {% endif %}
@@ -207,7 +216,16 @@
         }
 
         public function preUpsert() {
-{% if date_added %}
+{% if primary %}
+{% for field in primary %}
+{% if field.type == 'Field\\UUID' or field.type == 'Field\\UUIDNullable' %}
+            if ($this->{{field.name}}->isNull()) {
+                $this->{{field.name}}->generateValue();
+            }
+{% endfor %}
+
+{% endif %}
+    {% if date_added %}
             $this->{{date_added.name}}->setValue($this->now());
 {% endif %}
 {% if date_updated %}

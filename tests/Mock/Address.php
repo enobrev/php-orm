@@ -13,10 +13,10 @@
         /** @var  Field\Id */
         public $user_id;
 
-        /** @var  Field\Text */
-        public $address_1;
+        /** @var  Field\TextNullable */
+        public $address_line_1;
 
-        /** @var  Field\Text */
+        /** @var  Field\TextNullable */
         public $address_city;
 
         protected function init() {
@@ -26,8 +26,8 @@
 
             $this->addFields(
                 new Field\Id('user_id'),
-                new Field\Text('address_1'),
-                new Field\Text('address_city')
+                new Field\TextNullable('address_line_1'),
+                new Field\TextNullable('address_city')
             );
         }
     }

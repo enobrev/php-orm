@@ -393,8 +393,7 @@
 
                 // Add hex'd aliases
                 foreach($this->oTable->getFields() as $oField) {
-                    if ($oField instanceof ORM\Field\Hash
-                        ||  $oField instanceof ORM\Field\UUID) {
+                    if ($oField instanceof ORM\Field\Hash) { // TODO: `|| $oField instanceof ORM\Field\UUID` -- UUID is no longer binary, but should we add a BinaryUUID, it should be added here
                         $aSQLFields[] = $oField->toSQLColumnForSelect();
                     }
                 }

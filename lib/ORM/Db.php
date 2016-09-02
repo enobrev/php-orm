@@ -21,6 +21,9 @@
         /** @var bool */
         public static $bUpsertUpdated  = false;
 
+        /** @var int */
+        private $iLastInsertId;
+
         /** @var SQLLogger */
         private $oLogger;
 
@@ -52,18 +55,42 @@
         }
 
         /**
+         * @param string      $sDSN
+         * @param string|null $sUsername
+         * @param string|null $sPassword
+         * @param array       $aOptions
+         * @return PDO
+         */
+        public static function defaultMySQLPDO(string $sDSN, string $sUsername = null, string $sPassword = null, array $aOptions = []) {
+            $oPDO = new PDO($sDSN, $sUsername, $sPassword, $aOptions);
+            self::$oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
+            self::$oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            self::$oPDO->setAttribute(PDO::MYSQL_ATTR_FOUND_ROWS,   true);
+
+            return $oPDO;
+        }
+
+        /**
+         * @return PDO
+         */
+        public static function defaultSQLiteMemory() {
+            $oPDO = new PDO('sqlite::memory');
+            self::$oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
+            self::$oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+            return $oPDO;
+        }
+
+        /**
          * @param PDO $oPDO
          */
         private function __construct(PDO $oPDO) {
             self::$oPDO = $oPDO;
-
-            /* new PDO($sDSN, $sUsername, $sPassword, $aOptions);
-            self::$oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
-            self::$oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            self::$oPDO->setAttribute(PDO::MYSQL_ATTR_FOUND_ROWS,   true);
-            */
         }
 
+        /**
+         * @param SQLLogger $oLogger
+         */
         public function setLogger(SQLLogger $oLogger) {
             $this->oLogger = $oLogger;
         }
@@ -100,8 +127,6 @@
         public static function wasUpsertUpdated() {
             return self::$bUpsertUpdated;
         }
-        
-        private $iLastInsertId;
         
         public function getLastInsertId() {
             return $this->iLastInsertId;

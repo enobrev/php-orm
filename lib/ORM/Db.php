@@ -267,13 +267,21 @@
             return self::$oPDO->query($sQuery);
         }
 
-        
         /**
          *
          * @return DateTime
          */
         public function getDate() {
-            return new DateTime($this->rawQuery('SELECT SYSDATE()')->fetchColumn());
+            switch(self::$oPDO->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+                default:
+                case 'mysql':
+                    return new DateTime($this->rawQuery('SELECT SYSDATE()')->fetchColumn());
+                    break;
+
+                case 'sqlite':
+                    return new DateTime('now');
+                    break;
+            }
         }
 
         /**

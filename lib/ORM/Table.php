@@ -392,7 +392,7 @@
             $aClass     = explode('\\', get_class($oTable));
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 
-            if ($oResult = $oTable->DB->namedQuery($sQueryName, SQL::select($oTable, $oConditions))) {
+            if ($oResult = Db::getInstance()->namedQuery($sQueryName, SQL::select($oTable, $oConditions))) {
                 if ($oResult->num_rows > 0) {
                     $oTable->setFromObject($oResult->fetch_object());
                     return $oTable;

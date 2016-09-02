@@ -82,11 +82,7 @@
 
         if ($bConnected && !$sName) {
             $oDatabases = $Db->query("SELECT schema_name FROM information_schema.schemata;");
-            $aDatabases = array();
-
-            while ($oDatabase = $oDatabases->fetch_object()) {
-                $aDatabases[] = $oDatabase->schema_name;
-            }
+            $aDatabases = $oDatabases->fetchAll(PDO::FETCH_COLUMN, 0);
 
             foreach ($aDatabases as $iIndex => $sDatabase) {
                 echo str_pad($iIndex + 1, 3, ' ', STR_PAD_LEFT) . ': ' . $sDatabase . "\n";
@@ -107,13 +103,13 @@
     $aReferences = array();
     $aReverseReferences = array();
     
-    while ($oTable = $oTables->fetch_object()) {
+    while ($oTable = $oTables->fetchObject()) {
         $sTable  = $oTable->table_name;
         $oFields = $Db->query("SELECT table_name, column_name, ordinal_position, is_nullable, data_type, column_key, column_type, column_default, column_comment FROM information_schema.columns WHERE table_schema = '$sName' AND table_name = '$sTable' ORDER BY ordinal_position ASC");
         $aFields = array();
         $aTableNames[] = $sTable;
         
-        while ($oField = $oFields->fetch_object()) {
+        while ($oField = $oFields->fetchObject()) {
             $aFields[$oField->column_name] = $oField;
         }
 

@@ -1,8 +1,11 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
+
+    use PDO;
 
     class Boolean extends Number {
         /**
@@ -50,6 +53,18 @@
          */
         public function isFalse() {
             return !$this->isTrue();
+        }
+
+        /**
+         *
+         * @return string
+         */
+        public function toSQL() {
+            if (!$this->hasValue()) {
+                return 'NULL';
+            }
+
+            return Escape::string($this->__toString(), PDO::PARAM_BOOL);
         }
     }
 ?>

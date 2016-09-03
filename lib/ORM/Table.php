@@ -389,9 +389,11 @@
             $oField->sTable      = $this->sTitle;
             $oField->sTableClass = get_class($this);
 
-            $mExistingValue = $this->{$oField->sColumn};
-            if ($mExistingValue) {
-                $oField->setValue($mExistingValue);
+            if (property_exists($this, $oField->sColumn)) {
+                $mExistingValue = $this->{$oField->sColumn};
+                if ($mExistingValue) {
+                    $oField->setValue($mExistingValue);
+                }
             }
 
             $this->{$oField->sColumn} =& $oField;

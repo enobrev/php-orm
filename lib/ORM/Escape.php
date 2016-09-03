@@ -1,14 +1,16 @@
 <?php
     namespace Enobrev\ORM;
 
+    use PDO;
+
     class Escape {
         /**
          * @param string $sString
          * @return string
          */
-        public static function string(string $sString) {
+        public static function string(string $sString, $sPDOType = PDO::PARAM_STR) {
             if (defined('PHPUNIT_ENOBREV_ORM_TESTSUITE') === true) {
-                return strtr($sString, [
+                $sReturn = strtr($sString, [
                     "\x00"  => '\x00',
                     "\n"    => '\n',
                     "\r"    => '\r',
@@ -17,8 +19,15 @@
                     '"'     => '\"',
                     "\x1a"  => '\x1a'
                 ]);
+
+                if ($sPDOType != PDO::PARAM_INT
+                &&  $sPDOType != PDO::PARAM_BOOL) {
+                    $sReturn = '"' . $sReturn .'"';
+                }
+
+                return $sReturn;
             }
 
-            return Db::getInstance()->quote($sString);
+            return Db::getInstance()->quote($sString, $sPDOType);
         }
     }

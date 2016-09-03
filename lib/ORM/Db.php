@@ -268,11 +268,12 @@
         }
 
         /**
-         * @param $sString
+         * @param     $sString
+         * @param int $sPDOType
          * @return string
          */
-        public function quote($sString) {
-            return self::$oPDO->quote($sString);
+        public function quote($sString, $sPDOType = PDO::PARAM_STR) {
+            return self::$oPDO->quote($sString, $sPDOType);
         }
 
         /**

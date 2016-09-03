@@ -1,8 +1,11 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
+
+    use PDO;
 
     class Integer extends Number {
 
@@ -53,7 +56,7 @@
                 return 'NULL';
             }
 
-            return parent::toSQL();
+            return Escape::string($this->__toString(), PDO::PARAM_INT);
         }
     }
 ?>

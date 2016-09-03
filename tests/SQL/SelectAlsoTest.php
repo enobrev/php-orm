@@ -1,9 +1,12 @@
 <?php
     namespace Enobrev;
 
-    use Enobrev\ORM\Mock\User;
+    require __DIR__ . '/../../vendor/autoload.php';
 
-    class SelectAlsoTest extends \PHPUnit_Framework_TestCase {
+    use Enobrev\ORM\Mock\User;
+    use PHPUnit_Framework_TestCase as TestCase;
+
+    class SelectAlsoTest extends TestCase {
         public function testSelectAlsoFlat() {
             $oUser = new User();
             $oSQL = SQL::select(

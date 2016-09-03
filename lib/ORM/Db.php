@@ -71,7 +71,7 @@
          * @return PDO
          */
         public static function defaultMySQLPDO(string $sHost, string $sUsername = null, string $sPassword = null, string $sDatabase = null, array $aOptions = []) {
-            $sDSN = "mysql:host=$sHost;port=3307";
+            $sDSN = "mysql:host=$sHost";
             if ($sDatabase) {
                 $sDSN .= ";dbname=$sDatabase";
             }

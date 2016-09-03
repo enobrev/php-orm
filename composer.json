@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0.10"
+        "php": ">=7.0.09"
     },
     "require-dev": {
         "enobrev/tools":  "dev-master",

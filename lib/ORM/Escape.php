@@ -19,6 +19,6 @@
                 ]);
             }
 
-            return Db::getInstance()->real_escape_string($sString);
+            return Db::getInstance()->quote($sString);
         }
     }

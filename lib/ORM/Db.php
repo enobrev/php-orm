@@ -268,6 +268,14 @@
         }
 
         /**
+         * @param $sString
+         * @return string
+         */
+        public function quote($sString) {
+            return self::$oPDO->quote($sString);
+        }
+
+        /**
          *
          * @return DateTime
          */

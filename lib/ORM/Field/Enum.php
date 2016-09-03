@@ -46,7 +46,7 @@
          * @return string
          */
         public function toSQL() {
-            return '"' . Escape::string($this->__toString()) . '"';
+            return Escape::string($this->__toString());
         }
         /**
          *

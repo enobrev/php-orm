@@ -33,7 +33,7 @@
             if ($this->isNull()) {
                 return '""';
             } else {
-                return '"' . Escape::string((string) $this) . '"';
+                return Escape::string((string) $this);
             }
         }
 

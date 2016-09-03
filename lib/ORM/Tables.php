@@ -37,7 +37,7 @@
             $oSQL = SQL::count($oTable);
 
             $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
-            if (Db::getInstance()->getLastRowsAffected() > 0) {
+            if ($oResults->fetchColumn()) {
                 return (int) $oResults->fetchColumn();
             }
 

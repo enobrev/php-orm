@@ -121,7 +121,7 @@
 
         $sSQL = "SELECT column_name, referenced_table_name, referenced_column_name FROM information_schema.KEY_COLUMN_USAGE WHERE table_schema = '$sName' AND table_name = '$sTable' AND LENGTH(referenced_table_name) > 0;";
         $oReferences = $Db->query($sSQL);
-        if ($Db->getLastRowsAffected()) {
+        if ($oReferences->fetchColumn()) {
             $aReferences[$sTable] = array();
             while($oReference = $oReferences->fetchObject()) {
                 $aReferences[$sTable][$oReference->column_name] = array(

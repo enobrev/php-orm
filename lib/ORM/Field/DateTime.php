@@ -2,6 +2,7 @@
     namespace Enobrev\ORM\Field;
 
     use DateTime as PHPDateTime;
+    use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
 
@@ -86,7 +87,7 @@
             if ($this->isNull()) {
                 return 'NULL';
             } else {
-                return parent::toSQL();
+                return Escape::string($this->sValue->format('Y-m-d H:i:s'));
             }
         }
     }

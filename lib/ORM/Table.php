@@ -439,15 +439,10 @@
             }
 
             if ($this->primaryHasValue()) {
-                $sFromTable = 'Table';
-                if ($sFromTable === NULL) {
-                    $sFromTable = get_class($this);
-                }
-
                 $oConditions = Conditions::also($this->getPrimary());
 
                 $this->preUpdate();
-                $oReturn = Db::getInstance()->namedQuery($sFromTable . '.update',
+                $oReturn = Db::getInstance()->namedQuery(get_class($this) . '.update',
                     SQL::update($this, $oConditions)
                 );
                 $this->postUpdate();

@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM;
 
+    use Enobrev\Log;
     use PDO;
     use PDOException;
     use PDOStatement;
@@ -26,9 +27,6 @@
 
         /** @var int */
         private $iLastRowsAffected;
-
-        /** @var SQLLogger */
-        private $oLogger;
 
         /** @var PDO $oPDO */
         private static $oPDO;
@@ -114,13 +112,6 @@
             self::$oPDO = $oPDO;
         }
 
-        /**
-         * @param SQLLogger $oLogger
-         */
-        public function setLogger(SQLLogger $oLogger) {
-            $this->oLogger = $oLogger;
-        }
-
         public function close() {
             if (self::$oInstance instanceof self && self::$bConnected) {
                 self::$oPDO = null;
@@ -185,8 +176,20 @@
          * @throws DbDuplicateException|DbException
          */
         public function query($sQuery, $sName = '') {
-            if ($this->oLogger) {
-                $this->oLogger->startQuery($sName);
+            $sTimerName = 'ORM.Db.query.' . $sName;
+            Log::startTimer($sTimerName);
+
+            $aLogOutput = [
+                'name'  => $sName
+            ];
+
+            if ($sQuery instanceof SQL) {
+                $aLogOutput['sql']   = $sQuery->sSQL;
+                $aLogOutput['group'] = $sQuery->sSQLGroup;
+                $aLogOutput['table'] = $sQuery->sSQLTable;
+                $aLogOutput['type']  = $sQuery->sSQLType;
+            } else {
+                $aLogOutput['sql']   = $sQuery;
             }
 
             $sSQL = $sQuery;
@@ -205,9 +208,10 @@
                     $oException = new DbException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
                 }
 
-                if ($this->oLogger) {
-                    $this->oLogger->stopQuery($sQuery, array(), $sName);
-                }
+                $aLogOutput['__ms']  = Log::stopTimer($sTimerName);
+                $aLogOutput['error'] = $oException->getMessage();
+
+                Log::e($sTimerName, $aLogOutput);
 
                 throw $oException;
             }
@@ -243,17 +247,9 @@
                 }
             }
 
-            $aParams = array(
-                'rows' => $this->iLastRowsAffected
-            );
-
-            if (strlen($sName)) {
-                $aParams['SQL_NAME'] = $sName;
-            }
-
-            if ($this->oLogger) {
-                $this->oLogger->stopQuery($sQuery, $aParams, $sName, $this->iLastRowsAffected);
-            }
+            $aLogOutput['__ms']  = Log::stopTimer($sTimerName);
+            $aLogOutput['rows']  = $this->iLastRowsAffected;
+            Log::d($sTimerName, $aLogOutput);
 
             return $mResult;
         }

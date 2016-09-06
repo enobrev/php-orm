@@ -22,7 +22,6 @@
     "require-dev": {
         "enobrev/tools":  "dev-master",
         "twig/twig": "^1.23",
-        "monolog/monolog": "^1.17",
         "phpunit/phpunit": "^5.1",
         "phpunit/phpunit-mock-objects": "^3.0",
         "nategood/commando": "^0.2.8"

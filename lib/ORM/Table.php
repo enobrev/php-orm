@@ -373,9 +373,7 @@
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 
             if ($oResult = Db::getInstance()->namedQuery($sQueryName, SQL::select($oTable, $oConditions))) {
-                if ($oResult->fetchColumn()) {
-                    return $oResult->fetchObject($sClass);
-                }
+                return $oResult->fetchObject($sClass);
             }
 
             return NULL;

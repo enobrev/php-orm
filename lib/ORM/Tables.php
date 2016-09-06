@@ -37,8 +37,9 @@
             $oSQL = SQL::count($oTable);
 
             $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
-            if ($oResults->fetchColumn()) {
-                return (int) $oResults->fetchColumn();
+            $iTotal   = $oResults->fetchColumn();
+            if ($iTotal !== false) {
+                return (int) $iTotal;
             }
 
             return 0;

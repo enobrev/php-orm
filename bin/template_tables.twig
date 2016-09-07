@@ -71,10 +71,10 @@
             $oSQL = SQLBuilder::select($oTable)->limit(1);
 {% if date_updated %}
             $oSQL->field($oTable->{{ date_updated.name }});
-            $oSQL->desc($oTable->{{ date_updated.name }}));
+            $oSQL->desc($oTable->{{ date_updated.name }});
 {% else %}
             $oSQL->field($oTable->{{ date_added.name }});
-            $oSQL->desc($oTable->{{ date_added.name }}));
+            $oSQL->desc($oTable->{{ date_added.name }});
 {% endif %}
 
             $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);

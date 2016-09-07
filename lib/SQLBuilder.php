@@ -757,7 +757,17 @@
 
         public function __toString() {
             if ($this->sSQL === NULL) {
-                $this->build();
+                try {
+                    $this->build();
+                } catch (SQLBuilderMissingTableOrFieldsException $e) {
+                    if (defined('PHPUNIT_ENOBREV_ORM_TESTSUITE') === true) {
+                        dbg($e);
+                    } else {
+                        Log::e('SQLBuilder.__toString.error', [
+                            'error' => $e
+                        ]);
+                    }
+                }
             }
 
             return $this->sSQL;

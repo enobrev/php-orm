@@ -21,7 +21,6 @@
 
         public function testSelectJoinAlias() {
             $oUser    = new User();
-            $oAddress = new Address();
             $oSQL     = SQL::select(
                 $oUser,
                 $oUser->user_id,

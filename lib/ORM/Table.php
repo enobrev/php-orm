@@ -149,9 +149,6 @@
         protected function init() {
         }
 
-        /**
-         * @return bool
-         */
         public function applyDefaults() {
             /** @var Field $oField */
             foreach ($this->getFields() as $oField) {
@@ -264,6 +261,8 @@
                     }
                 }
             }
+
+            return null;
         }
 
         /**

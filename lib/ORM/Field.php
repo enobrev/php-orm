@@ -311,6 +311,8 @@
             if ($this->sTableClass) {
                 return new $this->sTableClass;
             }
+
+            return null;
         }
 
         /**
@@ -339,7 +341,7 @@
         }
 
         /**
-         * @return Field|null
+         * @return string
          */
         public function referenceField() {
             return $this->sReferenceField;

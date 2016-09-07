@@ -19,7 +19,7 @@
         /**
          *
          * @param mixed $sValue
-         * @return Boolean
+         * @return self
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
 
     class HashNullable extends Hash {

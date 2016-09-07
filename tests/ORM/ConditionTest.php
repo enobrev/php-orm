@@ -4,7 +4,7 @@
     require __DIR__ . '/../../vendor/autoload.php';
 
     use Enobrev\ORM\Condition;
-    use Enobrev\ORM\Conditions;
+
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
     use PHPUnit_Framework_TestCase as TestCase;

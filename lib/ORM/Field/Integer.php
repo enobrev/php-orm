@@ -23,7 +23,7 @@
         /**
          *
          * @param mixed $sValue
-         * @return Integer;
+         * @return self
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

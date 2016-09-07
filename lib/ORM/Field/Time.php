@@ -17,7 +17,7 @@
         /**
          *
          * @param mixed $sValue
-         * @return DateTime
+         * @return self
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

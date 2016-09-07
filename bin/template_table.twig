@@ -153,6 +153,7 @@
 {% for field in fields %}
 {% if field.reference %}
 {% if field.reference.title == 'User' %}
+
         /**
          * @return {{ field.reference.title }}
          */
@@ -167,6 +168,7 @@
             return $this->user_id;
         }
 {% else %}
+    
         /**
          * @return {{field.reference.subclass}}
          */

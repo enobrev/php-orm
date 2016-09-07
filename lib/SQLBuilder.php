@@ -505,7 +505,11 @@
          */
         private function buildInsert() {
             if (count($this->aFields) == 0) {
-                throw new SQLBuilderMissingTableOrFieldsException;
+                if (count($this->aTables)) {
+                    $this->aFields = $this->aTables[0]->getFields();
+                } else {
+                    throw new SQLBuilderMissingTableOrFieldsException;
+                }
             }
 
             $this->sSQL      = implode(' ',
@@ -576,12 +580,16 @@
          * @throws SQLBuilderPrimaryValuesNotSetException
          */
         public function buildUpsert() {
-            if (count($this->aFields) == 0) {
-                throw new SQLBuilderMissingTableOrFieldsException;
-            }
-
             if (!$this->oTable->primaryHasValue()) {
                 throw new SQLBuilderPrimaryValuesNotSetException;
+            }
+
+            if (count($this->aFields) == 0) {
+                if (count($this->aTables)) {
+                    $this->aFields = $this->aTables[0]->getFields();
+                } else {
+                    throw new SQLBuilderMissingTableOrFieldsException;
+                }
             }
 
             $this->sSQL      = implode(' ',
@@ -618,11 +626,11 @@
          * @throws SQLBuilderMissingTableOrFieldsException
          */
         public function buildDelete() {
-            if (count($this->aFields) == 0) {
-                throw new SQLBuilderMissingTableOrFieldsException;
-            }
-
             if ($this->oConditions->count() == 0) {
+                if (count($this->aFields) == 0) {
+                    throw new SQLBuilderMissingTableOrFieldsException;
+                }
+
                 $this->oConditions->add($this->aFields);
             }
 
@@ -761,12 +769,14 @@
                     $this->build();
                 } catch (SQLBuilderMissingTableOrFieldsException $e) {
                     if (defined('PHPUNIT_ENOBREV_ORM_TESTSUITE') === true) {
-                        dbg($e);
+                        dbg('SQLBuilderMissingTableOrFieldsException');
                     } else {
                         Log::e('SQLBuilder.__toString.error', [
                             'error' => $e
                         ]);
                     }
+
+                    return '';
                 }
             }
 

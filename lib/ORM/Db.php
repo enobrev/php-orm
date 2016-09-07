@@ -264,6 +264,14 @@
         }
 
         /**
+         * @param string $sStatement
+         * @return PDOStatement
+         */
+        public function prepare(string $sStatement) {
+            return self::$oPDO->prepare($sStatement);
+        }
+
+        /**
          * @param     $sString
          * @param int $sPDOType
          * @return string

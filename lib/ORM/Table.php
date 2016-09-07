@@ -143,8 +143,8 @@
          */
         public function __construct($sTitle = '', $bFromPDO = false) {
             if ($this->bConstructed === false) {
-                $this->oResult  = new stdClass();
                 $this->bFromPDO = $bFromPDO;
+                $this->oResult  = new stdClass();
 
                 if (strlen($sTitle)) {
                     $this->sTitle = $sTitle;
@@ -171,10 +171,6 @@
                     if (!$oField->hasValue()) {
                         $oField->applyDefault();
                     }
-                }
-
-                if ($this->bFromPDO) {
-                    $this->oResult->${$oField->sColumn} = $oField->getValue();
                 }
             }
         }

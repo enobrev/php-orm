@@ -121,15 +121,30 @@
             return $oTable;
         }
 
+        /** @var bool  */
         protected $bConstructed = false;
 
+        /** @var bool  */
+        protected $bFromPDO     = false;
+
         /**
-         * @throws TableNamelessException
-         * @param string $sTitle
+         * @param PDOStatement $oResults
+         * @return static
          */
-        public function __construct($sTitle = '') {
+        public function createFromPDOStatement(PDOStatement $oResults) {
+            return $oResults->fetchObject(get_class($this), [$this->getTitle(), true]);
+        }
+
+        /**
+         *
+         * @param string $sTitle
+         * @param bool   $bFromPDO
+         * @throws TableNamelessException
+         */
+        public function __construct($sTitle = '', $bFromPDO = false) {
             if ($this->bConstructed === false) {
-                $this->oResult = new stdClass();
+                $this->oResult  = new stdClass();
+                $this->bFromPDO = $bFromPDO;
 
                 if (strlen($sTitle)) {
                     $this->sTitle = $sTitle;
@@ -156,6 +171,10 @@
                     if (!$oField->hasValue()) {
                         $oField->applyDefault();
                     }
+                }
+
+                if ($this->bFromPDO) {
+                    $this->oResult->${$oField->sColumn} = $oField->getValue();
                 }
             }
         }
@@ -372,7 +391,7 @@
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 
             if ($oResult = Db::getInstance()->namedQuery($sQueryName, $oSQL)) {
-                return $oResult->fetchObject($sClass);
+                return $oTable->createFromPDOStatement($oResult);
             }
 
             return NULL;

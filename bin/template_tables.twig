@@ -33,7 +33,7 @@
                 SQL::eq($oTable->{{field.name}}->setValue($i{{field.reference.subclass}}Id))
             );
 
-            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
+            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
             return self::fromResults($oResults, $oTable);
         }
 
@@ -54,7 +54,7 @@
                 SQL::in($oTable->{{field.name}}, $a{{field.reference.subclass}}Ids)
             );
 
-            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
+            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
             return self::fromResults($oResults, $oTable);
         }
 {% endif %}
@@ -85,7 +85,7 @@
                 SQL::limit(1)
             );
 
-            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
+            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
 {% if date_updated %}
             return new DateTime($oResults->fetchObject()->{{ date_updated.name }});
 {% else %}

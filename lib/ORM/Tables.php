@@ -25,7 +25,7 @@
             $oTable = static::getTable();
             $oSQL = SQL::select($oTable);
 
-            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
+            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
             return self::fromResults($oResults, $oTable);
         }
 
@@ -36,7 +36,7 @@
             $oTable = static::getTable();
             $oSQL = SQL::count($oTable);
 
-            $oResults = Db::getInstance()->namedQuery([__CLASS__, __METHOD__], $oSQL);
+            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
             $iTotal   = $oResults->fetchColumn();
             if ($iTotal !== false) {
                 return (int) $iTotal;

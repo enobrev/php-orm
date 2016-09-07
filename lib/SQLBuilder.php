@@ -62,6 +62,13 @@
         }
 
         /**
+         * @return bool
+         */
+        public function hasConditions() {
+            return $this->oConditions->count() > 0;
+        }
+
+        /**
          * @param $sType
          */
         public function setType($sType) {

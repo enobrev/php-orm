@@ -2,9 +2,9 @@
     namespace Enobrev\ORM;
 
     use ArrayIterator;
+    use Enobrev\SQLBuilder;
     use PDO;
     use PDOStatement;
-    use Enobrev\SQL;
 
     class TablesException extends DbException {}
     class TablesMultiplePrimaryException extends TablesException {}
@@ -22,10 +22,8 @@
          * @return Tables
          */
         public static function get() {
-            $oTable = static::getTable();
-            $oSQL = SQL::select($oTable);
-
-            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
+            $oTable   = static::getTable();
+            $oResults = Db::getInstance()->namedQuery(__METHOD__, SQLBuilder::select($oTable));
             return self::fromResults($oResults, $oTable);
         }
 
@@ -33,10 +31,8 @@
          * @return int
          */
         public static function total() {
-            $oTable = static::getTable();
-            $oSQL = SQL::count($oTable);
-
-            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
+            $oTable   = static::getTable();
+            $oResults = Db::getInstance()->namedQuery(__METHOD__, SQLBuilder::count($oTable));
             $iTotal   = $oResults->fetchColumn();
             if ($iTotal !== false) {
                 return (int) $iTotal;

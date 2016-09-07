@@ -196,6 +196,7 @@
          * @return SQL
          * @throws ORM\ConditionsNonConditionException
          * @throws SQLMissingTableOrFieldsException
+         * @deprecated Use SQLBuilder::select instead
          */
         public static function select(...$aArguments) {
             $bStar       = false;
@@ -353,6 +354,7 @@
          * @param array ...$aArguments
          * @return SQL
          * @throws ORM\ConditionsNonConditionException
+         * @deprecated Use SQLBuilder::count instead
          */
         public static function count(...$aArguments) {
             /** @var ORM\Table[] $aTables */
@@ -445,6 +447,7 @@
          * @param array ...$aArguments
          * @return SQL
          * @throws SQLMissingTableOrFieldsException
+         * @deprecated Use SQLBuilder::insert instead
          */
         public static function insert(...$aArguments) {
             $aFields     = [];
@@ -507,6 +510,7 @@
          * @throws ORM\ConditionsNonConditionException
          * @throws SQLMissingConditionException
          * @throws SQLMissingTableOrFieldsException
+         * @deprecated Use SQLBuilder::update instead
          */
         public static function update(...$aArguments) {
             $aFields     = [];
@@ -587,6 +591,7 @@
          * @return SQL
          * @throws SQLPrimaryValuesNotSetException
          * @throws SQLMissingTableOrFieldsException
+         * @deprecated Use SQLBuilder::upsert instead
          */
         public static function upsert(...$aArguments) {
             $aFields     = [];
@@ -665,6 +670,7 @@
          * @return SQL
          * @throws ORM\ConditionsNonConditionException
          * @throws SQLMissingTableOrFieldsException
+         * @deprecated Use SQLBuilder::delete instead
          */
         public static function delete(...$aArguments) {
             $aFields     = [];

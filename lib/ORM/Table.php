@@ -1,9 +1,9 @@
 <?php
     namespace Enobrev\ORM;
 
+    use Enobrev\SQLBuilder;
     use stdClass;
     use PDOStatement;
-    use Enobrev\SQL;
 
     class TableNamelessException extends TableException {}
     class TableFieldNotFoundException extends TableException {}
@@ -355,9 +355,11 @@
          * @throws TableException
          */
         protected static function getBy(...$aFields) {
-            $oObject = NULL;
-            $oConditions = SQL::also($aFields);
-            if ($oConditions->count() == 0) {
+            /** @var Table $oTable */
+            $oTable = new static;
+            $oSQL   = SQLBuilder::select($oTable)->also($aFields);
+
+            if ($oSQL->hasConditions() == false) {
                 throw new TableException('No Conditions Given');
             }
 
@@ -366,13 +368,11 @@
                 $aQueryName[] = $oField->sColumn;
             }
 
-            /** @var Table $oTable */
-            $oTable     = new static;
             $sClass     = get_class($oTable);
             $aClass     = explode('\\', $sClass);
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 
-            if ($oResult = Db::getInstance()->namedQuery($sQueryName, SQL::select($oTable, $oConditions))) {
+            if ($oResult = Db::getInstance()->namedQuery($sQueryName, $oSQL)) {
                 return $oResult->fetchObject($sClass);
             }
 
@@ -439,11 +439,9 @@
             }
 
             if ($this->primaryHasValue()) {
-                $oConditions = Conditions::also($this->getPrimary());
-
                 $this->preUpdate();
                 $oReturn = Db::getInstance()->namedQuery(get_class($this) . '.update',
-                    SQL::update($this, $oConditions)
+                    SQLBuilder::update($this)->also($this->getPrimary())
                 );
                 $this->postUpdate();
 
@@ -470,10 +468,8 @@
          */
         public function delete() {
             if ($this->primaryHasValue()) {
-                $oConditions = Conditions::also($this->getPrimary());
-
                 $oReturn = Db::getInstance()->namedQuery(get_class($this) . '.delete',
-                    SQL::delete($this, $oConditions)
+                    SQLBuilder::update($this)->also($this->getPrimary())
                 );
 
                 return $oReturn;
@@ -495,7 +491,7 @@
             $this->preInsert();
 
             Db::getInstance()->namedQuery(get_class($this) . '.insert',
-                SQL::insert($this)
+                SQLBuilder::insert($this)
             );
 
             $iLastInsertId = Db::getInstance()->getLastInsertId();
@@ -533,7 +529,7 @@
         public function upsert() {
             $this->preUpsert();
             Db::getInstance()->namedQuery(get_class($this) . '.upsert',
-                SQL::upsert($this)
+                SQLBuilder::upsert($this)
             );
 
             $iLastInsertId = Db::getInstance()->getLastInsertId();

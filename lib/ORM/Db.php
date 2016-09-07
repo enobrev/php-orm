@@ -86,7 +86,7 @@
          * @return PDO
          */
         public static function defaultSQLiteMemory() {
-            $oPDO = new PDO('sqlite::memory');
+            $oPDO = new PDO('sqlite::memory:');
             $oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
             $oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 

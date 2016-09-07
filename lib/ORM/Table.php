@@ -405,14 +405,20 @@
             $oField->sTable      = $this->sTitle;
             $oField->sTableClass = get_class($this);
 
-            if (property_exists($this, $oField->sColumn)) {
-                $mExistingValue = $this->{$oField->sColumn};
+            $sField = $oField->sColumn;
+            if (property_exists($this, $sField)) {
+                $mExistingValue = $this->$sField;
+
                 if ($mExistingValue) {
                     $oField->setValue($mExistingValue);
+
+                    if ($this->bFromPDO) {
+                        $this->oResult->$sField = $mExistingValue;
+                    }
                 }
             }
 
-            $this->{$oField->sColumn} =& $oField;
+            $this->$sField =& $oField;
         }
 
         /**

@@ -5,12 +5,23 @@
     use Enobrev\ORM\Field;
 {% if has_date %}
     use Enobrev\ORM\ModifiedDateColumn;
+    use Enobrev\ORM\ModifiedDate;
 {% endif %}
 {% if has_owner %}
     use Enobrev\ORM\OwnerColumn;
+    use Enobrev\ORM\Owner;
 {% endif %}
 
     class {{table.title}} extends Table {% if interfaces %}implements {{ interfaces }} {% endif %}{
+{% if has_date or has_owner %}
+{% if has_date %}
+        use ModifiedDate;
+{% endif %}
+{% if has_owner %}
+        use Owner;
+{% endif %}
+
+{% endif %}
         protected $sTitle = '{{table.name}}';
 
 {% for field in fields %}
@@ -118,35 +129,16 @@
 {% endif %}
 {% endfor %}
 {% endif %}
-{% if count.outbound %}
+{% if count.inbound %}
 {% for field in fields %}
 {% if field.primary and field.name == 'user_id' %}
 
         /**
-         * @return Field
+         * @return {{ table.title }}
          */
-        public function getOwnerField() {
-            return $this->user_id;
+        public function getOwnerTable() {
+            return $this;
         }
-
-        /**
-         * @return {{table.title}}
-         */
-        public function getOwner() {
-            if ($this->getOwnerField()->hasValue()) {
-                return {{table.title}}::getById($this->getOwnerField()->getValue());
-            }
-        }
-
-        /**
-         * @param Table|{{table.title}}|null $o{{field.title}}
-         * @return bool
-         */
-        public function hasOwner(Table $o{{field.title}} = null) {
-            return $this->getOwnerField()->is($o{{field.title}});
-        }
-{% elseif field.reference %}
-{% if field.reference.title == 'User' %}
 
         /**
          * @return Field
@@ -155,41 +147,24 @@
             return $this->user_id;
         }
 {% endif %}
-
-        /**
-         * @return {{field.reference.subclass}}
-         */
-{% if field.reference.title == 'User' %}
-        public function getOwner() {
-            if ($this->getOwnerField()->hasValue()) {
-                return {{field.reference.subclass}}::getById($this->getOwnerField()->getValue());
-            }
-        }
-{% else %}
-        public function get{{field.reference.title}}() {
-            if ($this->{{field.name}}->hasValue()) {
-                return {{field.reference.subclass}}::getById($this->{{field.name}}->getValue());
-            }
-        }
+{% endfor %}
 {% endif %}
-
+{% if count.outbound %}
+{% for field in fields %}
+{% if field.reference %}
 {% if field.reference.title == 'User' %}
         /**
-         * @param Table|{{field.reference.subclass}}|null $o{{field.reference.title}}
-         * @return bool
+         * @return {{ field.reference.title }}
          */
-        public function hasOwner(Table $o{{field.reference.title}} = null) {
-            return $o{{field.reference.title}} instanceof {{field.reference.subclass}}
-                && $this->getOwnerField()->is($o{{field.reference.title}});
+        public function getOwnerTable() {
+            return {{ field.reference.title }}::class;
         }
-{% else %}
+
         /**
-         * @param {{field.reference.subclass}}|null $o{{field.reference.title}}
-         * @return bool
+         * @return Field
          */
-        public function has{{field.reference.title}}({{field.reference.subclass}} $o{{field.reference.title}} = null) {
-            return $o{{field.reference.title}} instanceof {{field.reference.subclass}}
-                && $this->{{field.name}}->is($o{{field.reference.title}});
+        public function getOwnerField() {
+            return $this->user_id;
         }
 {% endif %}
 {% endif %}
@@ -243,13 +218,13 @@
 {% endif %}
 {% if date_updated %}
 
-        public function getLastModified() {
-            return $this->{{date_updated.name}}->getValue();
+        public function getModifiedDateField() {
+            return $this->{{date_updated.name}};
         }
 {% elseif date_added %}
 
-        public function getLastModified() {
-            return $this->{{date_added.name}}->getValue();
+        public function getModifiedDateField() {
+            return $this->{{date_added.name}};
         }
 {% endif %}
     }

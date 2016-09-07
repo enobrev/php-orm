@@ -3,7 +3,7 @@
 
     require __DIR__ . '/../../vendor/autoload.php';
 
-    use Enobrev\ORM\Mock\User;
+    use Enobrev\ORM\Mock\Table\User;
     use PHPUnit_Framework_TestCase as TestCase;
 
     class SQLBuilderSelectAlsoTest extends TestCase {

@@ -3,6 +3,11 @@
 
     interface OwnerColumn {
         /**
+         * @return Table
+         */
+        public function getOwnerTable();
+
+        /**
          * @return Field
          */
         public function getOwnerField();

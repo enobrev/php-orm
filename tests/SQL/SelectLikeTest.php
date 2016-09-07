@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev;
 
-    use Enobrev\ORM\Mock\User;
+    use Enobrev\ORM\Mock\Table\User;
 
     class SelectLikeTest extends \PHPUnit_Framework_TestCase {
         public function testSelectIntLikeValue() {

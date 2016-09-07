@@ -3,8 +3,8 @@
 
     require __DIR__ . '/../../vendor/autoload.php';
 
-    use Enobrev\ORM\Mock\Address;
-    use Enobrev\ORM\Mock\User;
+    use Enobrev\ORM\Mock\Table\Address;
+    use Enobrev\ORM\Mock\Table\User;
 
     class SQLBuilderSelectTest extends \PHPUnit_Framework_TestCase {
         public function testSelectStar() {

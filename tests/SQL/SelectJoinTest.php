@@ -1,8 +1,8 @@
 <?php
     namespace Enobrev;
 
-    use Enobrev\ORM\Mock\Address;
-    use Enobrev\ORM\Mock\User;
+    use Enobrev\ORM\Mock\Table\Address;
+    use Enobrev\ORM\Mock\Table\User;
 
     class SelectJoinTest extends \PHPUnit_Framework_TestCase {
         public function testSelectJoin() {

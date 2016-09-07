@@ -3,7 +3,7 @@
 
     require __DIR__ . '/../../vendor/autoload.php';
 
-    use Enobrev\ORM\Mock\User;
+    use Enobrev\ORM\Mock\Table\User;
 
     class SQLBuilderUpdateTest extends \PHPUnit_Framework_TestCase {
         public function testOne() {
@@ -31,7 +31,7 @@
 
             $oSQL     = SQLBuilder::update($oUser)->eq($oUser->user_id, 1);
 
-            $this->assertEquals('UPDATE users SET users.user_id = 2, users.user_name = "Testtttt", users.user_email = "whynot@fuckit.com", users.user_date_added = NULL, users.happy = 0 WHERE users.user_id = 1', (string) $oSQL);
+            $this->assertEquals('UPDATE users SET users.user_id = 2, users.user_name = "Testtttt", users.user_email = "whynot@fuckit.com", users.user_happy = 0, users.user_date_added = NULL WHERE users.user_id = 1', (string) $oSQL);
         }
     }
 

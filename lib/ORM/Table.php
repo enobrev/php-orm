@@ -365,7 +365,7 @@
 
         /**
          * @param Field[] $aFields
-         * @return Table|null
+         * @return self|null
          * @throws TableException
          */
         protected static function getBy(...$aFields) {

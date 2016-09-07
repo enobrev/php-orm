@@ -18,8 +18,11 @@
 
     use Enobrev\ORM\Db;
     use Enobrev\ORM\DbException;
+    use Enobrev\Log;
 
     use function Enobrev\depluralize;
+
+    Log::setName('SQL_TO_JSON');
 
     $oOptions = new Commando\Command();
 
@@ -444,7 +447,7 @@
                         );
                         $aData['count']['outbound']++;
 
-                        if ($sField == 'user_id' && $sTable != 'users') {
+                        if ($sField == 'user_id') {
                             $aData['has_owner']    = true;
                             $aData['interfaces'][] = 'OwnerColumn';
                         }
@@ -479,7 +482,7 @@
                 $aData['primary'][] = $oTemplateField;
                 $aData['count']['primary']++;
 
-                if ($sField == 'user_id' && $sTable != 'users') {
+                if ($sField == 'user_id') {
                     $aData['has_owner']    = true;
                     $aData['interfaces'][] = 'OwnerColumn';
                 }

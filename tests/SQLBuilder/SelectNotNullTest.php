@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev;
 
-    use Enobrev\ORM\Mock\User;
+    use Enobrev\ORM\Mock\Table\User;
 
     class SQLBuilderSelectNotNullTest extends \PHPUnit_Framework_TestCase {
         public function testSelectIntNotNull() {

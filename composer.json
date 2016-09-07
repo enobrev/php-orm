@@ -33,6 +33,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Enobrev\\ORM\\Mock\\Table\\": "tests/Mock/Table",
             "Enobrev\\ORM\\Mock\\": "tests/Mock/"
         }
     },

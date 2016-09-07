@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev;
 
-    use Enobrev\ORM\Mock\User;
+    use Enobrev\ORM\Mock\Table\User;
 
     class SQLBuilderSelectBetweenTest extends \PHPUnit_Framework_TestCase {
         public function testSelectIntBetweenValues() {

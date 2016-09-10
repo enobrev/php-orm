@@ -297,12 +297,12 @@
                 case $oField->data_type == 'text':
                 case $oField->data_type == 'char':
                     if (strtolower($oField->column_type) == 'char(32)') {
-                        if ($oField->is_nullable) {
+                        if ($oTemplateField['nullable']) {
                             $oTemplateField['type'] = 'Field\\UUIDNullable';
                         } else {
                             $oTemplateField['type'] = 'Field\\UUID';
                         }
-                    } else if ($oField->is_nullable) {
+                    } else if ($oTemplateField['nullable']) {
                         $oTemplateField['type'] = 'Field\\TextNullable';
                     } else {
                         $oTemplateField['type'] = 'Field\\Text';

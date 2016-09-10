@@ -489,7 +489,7 @@
         public function delete() {
             if ($this->primaryHasValue()) {
                 $oReturn = Db::getInstance()->namedQuery(get_class($this) . '.delete',
-                    SQLBuilder::update($this)->also($this->getPrimary())
+                    SQLBuilder::delete($this)->also($this->getPrimary())
                 );
 
                 return $oReturn;

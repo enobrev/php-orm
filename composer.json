@@ -26,6 +26,10 @@
         "phpunit/phpunit-mock-objects": "^3.0",
         "nategood/commando": "^0.2.8"
     },
+    "suggest": {
+        "twig/twig": "Allows the use of bin scripts",
+        "nategood/commando": "Allows the use of bin scripts"
+    },
     "autoload": {
         "psr-4": {
             "Enobrev\\": "lib/"

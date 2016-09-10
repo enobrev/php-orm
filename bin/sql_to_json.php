@@ -128,7 +128,7 @@
             if (!isset($aReferences[$sTable])) {
                 $aReferences[$sTable] = [];
             }
-            
+
             $aReferences[$sTable][$oReference->column_name] = array(
                 'table' => $oReference->referenced_table_name,
                 'field' => $oReference->referenced_column_name

@@ -830,7 +830,7 @@
                     }
                 }
 
-                $aColumns[] = $oField->toSQLColumn() . ' = ' . $oField->toSQL();
+                $aColumns[] = $oField->toSQLColumn(false) . ' = ' . $oField->toSQL();
             }
 
             return implode(', ', $aColumns);
@@ -855,7 +855,7 @@
                 }
 
                 /** @var ORM\Field $oField */
-                $aColumns[] = $oField->toSQLColumn() . ' = ' . get_class($oField);
+                $aColumns[] = $oField->toSQLColumn(false) . ' = ' . get_class($oField);
             }
 
             return implode(', ', $aColumns);

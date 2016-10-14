@@ -3,3 +3,4 @@ ORM.iml
 vendor
 /tests/Mock/Table/
 mysql2sqlite.sh
+/.phan/

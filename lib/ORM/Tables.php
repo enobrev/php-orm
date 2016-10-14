@@ -168,5 +168,34 @@
 
             return $aReturn;
         }
+
+        /**
+         * @return string
+         */
+        public function toCSV() {
+            $oTable = self::getTable();
+            $aFields = [];
+            foreach($oTable->getFields() as $oField) {
+                $aFields[] = $oField->toSQLColumnForFields();
+            }
+
+            $oOutput = fopen("php://temp", "w");
+
+            fputcsv($oOutput, $aFields);
+
+            foreach($this as $oTable) {
+                fputcsv($oOutput, $oTable->toArray());
+            }
+            rewind($oOutput);
+
+            $sOutput = '';
+            while(!feof($oOutput)) {
+                $sOutput .= fread($oOutput, 8192);
+            }
+
+            fclose($oOutput);
+
+            return $sOutput;
+        }
     }
 ?>

@@ -177,7 +177,7 @@
             $oRecord = $this->offsetGet(0);
             $aFields = [];
             foreach($oRecord->getFields() as $oField) {
-                $aFields[] = $oField->toSQLColumnForFields();
+                $aFields[] = $oField->toSQLColumnForFields(false);
             }
 
             $oOutput = fopen("php://temp", "w");

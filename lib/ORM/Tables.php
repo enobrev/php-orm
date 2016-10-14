@@ -173,9 +173,10 @@
          * @return string
          */
         public function toCSV() {
-            $oTable = self::getTable();
+            /** @var Table $oRecord */
+            $oRecord = $this->offsetGet(0);
             $aFields = [];
-            foreach($oTable->getFields() as $oField) {
+            foreach($oRecord->getFields() as $oField) {
                 $aFields[] = $oField->toSQLColumnForFields();
             }
 

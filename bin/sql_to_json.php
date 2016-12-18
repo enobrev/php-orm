@@ -21,6 +21,7 @@
     use Enobrev\Log;
 
     use function Enobrev\depluralize;
+    use function Enobrev\pluralize;
 
     Log::setName('SQL_TO_JSON');
 
@@ -158,11 +159,7 @@
     }
 
     function getClassNamePlural($sTable) {
-        if (depluralize($sTable) == $sTable) {
-            $sTable .= 's'; // force plural
-        }
-
-        return str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable))));
+        return pluralize(str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable)))));
     }
 
     $aM2MTables   = [];

@@ -151,7 +151,7 @@
     }
 
     function getClassName($sTable) {
-        return depluralize(pluralize(str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable))))));
+        return depluralize(str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable)))));
     }
 
     function getFieldTitle($sField) {

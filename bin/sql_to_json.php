@@ -159,7 +159,7 @@
     }
 
     function getClassNamePlural($sTable) {
-        return pluralize(str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable)))));
+        return pluralize(depluralize(str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable))))));
     }
 
     $aM2MTables   = [];

@@ -45,7 +45,11 @@
                 $sValue = NULL;
             }
 
-            parent::setValue($sValue);
+            if ($sValue === NULL) {
+                $this->sValue = $sValue;
+            } else {
+                parent::setValue($sValue);
+            }
 
             return $this;
         }
@@ -62,4 +66,3 @@
             }
         }
     }
-?>

@@ -183,18 +183,20 @@
                 'name'  => $sName
             ];
 
-            if ($sQuery instanceof SQL) {
-                $aLogOutput['sql']   = $sQuery->sSQL;
-                $aLogOutput['group'] = $sQuery->sSQLGroup;
-                $aLogOutput['table'] = $sQuery->sSQLTable;
-                $aLogOutput['type']  = $sQuery->sSQLType;
-            } else {
-                $aLogOutput['sql']   = $sQuery;
-            }
-
             $sSQL = $sQuery;
             if ($sSQL instanceof SQL || $sSQL instanceof SQLBuilder) {
                 $sSQL = (string) $sQuery;
+
+                $aLogOutput['sql'] = [
+                    'query' => $sSQL,
+                    'group' => $sQuery->sSQLGroup,
+                    'table' => $sQuery->sSQLTable,
+                    'type'  => $sQuery->sSQLType
+                ];
+            } else {
+                $aLogOutput['sql'] = [
+                    'query' => $sSQL
+                ];
             }
 
             try {
@@ -208,14 +210,14 @@
                     $oException = new DbException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
                 }
 
-                $aLogOutput['__ms']  = Log::stopTimer($sTimerName);
+                $aLogOutput['--ms']  = Log::stopTimer($sTimerName);
                 $aLogOutput['error'] = $oException->getMessage();
 
                 Log::e($sTimerName, $aLogOutput);
 
                 throw $oException;
             }
-            
+
             $this->iLastInsertId     = self::$oPDO->lastInsertId();
             $this->iLastRowsAffected = 0;
             if ($mResult instanceof PDOStatement) {
@@ -247,7 +249,7 @@
                 }
             }
 
-            $aLogOutput['__ms']  = Log::stopTimer($sTimerName);
+            $aLogOutput['--ms']  = Log::stopTimer($sTimerName);
             $aLogOutput['rows']  = $this->iLastRowsAffected;
             Log::d($sTimerName, $aLogOutput);
 
@@ -327,4 +329,3 @@
             throw new DbException('Cannot clone the database class');
         }
     }
-?>

@@ -431,7 +431,7 @@
             if ($this->oGroup) {
                 $aGroup  = ['GROUP BY', $this->oGroup->toSQL()];
                 $aSQL    = array_merge($aSQL, $aGroup);
-                $aSQLLog = array_merge($aSQL, $aGroup);
+                $aSQLLog = array_merge($aSQLLog, $aGroup);
             }
 
             if (count($this->aOrders)) {
@@ -442,7 +442,7 @@
 
                 $aOrder  = ['ORDER BY', implode(', ', $aOrderSQL)];
                 $aSQL    = array_merge($aSQL, $aOrder);
-                $aSQLLog = array_merge($aSQL, $aOrder);
+                $aSQLLog = array_merge($aSQLLog, $aOrder);
             }
 
             if ($this->oLimit instanceof ORM\Limit) {

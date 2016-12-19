@@ -773,6 +773,7 @@
                     } else {
                         Log::e('SQLBuilder.__toString.error', [
                             'error' => [
+                                'type'    => get_class($e),
                                 'code'    => $e->getCode(),
                                 'message' => $e->getMessage(),
                                 'trace'   => json_encode($e->getTrace())

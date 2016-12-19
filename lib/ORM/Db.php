@@ -213,7 +213,7 @@
                 $aLogOutput['--ms']  = Log::stopTimer($sTimerName);
                 $aLogOutput['error'] = $oException->getMessage();
 
-                Log::e($sTimerName, $aLogOutput);
+                Log::e('ORM.Db.query', $aLogOutput);
 
                 throw $oException;
             }

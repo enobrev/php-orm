@@ -772,7 +772,11 @@
                         dbg('SQLBuilderMissingTableOrFieldsException');
                     } else {
                         Log::e('SQLBuilder.__toString.error', [
-                            'error' => $e
+                            'error' => [
+                                'code'    => $e->getCode(),
+                                'message' => $e->getMessage(),
+                                'trace'   => json_encode($e->getTrace())
+                            ]
                         ]);
                     }
 

@@ -251,7 +251,7 @@
 
             $aLogOutput['--ms']  = Log::stopTimer($sTimerName);
             $aLogOutput['rows']  = $this->iLastRowsAffected;
-            Log::d($sTimerName, $aLogOutput);
+            Log::d('ORM.Db.query', $aLogOutput);
 
             return $mResult;
         }

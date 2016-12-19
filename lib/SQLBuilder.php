@@ -771,7 +771,7 @@
                     if (defined('PHPUNIT_ENOBREV_ORM_TESTSUITE') === true) {
                         dbg('SQLBuilderMissingTableOrFieldsException');
                     } else {
-                        Log::e('SQLBuilder.__toString.error', [
+                        Log::e('ORM.SQLBuilder.__toString.error', [
                             'error' => [
                                 'type'    => get_class($e),
                                 'code'    => $e->getCode(),

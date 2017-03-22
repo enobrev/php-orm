@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use \Exception;
     use Enobrev\ORM\Db;
 
     class UUID extends Text {
@@ -25,7 +26,11 @@
          * @return bool
          */
         public function is($mValue) {
-            if ($mValue instanceof self) {
+            if ($mValue instanceof Table) {
+                $mValue = $mValue->{$this->sColumn};
+            }
+
+            if ($mValue instanceof Field) {
                 return $this->is($mValue->getValue());
             }
 
@@ -33,9 +38,13 @@
                 return true;
             }
 
-            $mValue = strtolower(str_replace('-', '', $mValue));
+            try {
+                $mValue = strtolower(str_replace('-', '', (string)$mValue));
 
-            return (string) $this == (string) $mValue;
+                return (string)$this == (string)$mValue;
+            } catch (Exception $e) {
+                return false;
+            }
         }
 
         /**

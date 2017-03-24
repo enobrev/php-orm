@@ -244,8 +244,10 @@
                 return $this->is($mValue->getValue());
             }
 
-            if ($mValue === null && $this->isNull()) {
-                return true;
+            if ($mValue === null) {
+                return $this->isNull(); // Both Null
+            } else if ($this->isNull()) {
+                return false;           // My Value is null but comparator is not
             }
 
             return (string) $this == (string) $mValue;

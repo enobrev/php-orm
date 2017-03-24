@@ -14,6 +14,7 @@
                 $this->sValue += 1;
             }
         }
+
         public function decrement() {
             if (!$this->isNull()) {
                 $this->sValue -= 1;

@@ -763,28 +763,28 @@
             return implode(', ', $aColumns);
         }
 
-        public function __toString() {
-            if ($this->sSQL === NULL) {
-                try {
-                    $this->build();
-                } catch (SQLBuilderMissingTableOrFieldsException $e) {
-                    if (defined('PHPUNIT_ENOBREV_ORM_TESTSUITE') === true) {
-                        dbg('SQLBuilderMissingTableOrFieldsException');
-                    } else {
-                        Log::e('ORM.SQLBuilder.__toString.error', [
-                            'error' => [
-                                'type'    => get_class($e),
-                                'code'    => $e->getCode(),
-                                'message' => $e->getMessage(),
-                                'trace'   => json_encode($e->getTrace())
-                            ]
-                        ]);
-                    }
-
-                    return '';
-                }
+        public function toString() {
+            if ($this->sSQL === null) {
+                $this->build();
             }
 
             return $this->sSQL;
+        }
+
+        public function __toString() {
+            try {
+                return $this->toString();
+            } catch (SQLBuilderException $e) {
+                Log::e('ORM.SQLBuilder.__toString.error', [
+                    'error' => [
+                        'type'    => get_class($e),
+                        'code'    => $e->getCode(),
+                        'message' => $e->getMessage(),
+                        'trace'   => json_encode($e->getTrace())
+                    ]
+                ]);
+
+                return '';
+            }
         }
     }

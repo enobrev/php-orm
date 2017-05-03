@@ -101,7 +101,7 @@
         }
 
         public function append($value) {
-            $sClass = self::getTable();
+            $sClass = static::getTable();
             if ($value instanceof $sClass !== false) {
                 parent::append($value);
             } else {

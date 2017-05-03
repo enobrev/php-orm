@@ -100,6 +100,15 @@
 
         }
 
+        public function append($value) {
+            $sClass = self::getTable();
+            if ($value instanceof $sClass !== false) {
+                parent::append($value);
+            } else {
+                // TODO: Log incorrect value or throw an exception or something
+            }
+        }
+
         /**
          * @param string $sKey
          * @param string $sValue

@@ -39,6 +39,10 @@
                 $sValue = null;
             }
 
+            if (strlen(trim($sValue)) === 0) {
+                $sValue = null;
+            }
+
             if ($sValue !== null) {
                 $sValue = (int) $sValue;
             }

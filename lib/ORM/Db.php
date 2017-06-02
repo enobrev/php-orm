@@ -73,11 +73,13 @@
             if ($sDatabase) {
                 $sDSN .= ";dbname=$sDatabase";
             }
+            $sDSN .= ";charset=utf8mb4";
 
             $oPDO = new PDO($sDSN, $sUsername, $sPassword, $aOptions);
             $oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
             $oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $oPDO->setAttribute(PDO::MYSQL_ATTR_FOUND_ROWS,   true);
+            $oPDO->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
 
             return $oPDO;
         }

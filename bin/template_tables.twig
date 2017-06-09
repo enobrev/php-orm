@@ -27,6 +27,10 @@
          * @throws \Enobrev\SQLMissingTableOrFieldsException
          */
         public static function getBy{{field.reference.title}}($i{{field.reference.subclass}}Id) {
+            if (!$i{{ field.reference.subclass }}Id) {
+                return new self();
+            }
+
             $oTable = static::getTable();
             $oSQL = SQLBuilder::select($oTable)->eq($oTable->{{field.name}}->setValue($i{{field.reference.subclass}}Id));
 
@@ -46,7 +50,7 @@
             }
 
             if (count($a{{ field.reference.subclass }}Ids) === 0) {
-                return null;
+                return new self();
             }
 
             $oTable = static::getTable();

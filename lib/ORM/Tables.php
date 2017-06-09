@@ -19,7 +19,7 @@
         }
 
         /**
-         * @return Tables
+         * @return Table[]
          */
         public static function get() {
             $oTable   = static::getTable();
@@ -45,7 +45,7 @@
          * @param Table $oTable
          * @param array $aData
          * @param array $aMap
-         * @return Tables
+         * @return Table[]
          */
         public static function createAndUpdateFromMap(Table $oTable, Array $aData, Array $aMap) {
             $aOutput = new static;
@@ -61,7 +61,7 @@
         /**
          * @param Table $oTable
          * @param array $aData
-         * @return Tables
+         * @return Table[]
          */
         public static function createAndUpdate(Table $oTable, Array $aData) {
             $aOutput = new static;
@@ -77,7 +77,7 @@
         /**
          * @param PDOStatement $oResults
          * @param Table[] ...$aTables
-         * @return Tables
+         * @return Table[]
          */
         protected static function fromResults(PDOStatement $oResults, ...$aTables) {
             if (count($aTables) > 1) {

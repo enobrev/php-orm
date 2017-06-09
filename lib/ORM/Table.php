@@ -48,7 +48,7 @@
 
         /**
          * @param array $aData
-         * @return Table
+         * @return static
          */
         public static function createFromArray(array $aData) {
             /** @var Table $oTable */
@@ -60,7 +60,7 @@
         /**
          * @static
          * @param stdClass $oObject
-         * @return Table
+         * @return static
          */
         public static function createFromObject(stdClass $oObject = NULL) {
             if ($oObject instanceof stdClass === false) {
@@ -77,7 +77,7 @@
          * @param array $aData
          * @param array $aMap
          * @param array $aOverride
-         * @return Table
+         * @return static
          */
         public static function createAndUpdateFromMap(Array $aData, Array $aMap, Array $aOverride = []) {
             /** @var Table $oTable */
@@ -100,7 +100,7 @@
 
         /**
          * @param array $aData
-         * @return Table
+         * @return static
          */
         public static function createAndUpdate(Array $aData) {
             /** @var Table $oTable */
@@ -283,7 +283,7 @@
         /**
          *
          * @param stdClass $oData
-         * @return Table
+         * @return static
          */
         public function setFromObject(stdClass $oData) {
             $this->oResult = $oData;
@@ -298,7 +298,7 @@
         /**
          *
          * @param array $aData
-         * @return Table
+         * @return static
          */
         public function setFromArray(Array $aData) {
             foreach ($this->getFields() as &$oField) {
@@ -357,7 +357,7 @@
 
         /**
          *
-         * @return Table
+         * @return static
          */
         public function getByPrimary() {
             return $this->getBy(...$this->getPrimary());
@@ -365,7 +365,7 @@
 
         /**
          * @param Field[] $aFields
-         * @return self|null
+         * @return static|null
          * @throws TableException
          */
         protected static function getBy(...$aFields) {

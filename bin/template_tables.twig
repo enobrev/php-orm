@@ -40,9 +40,13 @@
          * @throws \Enobrev\ORM\DbException
          * @throws \Enobrev\SQLMissingTableOrFieldsException
          */
-        public static function getBy{{field.reference.title_plural}}($a{{ field.reference.subclass }}Ids) {
+        public static function getBy{{field.reference.title_plural}}(array $a{{ field.reference.subclass }}Ids) {
             if ($a{{ field.reference.subclass }}Ids instanceof {{field.reference.subclass_plural}}) {
                 $a{{ field.reference.subclass }}Ids = $a{{ field.reference.subclass }}Ids->toPrimaryArray();
+            }
+
+            if (count($a{{ field.reference.subclass }}Ids) === 0) {
+                return null;
             }
 
             $oTable = static::getTable();

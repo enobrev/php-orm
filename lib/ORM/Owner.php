@@ -5,12 +5,14 @@
     trait Owner {
 
         /**
-         * @return Table
+         * @return static
          */
         public function getOwner() {
-            if ($this->getOwnerField()->hasValue()) {
+            /** @var Field $oOwnerField */
+            $oOwnerField = $this->getOwnerField();
+            if ($oOwnerField->hasValue()) {
                 $sTable = $this->getOwnerTable();
-                return $sTable::getById($this->getOwnerField()->getValue());
+                return $sTable::getById($oOwnerField->getValue());
             }
         }
 
@@ -19,7 +21,9 @@
          * @return bool
          */
         public function hasOwner(Table $oOwner = null) {
-            $sTable = $this->getOwnerTable();
-            return $oOwner instanceof $sTable && $this->getOwnerField()->is($oOwner);
+            /** @var Field $oOwnerField */
+            $oOwnerField = $this->getOwnerField();
+            $sTable      = $this->getOwnerTable();
+            return $oOwner instanceof $sTable && $oOwnerField->is($oOwner);
         }
     }

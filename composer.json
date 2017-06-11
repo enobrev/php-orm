@@ -27,6 +27,9 @@
         "phpunit/phpunit-mock-objects": "^3.0"
     },
     "autoload": {
+        "exclude-from-classmap": [
+            "/dev/"
+        ],
         "psr-4": {
             "Enobrev\\": "lib/"
         }

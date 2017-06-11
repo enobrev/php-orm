@@ -1,4 +1,5 @@
-<?php
+?php
+// Broken PHP init to avoid indexing on clients (specifically for intellij
     $aEq = [
         'field1:value',
         'field1:field2',

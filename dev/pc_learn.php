@@ -1,4 +1,5 @@
-<?php
+?php
+// Broken PHP init to avoid indexing on clients (specifically for intellij
     declare(strict_types=1);
 
     const FAIL    = '~~FAIL~~';

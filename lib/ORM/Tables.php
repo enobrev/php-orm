@@ -110,17 +110,37 @@
         }
 
         /**
-         * @param Field $oField
+         * @param Field|array $mFields
          * @return array
          */
-        public function toValueArray(Field $oField) {
-            $sField  = $oField->sColumn;
-            $aReturn = [];
-            foreach ($this as $oTable) {
-                $aReturn[] = $oTable->$sField->getValue();
-            }
+        public function toValueArray($mFields) {
+            if ($mFields instanceof Field) {
+                $sField  = $mFields->sColumn;
+                $aReturn = [];
+                foreach ($this as $oTable) {
+                    $aReturn[] = $oTable->$sField->getValue();
+                }
 
-            return $aReturn;
+                return $aReturn;
+            } else {
+                $aFields = [];
+                /** @var Field $oField */
+                foreach($mFields as $oField) {
+                    $aFields[] = $oField->sColumn;
+                }
+
+                $aReturn = [];
+                foreach ($this as $oTable) {
+                    $aRow = [];
+                    foreach ($aFields as $sField) {
+                        $aRow[$sField] = $oTable->$sField->getValue();
+                    }
+
+                    $aReturn[] = $aRow;
+                }
+
+                return $aReturn;
+            }
         }
 
         /**

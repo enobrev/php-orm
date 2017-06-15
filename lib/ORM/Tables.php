@@ -110,6 +110,20 @@
         }
 
         /**
+         * @param Field $oField
+         * @return array
+         */
+        public function toValueArray(Field $oField) {
+            $sField  = $oField->sColumn;
+            $aReturn = [];
+            foreach ($this as $oTable) {
+                $aReturn[] = $oTable->$sField->getValue();
+            }
+
+            return $aReturn;
+        }
+
+        /**
          * @param string $sKey
          * @param string $sValue
          * @return array

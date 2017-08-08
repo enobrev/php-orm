@@ -19,11 +19,29 @@
         /**
          * @param Table|null $oOwner
          * @return bool
+         * @throws \Exception
          */
         public function hasOwner(Table $oOwner = null) {
             /** @var Field $oOwnerField */
             $oOwnerField = $this->getOwnerField();
             $sTable      = $this->getOwnerTable();
-            return $oOwner instanceof $sTable && $oOwnerField->is($oOwner);
+
+            $bOwnerIsRightType   = $oOwner instanceof $sTable;
+
+            if (!$bOwnerIsRightType) {
+                throw new \Exception('Invalid Owner Table');
+            }
+
+            $bOwnerHasRightField = $oOwner->{$oOwnerField->sColumn} instanceof Field;
+
+            if (!$bOwnerHasRightField) {
+                throw new \Exception('Owner Table does not have Owner Field');
+            }
+
+            $bOwnerHasRightValue = $oOwnerField->is($oOwner->{$oOwnerField->sColumn});
+
+            return $bOwnerIsRightType
+                && $bOwnerHasRightField
+                && $bOwnerHasRightValue;
         }
     }

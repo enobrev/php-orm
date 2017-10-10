@@ -317,7 +317,7 @@
         public function mapArrayToFields(Array $aData, Array $aMap, Array $aOverride = []) {
             $aMappedData = array();
             foreach($aMap as $sDataField => $mField) {
-                if (isset($aData[$sDataField])) {
+                if (isset($aData[$sDataField]) || array_key_exists($sDataField, $aData)) {
                     if ($mField instanceof Field) {
                         $mField = $mField->sColumn;
                     }
@@ -349,7 +349,7 @@
          */
         public function setPrimaryFromArray(Array $aData) {
             foreach ($this->getPrimary() as $oPrimary) {
-                if (isset($aData[$oPrimary->sColumn])) {
+                if (isset($aData[$oPrimary->sColumn]) || array_key_exists($oPrimary->sColumn, $aData)) {
                     $this->{$oPrimary->sColumn}->setValue($aData[$oPrimary->sColumn]);
                 }
             }

@@ -171,7 +171,7 @@
         }
 
         /**
-         * @param string $sQuery
+         * @param string|SQLBuilder|SQL $sQuery
          * @param string $sName
          *
          * @return PDOStatement

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "314679cd3603100d61fb8fa387d0ee32",
-    "content-hash": "4b4599ad706f93679a5b510d22e12c0f",
+    "hash": "4482027d0e1b84ec331b0c401d69b52c",
+    "content-hash": "231382df908b05f564d94d067bb20636",
     "packages": [
         {
             "name": "kevinlebrun/colors.php",
@@ -226,17 +226,17 @@
             "time": "2017-07-22 11:58:36"
         },
         {
-            "name": "enobrev/tools",
+            "name": "enobrev/php-tools",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/enobrev/tools.git",
-                "reference": "0d21c74f527ebb427ba09d5b0cd2d92277ee3a1d"
+                "url": "https://github.com/enobrev/php-tools.git",
+                "reference": "5378e9d75a9d410c2ad3f9c21838b37f2f9ef91b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/enobrev/tools/zipball/0d21c74f527ebb427ba09d5b0cd2d92277ee3a1d",
-                "reference": "0d21c74f527ebb427ba09d5b0cd2d92277ee3a1d",
+                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/5378e9d75a9d410c2ad3f9c21838b37f2f9ef91b",
+                "reference": "5378e9d75a9d410c2ad3f9c21838b37f2f9ef91b",
                 "shasum": ""
             },
             "require": {
@@ -270,10 +270,10 @@
             ],
             "description": "General Tools",
             "support": {
-                "source": "https://github.com/enobrev/tools/tree/master",
-                "issues": "https://github.com/enobrev/tools/issues"
+                "source": "https://github.com/enobrev/php-tools/tree/master",
+                "issues": "https://github.com/enobrev/php-tools/issues"
             },
-            "time": "2017-10-22 01:35:41"
+            "time": "2017-10-24 08:44:52"
         },
         {
             "name": "monolog/monolog",
@@ -1666,7 +1666,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "enobrev/tools": 20
+        "enobrev/php-tools": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

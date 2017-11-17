@@ -23,6 +23,7 @@
     use function Enobrev\depluralize;
     use function Enobrev\pluralize;
 
+    Log::setService('enobrev-php-orm');
     Log::setPurpose('SQL_TO_JSON');
 
     $oOptions = new Commando\Command();

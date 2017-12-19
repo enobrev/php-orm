@@ -68,7 +68,7 @@
 
 {% for field in fields %}
 {% if field.reference %}
-            $this->{{field.name}}->references('{{ field.reference.name }}', '{{ field.reference.field }}');
+            $this->{{field.name}}->references('{{ field.reference.table.name}}', '{{ field.reference.field.name }}');
 {% endif %}
 {% endfor %}
 {% endif %}
@@ -152,7 +152,7 @@
 {% if count.outbound %}
 {% for field in fields %}
 {% if field.reference %}
-{% if field.reference.title == 'User' %}
+{% if field.reference.table.title == 'User' and table.title != 'User' %}
 
         /**
          * @return {{ field.reference.title }}
@@ -170,20 +170,20 @@
 {% else %}
 
         /**
-         * @return {{field.reference.subclass}}
+         * @return {{field.reference.table.title}}
          */
         public function get{{field.reference.title}}() {
             if ($this->{{field.name}}->hasValue()) {
-                return {{field.reference.subclass}}::getById($this->{{field.name}}->getValue());
+                return {{field.reference.table.title}}::getById($this->{{field.name}}->getValue());
             }
         }
 
         /**
-         * @param {{field.reference.subclass}}|null $o{{field.reference.title}}
+         * @param {{field.reference.table.title}}|null $o{{field.reference.title}}
          * @return bool
          */
-        public function has{{field.reference.title}}({{field.reference.subclass}} $o{{field.reference.title}} = null) {
-            return $o{{field.reference.title}} instanceof {{field.reference.subclass}}
+        public function has{{field.reference.title}}({{field.reference.table.title}} $o{{field.reference.title}} = null) {
+            return $o{{field.reference.title}} instanceof {{field.reference.table.title}}
                 && $this->{{field.name}}->is($o{{field.reference.title}});
         }
 {% endif %}

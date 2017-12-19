@@ -219,7 +219,9 @@
                 'spaced_singular'       => depluralize(str_replace('_', ' ', $sTable)),
                 'spaced_singular_title' => ucwords(depluralize(str_replace('_', ' ', $sTable))),
                 'spaced_title'          => ucwords(str_replace('_', ' ', $sTable)),
-                'comment'               => $aTable['comment']
+                'comment'               => $aTable['comment'],
+                'class'                 => 'Table\\' . getClassName($sTable),
+                'class_plural'          => 'Table\\' . getClassNamePlural($sTable),
             ),
             'count' => [
                 'outbound'  => 0,
@@ -244,16 +246,20 @@
         $iFieldNameLength      = 0;
         $iFieldNameShortLength = 0;
         foreach($aTable['fields'] as $sField => $oField) {
+
+            $sShort = str_replace($aData['table']['singular'] . '_', '', $sField);
             $oTemplateField = array(
-                'short'       => str_replace($aData['table']['singular'] . '_', '', $sField),
-                'short_title' => str_replace(' ', '', (ucwords(str_replace($aData['table']['singular'] . '_', '', $sField)))),
+                'short'       => $sShort,
+                'short_title' => str_replace(' ', '', (ucwords(str_replace('_', ' ', $sShort)))),
                 'name'        => $sField,
                 'title'       => getFieldTitle($sField),
+                'plural'      => pluralize(getFieldTitle($sField)),
                 'primary'     => false,
                 'unique'      => false,
                 'boolean'     => false,
                 'nullable'    => strtolower($oField->is_nullable) == 'yes' ? true : false,
-                'var'         => str_replace(' ', '', (ucwords(str_replace('_', ' ', $sField)))),
+                'var'         => getFieldTitle($sField),
+                'var_array'   => 'a' . pluralize(getFieldTitle($sField)),
                 'default'     => strlen($oField->column_default) ? $oField->column_default : null,
                 'comment'     => $oField->column_comment
             );
@@ -428,56 +434,6 @@
                     break;
             }
 
-            if (isset($aReferences[$sTable])) {
-                if (count($aReferences[$sTable])) {
-                    if (isset($aReferences[$sTable][$sField])) {
-                        $sClass = getClassName($aReferences[$sTable][$sField]['table']);
-                        $sClassPlural = getClassNamePlural($aReferences[$sTable][$sField]['table']);
-                        $oTemplateField['reference'] = array(
-                            'title'                 => getClassName(str_replace($aReferences[$sTable][$sField]['field'], '', $sField)) . $sClass,
-                            'title_plural'          => getClassNamePlural(str_replace($aReferences[$sTable][$sField]['field'], '', $sField) . $aReferences[$sTable][$sField]['table']),
-                            'field'                 => $aReferences[$sTable][$sField]['field'],
-                            'name'                  => $aReferences[$sTable][$sField]['table'],
-                            'name_singular'         => depluralize($aReferences[$sTable][$sField]['table']),
-                            'name_spaced'           => str_replace('_', ' ', $aReferences[$sTable][$sField]['table']),
-                            'name_spaced_singular'  => depluralize(str_replace('_', ' ', $aReferences[$sTable][$sField]['table'])),
-                            'class'                 => 'Table\\' . $sClass,
-                            'class_plural'          => 'Table\\' . $sClassPlural,
-                            'subclass'              => $sClass,
-                            'subclass_plural'       => $sClassPlural
-                        );
-                        $aData['count']['outbound']++;
-
-                        if ($sField == 'user_id') {
-                            $aData['has_owner']    = true;
-                            $aData['interfaces'][] = 'OwnerColumn';
-                        }
-                    }
-                }
-            }
-
-            if (isset($aReverseReferences[$sTable])) {
-                if (count($aReverseReferences[$sTable])) {
-                    if (isset($aReverseReferences[$sTable][$sField])) {
-                        foreach($aReverseReferences[$sTable][$sField] as $aReverseReference) {
-                            $sClass = getClassNamePlural($aReverseReference['table']);
-                            $sName  = str_replace($aData['table']['singular'] . '_', '', $aReverseReference['table']);
-                            $oTemplateField['inbound_reference'][$sName] = array(
-                                'title'                => getClassName($sClass),
-                                'name'                 => $sName,
-                                'table'                => $aReverseReference['table'],
-                                'name_singular'        => depluralize($aReverseReference['table']),
-                                'name_spaced'          => str_replace('_', ' ', str_replace($aData['table']['singular'] . '_', '', $aReverseReference['table'])),
-                                'name_spaced_singular' => depluralize(str_replace('_', ' ', $aReverseReference['table'])),
-                                'class'                => 'Table\\' . $sClass,
-                                'subclass'             => $sClass
-                            );
-                            $aData['count']['inbound']++;
-                        }
-                    }
-                }
-            }
-
             if ($oField->column_key == 'PRI') {
                 $oTemplateField['primary'] = true;
                 $aData['primary'][] = $oTemplateField;
@@ -508,9 +464,71 @@
             $aField['name_pad']  = str_replace($aField['name'],  '', str_pad($aField['name'],  $iFieldNameLength,      ' ', STR_PAD_RIGHT));
         }
 
-        $aData['interfaces'] = implode(', ', array_unique($aData['interfaces']));
-
         $aAllData['tables'][$aData['table']['name']] = $aData;
+    }
+
+    foreach ($aAllData['tables'] as $sTable => $aData) {
+
+            if (isset($aReferences[$sTable])) {
+                if (count($aReferences[$sTable])) {
+                    foreach($aReferences[$sTable] as $sColumn => $aReference) {
+                        $iIndex            = array_search($sColumn, array_column($aAllData['tables'][$sTable]['fields'], 'name'));
+                        $sReferencedTable  = $aReference['table'];
+                        $sReferencedField  = $aReference['field'];
+                        $aReferencedFields = $aAllData['tables'][$sReferencedTable]['fields'];
+
+                        $aReferencedTable = $aAllData['tables'][$sReferencedTable]['table'];
+                        $aReferencedField = $aReferencedFields[array_search($sReferencedField, array_column($aReferencedFields, 'name'))];
+
+                        unset($aReferencedField['reference']);
+                        unset($aReferencedField['inbound_reference']);
+
+                        $aAllData['tables'][$sTable]['fields'][$iIndex]['reference'] = [
+                            'title'         => getClassName(str_replace($sReferencedField, '', $sColumn)) . $aReferencedTable['title'],
+                            'title_plural'  => getClassNamePlural(str_replace($sReferencedField, '', $sColumn) . $aReferencedTable['title']),
+                            'table'         => $aReferencedTable,
+                            'field'         => $aReferencedField
+                        ];
+
+                        $aAllData['tables'][$sTable]['count']['outbound']++;
+
+                        if ($sColumn == 'user_id') {
+                            $aAllData['tables'][$sTable]['has_owner']    = true;
+                            $aAllData['tables'][$sTable]['interfaces'][] = 'OwnerColumn';
+                        }
+                    }
+                }
+            }
+
+            if (isset($aReverseReferences[$sTable])) {
+                if (count($aReverseReferences[$sTable])) {
+                    foreach ($aReverseReferences[$sTable] as $sColumn => $aReverseReferencesForColumn) {
+                        $iIndex = array_search($sColumn, array_column($aAllData['tables'][$sTable]['fields'], 'name'));
+                        foreach($aReverseReferencesForColumn as $aReverseReference) {
+                            $sReferencedTable  = $aReverseReference['table'];
+                            $sReferencedField  = $aReverseReference['field'];
+                            $aReferencedFields = $aAllData['tables'][$sReferencedTable]['fields'];
+
+                            $aReferencedTable  = $aAllData['tables'][$sReferencedTable]['table'];
+                            $aReferencedField  = $aReferencedFields[array_search($sReferencedField, array_column($aReferencedFields, 'name'))];
+
+                            unset($aReferencedField['reference']);
+                            unset($aReferencedField['inbound_reference']);
+
+                            $aAllData['tables'][$sTable]['fields'][$iIndex]['inbound_reference'][] = [
+                                'table' => $aReferencedTable,
+                                'field' => $aReferencedField
+                            ];
+                        }
+
+                        $aAllData['tables'][$sTable]['count']['inbound']++;
+                    }
+                }
+
+                $aAllData['tables'][$sTable]['interfaces'] = implode(', ', array_unique($aData['interfaces']));
+            }
+
+
     }
 
     $sJsonFile = getcwd() . '/sql.json';

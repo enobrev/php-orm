@@ -16,45 +16,58 @@
         public static function getTable() {
             return new {{table.title}};
         }
+{% if count.primary == 1 %}
+
+        /**
+         * @param {{ primary.0.php_type }}[] {{ primary.0.var_array }}
+         * @return {{ table.title }}[]|{{ table.plural }}
+         * @throws \Enobrev\ORM\DbException
+         */
+        public static function getBy{{ primary.0.plural }}(Array ${{ primary.0.var_array }}) {
+            $oTable   = static::getTable();
+            $oSQL     = SQLBuilder::select($oTable)->in($oTable->{{ primary.0.name }}, ${{ primary.0.var_array }});
+            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
+
+            return self::fromResults($oResults, $oTable);
+        }
+{% endif %}
 {% if count.outbound %}
 {% for field in fields %}
 {% if field.reference %}
 
         /**
-         * @param int|{{field.reference.subclass}} $i{{field.reference.subclass}}Id
+         * @param {{ field.reference.field.php_type }}|{{field.reference.table.title}} ${{field.reference.field.var}}
          * @return {{ table.title }}[]|{{ table.plural }}
          * @throws \Enobrev\ORM\DbException
-         * @throws \Enobrev\SQLMissingTableOrFieldsException
          */
-        public static function getBy{{field.reference.title}}($i{{field.reference.subclass}}Id) {
-            if (!$i{{ field.reference.subclass }}Id) {
+        public static function getBy{{field.reference.title}}(${{ field.reference.field.var }}) {
+            if (!${{ field.reference.field.var }}) {
                 return new self();
             }
 
             $oTable = static::getTable();
-            $oSQL = SQLBuilder::select($oTable)->eq($oTable->{{field.name}}->setValue($i{{field.reference.subclass}}Id));
+            $oSQL = SQLBuilder::select($oTable)->eq($oTable->{{field.name}}->setValue(${{ field.reference.field.var }}));
 
             $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
             return self::fromResults($oResults, $oTable);
         }
 
         /**
-         * @param {{ field.reference.subclass_plural }}|int[] $a{{ field.reference.subclass }}Ids
+         * @param {{ field.reference.table.plural }}|{{ field.reference.field.php_type }}[] ${{ field.reference.field.var_array }}
          * @return {{ table.title }}[]|{{ table.plural }}
          * @throws \Enobrev\ORM\DbException
-         * @throws \Enobrev\SQLMissingTableOrFieldsException
          */
-        public static function getBy{{field.reference.title_plural}}($a{{ field.reference.subclass }}Ids) {
-            if ($a{{ field.reference.subclass }}Ids instanceof {{field.reference.subclass_plural}}) {
-                $a{{ field.reference.subclass }}Ids = $a{{ field.reference.subclass }}Ids->toPrimaryArray();
+        public static function getBy{{field.reference.title_plural}}(${{ field.reference.field.var_array }}) {
+            if (${{ field.reference.field.var_array }} instanceof {{ field.reference.table.plural }}) {
+                ${{ field.reference.field.var_array }} = ${{ field.reference.field.var_array }}->toPrimaryArray();
             }
 
-            if (count($a{{ field.reference.subclass }}Ids) === 0) {
+            if (count(${{ field.reference.field.var_array }}) === 0) {
                 return new self();
             }
 
             $oTable = static::getTable();
-            $oSQL = SQLBuilder::select($oTable)->in($oTable->{{field.name}}, $a{{field.reference.subclass}}Ids);
+            $oSQL = SQLBuilder::select($oTable)->in($oTable->{{field.name}}, ${{ field.reference.field.var_array }});
 
             $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
             return self::fromResults($oResults, $oTable);
@@ -62,13 +75,11 @@
 {% endif %}
 {% endfor %}
 {% endif %}
-
 {% if date_updated or date_added  %}
 
         /**
          * @return DateTime
          * @throws \Enobrev\ORM\DbException
-         * @throws \Enobrev\SQLMissingTableOrFieldsException
          */
 {% if date_updated %}
         public static function getMostRecentUpdatedDate() {

@@ -106,4 +106,3 @@
     } else {
         echo 'No Tables Chosen' . "\n";
     }
-?>

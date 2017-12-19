@@ -5,7 +5,7 @@
     trait Owner {
 
         /**
-         * @return static
+         * @return Table
          */
         public function getOwner() {
             /** @var Field $oOwnerField */

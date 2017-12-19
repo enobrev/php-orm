@@ -12,7 +12,6 @@
     class Tables extends ArrayIterator {
         /**
          * @return Table
-         * @throws TablesException
          */
         public static function getTable() {
             throw new TablesException('This Method Should Have Been Overridden');
@@ -20,6 +19,7 @@
 
         /**
          * @return Table[]|static
+         * @throws DbException
          */
         public static function get() {
             $oTable   = static::getTable();
@@ -29,6 +29,7 @@
 
         /**
          * @return int
+         * @throws DbException
          */
         public static function total() {
             $oTable   = static::getTable();
@@ -159,14 +160,14 @@
 
         /**
          * @return Field[]
-         * @throws \Exception
+         * @throws TablesMultiplePrimaryException
          */
         public function toPrimaryFieldArray() {
             $aReturn = [];
             foreach($this as $oTable) {
                 $aPrimary = $oTable->getPrimary();
                 if (count($aPrimary) > 1) {
-                    throw new \Exception("Can Only get Primary Array of Tables with Single Primary Keys");
+                    throw new TablesMultiplePrimaryException("Can Only get Primary Array of Tables with Single Primary Keys");
                 }
 
                 $aReturn[] = $oTable->{$aPrimary[0]->sColumn};
@@ -177,14 +178,14 @@
 
         /**
          * @return array
-         * @throws \Exception
+         * @throws TablesMultiplePrimaryException
          */
         public function toPrimaryArray() {
             $aReturn = [];
             foreach($this as $oTable) {
                 $aPrimary = $oTable->getPrimary();
                 if (count($aPrimary) > 1) {
-                    throw new \Exception("Can Only get Primary Array of Tables with Single Primary Keys");
+                    throw new TablesMultiplePrimaryException("Can Only get Primary Array of Tables with Single Primary Keys");
                 }
 
                 $aReturn[] = $oTable->{$aPrimary[0]->sColumn}->getValue();
@@ -242,4 +243,3 @@
             return $sOutput;
         }
     }
-?>

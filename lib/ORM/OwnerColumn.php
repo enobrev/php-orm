@@ -3,7 +3,7 @@
 
     interface OwnerColumn {
         /**
-         * @return static
+         * @return Table
          */
         public function getOwnerTable();
 
@@ -13,7 +13,7 @@
         public function getOwnerField();
 
         /**
-         * @return static
+         * @return Table
          */
         public function getOwner();
 

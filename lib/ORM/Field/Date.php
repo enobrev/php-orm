@@ -2,6 +2,7 @@
     namespace Enobrev\ORM\Field;
 
     use DateTime;
+    use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
 
@@ -9,6 +10,8 @@
 
         const DEFAULT_FORMAT = 'Y-m-d';
         const NULL_VALUE     = '0000-00-00 00:00:00';
+
+        const MYSQL_NOW      = 'NOW()';
 
         /**
          * @var \DateTime
@@ -45,6 +48,24 @@
 
         /**
          *
+         * @return string
+         */
+        public function toSQL() {
+            if ($this->isNull()) {
+                return 'NULL';
+            }
+
+            switch($this->sValue) {
+                case self::MYSQL_NOW:
+                    return $this->sValue;
+
+                default:
+                    return Escape::string($this->sValue->format('Y-m-d'));
+            }
+        }
+
+        /**
+         *
          * @param mixed $sValue
          * @return Date
          */
@@ -60,6 +81,10 @@
             switch(true) {
                 case $sValue == self::NULL_VALUE:
                     $this->sValue = null;
+                    break;
+
+                case $sValue == self::MYSQL_NOW:
+                    $this->sValue = self::MYSQL_NOW;
                     break;
 
                 case $sValue === null:

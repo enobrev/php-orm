@@ -35,6 +35,13 @@
         }
 
         /**
+         * @return string
+         */
+        public static function NOW() {
+            return ORM\Field\Date::MYSQL_NOW;
+        }
+
+        /**
          * @param array ...$aArguments
          * @return ORM\Conditions
          */

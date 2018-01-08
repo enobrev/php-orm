@@ -87,8 +87,13 @@
             if ($this->isNull()) {
                 return 'NULL';
             } else {
-                return Escape::string($this->sValue->format('Y-m-d H:i:s'));
+                switch ($this->sValue) {
+                    case self::MYSQL_NOW:
+                        return $this->sValue;
+
+                    default:
+                        return Escape::string($this->sValue->format('Y-m-d H:i:s'));
+                }
             }
         }
     }
-?>

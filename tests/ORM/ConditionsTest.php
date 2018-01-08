@@ -5,12 +5,14 @@
 
     use Enobrev\ORM\Condition;
     use Enobrev\ORM\Conditions;
+    use Enobrev\ORM\Db;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
     use PHPUnit_Framework_TestCase as TestCase;
  
     class MySQLConditionsTest extends TestCase {
         public function setUp() {
+            Db::getInstance(Db::defaultSQLiteMemory());
         }
         
         public function testOne() {

@@ -1,16 +1,23 @@
 <?php
     namespace Enobrev;
 
+    require __DIR__ . '/../../vendor/autoload.php';
+
+    use Enobrev\ORM\Db;
     use Enobrev\ORM\Mock\Table\User;
 
     class SelectEqTest extends \PHPUnit_Framework_TestCase {
+        public function setUp() {
+            Db::getInstance(Db::defaultSQLiteMemory());
+        }
+
         public function testSelectIntEqualsValue() {
             $oUser = new User();
             $oSQL = SQL::select(
                 $oUser,
                 SQL::eq($oUser->user_id, 1)
             );
-            $this->assertEquals("SELECT * FROM users WHERE users.user_id = 1", (string) $oSQL);
+            $this->assertEquals("SELECT * FROM users WHERE users.user_id = '1'", (string) $oSQL);
         }
 
         public function testSelectIntEqualsSelf() {
@@ -20,7 +27,7 @@
                 $oUser,
                 SQL::eq($oUser->user_id)
             );
-            $this->assertEquals("SELECT * FROM users WHERE users.user_id = 1", (string) $oSQL);
+            $this->assertEquals("SELECT * FROM users WHERE users.user_id = '1'", (string) $oSQL);
         }
 
         public function testSelectIntFieldEqualsField() {
@@ -31,7 +38,7 @@
                 $oUser,
                 SQL::eq($oUser->user_id, $oOtherUser->user_id)
             );
-            $this->assertEquals("SELECT * FROM users WHERE users.user_id = 1", (string) $oSQL);
+            $this->assertEquals("SELECT * FROM users WHERE users.user_id = '1'", (string) $oSQL);
         }
 
         public function testSelectStringEqualsValue() {
@@ -40,6 +47,6 @@
                 $oUser,
                 SQL::eq($oUser->user_email, 'test@example.com')
             );
-            $this->assertEquals('SELECT * FROM users WHERE users.user_email = "test@example.com"', (string) $oSQL);
+            $this->assertEquals("SELECT * FROM users WHERE users.user_email = 'test@example.com'", (string) $oSQL);
         }
     }

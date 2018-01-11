@@ -464,9 +464,9 @@
             $aField['name_pad']  = str_replace($aField['name'],  '', str_pad($aField['name'],  $iFieldNameLength,      ' ', STR_PAD_RIGHT));
         }
 
-        $aAllData['tables'][$aData['table']['name']] = $aData;
-
         $aData['interfaces'] = array_values(array_unique($aData['interfaces']));
+
+        $aAllData['tables'][$aData['table']['name']] = $aData;
     }
 
     foreach ($aAllData['tables'] as $sTable => $aData) {

@@ -465,6 +465,8 @@
         }
 
         $aAllData['tables'][$aData['table']['name']] = $aData;
+
+        $aData['interfaces'] = array_unique($aData['interfaces']);
     }
 
     foreach ($aAllData['tables'] as $sTable => $aData) {

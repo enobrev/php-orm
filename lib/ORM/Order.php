@@ -11,9 +11,13 @@
         /**
          * @var Field
          */
-        private $oField;
-        private $sType;
-        private $aValues;
+        private $oField = null;
+
+        /** @var string */
+        private $sType = null;
+
+        /** @var array */
+        private $aValues = null;
 
         /**
          * @param Field       $oField
@@ -22,7 +26,7 @@
          *
          * @return Order
          */
-        private static function create(Field $oField, $sType = self::TYPE_ASC, Array $aValues = array()) {
+        private static function create(Field $oField, string $sType = self::TYPE_ASC, Array $aValues = array()): self {
             $oOrder   = new self;
             $oOrder->oField  = $oField;
             $oOrder->sType   = $sType;
@@ -36,7 +40,7 @@
          * @param array $aValues
          * @return Order
          */
-        public static function desc(Field $oField, Array $aValues = array()) {
+        public static function desc(Field $oField, Array $aValues = array()): self {
             return self::create($oField, self::TYPE_DESC, $aValues);
         }
 
@@ -45,7 +49,7 @@
          * @param array $aValues
          * @return Order
          */
-        public static function asc(Field $oField, Array $aValues = array()) {
+        public static function asc(Field $oField, Array $aValues = array()): self {
             return self::create($oField, self::TYPE_ASC, $aValues);
         }
 
@@ -54,14 +58,14 @@
          * @param array $aValues
          * @return Order
          */
-        public static function byfield(Field $oField, Array $aValues = array()) {
+        public static function byfield(Field $oField, Array $aValues = array()): self {
             return self::create($oField, self::TYPE_FIELD, $aValues);
         }
 
         public function __construct() {
         }
 
-        public function toSQL() {
+        public function toSQL(): string {
             if ($this->sType == self::TYPE_FIELD) {
                 $aValues = $this->aValues;
                 foreach($aValues as &$sValue) {

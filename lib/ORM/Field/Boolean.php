@@ -12,14 +12,14 @@
          *
          * @return string
          */
-        public function __toString() {
+        public function __toString():string {
             return $this->sValue ? '1' : '0';
         }
 
         /**
          *
          * @param mixed $sValue
-         * @return self
+         * @return $this
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -44,14 +44,14 @@
         /**
          * @return bool
          */
-        public function isTrue() {
+        public function isTrue():bool {
             return $this->sValue ? true : false;
         }
 
         /**
          * @return bool
          */
-        public function isFalse() {
+        public function isFalse():bool {
             return !$this->isTrue();
         }
 
@@ -59,7 +59,7 @@
          *
          * @return string
          */
-        public function toSQL() {
+        public function toSQL():string {
             if (!$this->hasValue()) {
                 return 'NULL';
             }

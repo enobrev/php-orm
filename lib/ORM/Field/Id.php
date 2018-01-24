@@ -5,7 +5,7 @@
         /**
          * @return bool
          */
-        public function hasValue() {
+        public function hasValue():bool {
             return parent::hasValue() && (int) $this->sValue > 0;
         }
     }

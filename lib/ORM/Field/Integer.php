@@ -9,13 +9,13 @@
 
     class Integer extends Number {
 
-        public function increment() {
+        public function increment():void {
             if (!$this->isNull()) {
                 $this->sValue += 1;
             }
         }
 
-        public function decrement() {
+        public function decrement(): void {
             if (!$this->isNull()) {
                 $this->sValue -= 1;
             }
@@ -24,7 +24,7 @@
         /**
          *
          * @param mixed $sValue
-         * @return self
+         * @return $this
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -56,7 +56,7 @@
          *
          * @return string
          */
-        public function toSQL() {
+        public function toSQL():string {
             if (!$this->hasValue()) {
                 return 'NULL';
             }

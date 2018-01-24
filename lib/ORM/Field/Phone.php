@@ -16,7 +16,7 @@
         /**
          *
          * @param mixed $sValue
-         * @return Phone
+         * @return $this
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

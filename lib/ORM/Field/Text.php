@@ -29,7 +29,7 @@
          *
          * @return string
          */
-        public function toSQL() {
+        public function toSQL():string {
             if ($this->isNull()) {
                 return '""';
             } else {
@@ -40,14 +40,14 @@
         /**
          * @return bool
          */
-        public function hasValue() {
+        public function hasValue():bool {
             return parent::hasValue() && strlen((string) $this) > 0;
         }
         
         /**
          *
          * @param mixed $sValue
-         * @return Text
+         * @return $this
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

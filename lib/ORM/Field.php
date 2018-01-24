@@ -6,39 +6,39 @@
     class FieldInvalidValueException extends FieldException {}
     
     abstract class Field {
-        /** @var string  */
+        /** @var string|null  */
         public $sTable;
 
-        /** @var string  */
+        /** @var string|null  */
         public $sTableClass;
 
         /** @var string  */
         public $sColumn;
 
-        /** @var mixed  */
+        /** @var mixed|null  */
         public $sValue;
 
-        /** @var mixed  */
+        /** @var mixed|null  */
         public $sDefault;
 
-        /** @var string  */
+        /** @var string|null  */
         public $sAlias;
 
         /** @var boolean  */
         private $bPrimary;
 
-        /** @var string */
-        private $sReferenceTable;
+        /** @var string|null */
+        private $sReferenceTable = null;
 
-        /** @var string */
-        private $sReferenceField;
+        /** @var string|null */
+        private $sReferenceField = null;
 
         /**
          *
          * @param string $sTable Can also be column name if no table is to be specified
          * @param string $sColumn
          */
-        public function __construct($sTable, $sColumn = null) {
+        public function __construct(string $sTable, string $sColumn = null) {
             if ($sColumn === null) {
                 $sColumn = $sTable;
                 $sTable  = null;
@@ -50,7 +50,6 @@
             $this->sDefault         = null;
             $this->sValue           = null;
             $this->sAlias           = null;
-            $this->oReference       = null;
         }
 
         /**
@@ -63,13 +62,13 @@
          *
          * @return string
          */
-        abstract public function toSQL();
+        abstract public function toSQL(): string;
 
         /**
          *
          * @return string
          */
-        public function toSQLLog() {
+        public function toSQLLog(): string {
             return str_replace('Field_', '', get_class($this));
         }
 
@@ -77,11 +76,11 @@
          * @param bool $bWithTable
          * @return string
          */
-        public function toSQLColumn($bWithTable=true) {
+        public function toSQLColumn(bool $bWithTable=true): string {
             if ($bWithTable) {
-                if (strlen($this->sAlias)) {
+                if ($this->sAlias && strlen($this->sAlias)) {
                     return implode('.', array($this->sAlias, $this->sColumn));
-                } else if (strlen($this->sTable)) {
+                } else if ($this->sTable && strlen($this->sTable)) {
                     return implode('.', array($this->sTable, $this->sColumn));
                 }
             }
@@ -93,11 +92,11 @@
          * @param bool $bWithTable
          * @return string
          */
-        public function toSQLColumnForFields($bWithTable = true) {
+        public function toSQLColumnForFields(bool $bWithTable = true): string {
             if ($bWithTable) {
-                if (strlen($this->sAlias)) {
+                if ($this->sAlias && strlen($this->sAlias)) {
                     return implode(' ', array(implode('.', [$this->sAlias, $this->sColumn]), "AS", implode('_', [$this->sAlias, $this->sColumn])));
-                } else if (strlen($this->sTable)) {
+                } else if ($this->sTable && strlen($this->sTable)) {
                     return implode('.', [$this->sTable, $this->sColumn]);
                 }
             }
@@ -109,7 +108,7 @@
          * @param bool $bWithTable
          * @return string
          */
-        public function toSQLColumnForSelect($bWithTable = true) {
+        public function toSQLColumnForSelect(bool $bWithTable = true): string {
             return $this->toSQLColumnForFields($bWithTable);
         }
 
@@ -117,7 +116,7 @@
          * @param bool $bWithTable
          * @return string
          */
-        public function toSQLColumnForCount($bWithTable = true) {
+        public function toSQLColumnForCount(bool $bWithTable = true): string {
             if ($bWithTable) {
                 return implode('.', array($this->sTable, $this->sColumn));
             }
@@ -128,25 +127,25 @@
         /**
          * @return string
          */
-        public function toSQLColumnForInsert() {
+        public function toSQLColumnForInsert(): string {
             return $this->toSQLColumnForFields(false);
         }
 
         /**
          *
-         * @return string
+         * @return array
          */
-        public function toInfoArray() {
-            return array(
+        public function toInfoArray():array {
+            return [
                 'name'  => $this->sColumn,
                 'type'  => get_class($this)
-            );
+            ];
         }
 
         /**
          *
          * @param mixed $sValue
-         * @return Field
+         * @return $this
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -162,56 +161,56 @@
             return $this;
         }
 
-        public function applyDefault() {
+        public function applyDefault(): void {
             $this->setValue($this->sDefault);
         }
 
         /**
          * @param string $sDefault
          */
-        public function setDefault($sDefault) {
+        public function setDefault($sDefault): void {
             $this->sDefault = $sDefault;
         }
 
         /**
          * @return bool
          */
-        public function hasDefault() {
+        public function hasDefault(): bool {
             return $this->sDefault !== null;
         }
 
         /**
          * @return bool
          */
-        public function isDefault() {
+        public function isDefault(): bool {
             return $this->getValue() == $this->sDefault;
         }
 
         /**
          * @param string $sAlias
          */
-        public function setAlias($sAlias) {
+        public function setAlias($sAlias): void {
             $this->sAlias = $sAlias;
         }
 
         /**
          * @return bool
          */
-        public function hasAlias() {
+        public function hasAlias(): bool {
             return $this->sAlias !== null;
         }
 
         /**
          * @param boolean $bPrimary
          */
-        public function setPrimary($bPrimary) {
+        public function setPrimary($bPrimary):void {
             $this->bPrimary = $bPrimary;
         }
 
         /**
          * @return bool
          */
-        public function isPrimary() {
+        public function isPrimary(): bool {
             return $this->bPrimary;
         }
 
@@ -235,7 +234,7 @@
          * @param mixed $mValue
          * @return bool
          */
-        public function is($mValue) {
+        public function is($mValue): bool {
             if ($mValue instanceof Table) {
                 $mValue = $mValue->{$this->sColumn};
             }
@@ -257,7 +256,7 @@
          * @param $aValues
          * @return bool
          */
-        public function in($aValues) {
+        public function in($aValues): bool {
             if (!is_array($aValues)) {
                 $aValues = func_get_args();
             }
@@ -275,14 +274,14 @@
          *
          * @return boolean
          */
-        public function isNull() {
+        public function isNull(): bool {
             return $this->sValue === NULL;
         }
 
         /**
          * @return bool
          */
-        public function hasValue() {
+        public function hasValue(): bool {
             return !$this->isNull();
         }
         
@@ -290,7 +289,7 @@
          *
          * @param \stdClass $oData
          */
-        public function setValueFromData($oData) {
+        public function setValueFromData($oData): void {
             if (isset($oData->{$this->sColumn})) {
                 $this->setValue($oData->{$this->sColumn});
             }
@@ -300,7 +299,7 @@
          *
          * @param array $aData
          */
-        public function setValueFromArray($aData) {    
+        public function setValueFromArray($aData): void {
             if (isset($aData[$this->sColumn]) || array_key_exists($this->sColumn, $aData)) {
                 $this->setValue($aData[$this->sColumn]);
             }
@@ -309,7 +308,7 @@
         /**
          * @return Table|null
          */
-        public function getTable() {
+        public function getTable(): ?Table {
             if ($this->sTableClass) {
                 return new $this->sTableClass;
             }
@@ -321,7 +320,7 @@
          * @param string $sTable
          * @param string $sField
          */
-        public function references($sTable, $sField) {
+        public function references($sTable, $sField): void {
             $this->sReferenceTable = $sTable;
             $this->sReferenceField = $sField;
         }
@@ -330,22 +329,22 @@
          * @param Table $oTable
          * @return bool
          */
-        public function referencesTable(Table $oTable) {
+        public function referencesTable(Table $oTable): bool {
             return $this->sReferenceTable == $oTable->getTitle();
         }
 
         /**
          * @return bool
          */
-        public function hasReference() {
+        public function hasReference(): bool {
             return $this->sReferenceTable !== null
                 && $this->sReferenceField !== null;
         }
 
         /**
-         * @return string
+         * @return null|string
          */
-        public function referenceField() {
+        public function referenceField(): ?string {
             return $this->sReferenceField;
         }
     }

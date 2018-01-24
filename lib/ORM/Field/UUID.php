@@ -3,11 +3,13 @@
 
     use \Exception;
     use Enobrev\ORM\Db;
+    use Enobrev\ORM\Table;
+    use Enobrev\ORM\Field;
 
     class UUID extends Text {
         /**
          * @param mixed $sValue
-         * @return UUID
+         * @return $this
          */
         public function setValue($sValue) {
             parent::setValue($sValue);
@@ -17,7 +19,7 @@
             return $this;
         }
 
-        public function generateValue() {
+        public function generateValue(): void {
             $this->setValue(Db::getInstance()->getUUID());
         }
 
@@ -25,7 +27,7 @@
          * @param mixed $mValue
          * @return bool
          */
-        public function is($mValue) {
+        public function is($mValue):bool {
             if ($mValue instanceof Table) {
                 $mValue = $mValue->{$this->sColumn};
             }

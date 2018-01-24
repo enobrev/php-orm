@@ -22,12 +22,16 @@
         const NOTNULL      = 'IS NOT NULL';
         const BETWEEN      = 'BETWEEN';
 
+        /** @var string  */
         private $sSign;
-        private $aElements;
 
-        private static $aSigns = array(
+        /** @var array  */
+        private $aElements = [];
+
+        /** @var array  */
+        private static $aSigns = [
             self::NOTNULL, self::LT, self::LTE, self::GT, self::GTE, self::EQUAL, self::NEQ, self::LIKE, self::NLIKE, self::ISNULL, self::BETWEEN, self::IN, self::NIN
-        );
+        ];
 
         /**
          * @param mixed $sElement
@@ -38,14 +42,15 @@
         }
 
         /**
+         * @param string $sSign
          * @param  mixed ...$aElements,... As many args as necessary.  Field MUST come before values.  Condition Type can come in any order, defaults to Equals
          * @return Condition
          * @throws ConditionInvalidTypeException
-         * @throws ConditionMissingInValueException
-         * @throws ConditionMissingFieldException
          * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
          */
-        private static function create($sSign, ...$aElements) {
+        private static function create(string $sSign, ...$aElements) {
             if (!self::isSign($sSign)) {
                 throw new ConditionInvalidTypeException();
             }
@@ -58,7 +63,7 @@
                     $oCondition->aElements[] = $mElement;
                 } else if (isset($oCondition->aElements[0])
                        &&        $oCondition->aElements[0] instanceof Field) { // Value should be of the same field type as Field
-                    /** @var Field $oField  */
+                    /** @var Field $oField */
                     $oField = clone $oCondition->aElements[0];
 
                     if (is_array($mElement)) {
@@ -95,55 +100,55 @@
             return $oCondition;
         }
 
-        public static function eq(...$aArguments) {
+        public static function eq(...$aArguments): Condition {
             return self::create(self::EQUAL, ...$aArguments);
         }
 
-        public static function neq(...$aArguments) {
+        public static function neq(...$aArguments): Condition {
             return self::create(self::NEQ, ...$aArguments);
         }
 
-        public static function lt(...$aArguments) {
+        public static function lt(...$aArguments): Condition {
             return self::create(self::LT, ...$aArguments);
         }
 
-        public static function lte(...$aArguments) {
+        public static function lte(...$aArguments): Condition {
             return self::create(self::LTE, ...$aArguments);
         }
 
-        public static function gt(...$aArguments) {
+        public static function gt(...$aArguments): Condition {
             return self::create(self::GT, ...$aArguments);
         }
 
-        public static function gte(...$aArguments) {
+        public static function gte(...$aArguments): Condition {
             return self::create(self::GTE, ...$aArguments);
         }
 
-        public static function like(...$aArguments) {
+        public static function like(...$aArguments): Condition {
             return self::create(self::LIKE, ...$aArguments);
         }
 
-        public static function nlike(...$aArguments) {
+        public static function nlike(...$aArguments): Condition {
             return self::create(self::NLIKE, ...$aArguments);
         }
 
-        public static function in(...$aArguments) {
+        public static function in(...$aArguments): Condition {
             return self::create(self::IN, ...$aArguments);
         }
 
-        public static function nin(...$aArguments) {
+        public static function nin(...$aArguments): Condition {
             return self::create(self::NIN, ...$aArguments);
         }
 
-        public static function nul(...$aArguments) {
+        public static function nul(...$aArguments): Condition {
             return self::create(self::ISNULL, ...$aArguments);
         }
 
-        public static function nnul(...$aArguments) {
+        public static function nnul(...$aArguments): Condition {
             return self::create(self::NOTNULL, ...$aArguments);
         }
 
-        public static function between(...$aArguments) {
+        public static function between(...$aArguments): Condition {
             return self::create(self::BETWEEN, ...$aArguments);
         }
 
@@ -156,7 +161,7 @@
          * @return string
          */
         public function toSQL() {
-            /** @var Field $oField  */
+            /** @var Field $oField */
             $oField = $this->aElements[0];
 
             if (count($this->aElements) == 1) {
@@ -178,7 +183,7 @@
                     );
                 }
             } else if ($this->sSign == self::BETWEEN) {
-                /** @var Field $oField1  */
+                /** @var Field $oField1 */
                 $oField1 = $this->aElements[1];
                 if (count($this->aElements) == 2) {
                     return implode(' ',
@@ -191,7 +196,7 @@
                         )
                     );
                 } else {
-                    /** @var Field $oField2  */
+                    /** @var Field $oField2 */
                     $oField2 = $this->aElements[2];
                     return implode(' ',
                         array(
@@ -222,7 +227,7 @@
                     )
                 );
             } else {
-                /** @var Field $oField1  */
+                /** @var Field $oField1 */
                 $oField1 = $this->aElements[1];
 
                 return implode(' ',
@@ -239,7 +244,7 @@
          * @return string
          */
         public function toSQLLog() {
-            /** @var Field $oField  */
+            /** @var Field $oField */
             $oField = $this->aElements[0];
 
             if (count($this->aElements) == 1) {
@@ -260,7 +265,7 @@
                     );
                 }
             } else if ($this->sSign == self::BETWEEN) {
-                /** @var Field $oField1  */
+                /** @var Field $oField1 */
                 $oField1 = $this->aElements[1];
                 if (count($this->aElements) == 2) {
                     return implode(' ',
@@ -273,7 +278,7 @@
                         )
                     );
                 } else {
-                    /** @var Field $oField2  */
+                    /** @var Field $oField2 */
                     $oField2 = $this->aElements[2];
                     return implode(' ',
                         array(
@@ -302,7 +307,7 @@
                     )
                 );
             } else {
-                /** @var Field $oField1  */
+                /** @var Field $oField1 */
                 $oField1 = $this->aElements[1];
 
                 return implode(' ',
@@ -315,7 +320,7 @@
             }
         }
 
-        public function toKey() {
+        public function toKey(): string {
             $sKey = str_replace(' ', '_', $this->toSQL());
             return preg_replace('/[^a-zA-Z0-9_=<>!]/', '-', $sKey);
         }

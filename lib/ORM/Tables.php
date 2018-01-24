@@ -20,6 +20,7 @@
         /**
          * @return Table[]|static
          * @throws DbException
+         * @psalm-suppress InvalidArgument
          */
         public static function get() {
             $oTable   = static::getTable();
@@ -35,6 +36,7 @@
             $oTable   = static::getTable();
             $oResults = Db::getInstance()->namedQuery(__METHOD__, SQLBuilder::count($oTable));
             $iTotal   = $oResults->fetchColumn();
+            /** @psalm-suppress TypeDoesNotContainType */
             if ($iTotal !== false) {
                 return (int) $iTotal;
             }
@@ -85,28 +87,40 @@
                 $oOutput = new static;
                 while ($oResult = $oResults->fetchObject()) {
                     $aRow = array();
+                    /** @var Table $oTable */
                     foreach ($aTables as $oTable) {
                         /** @var Table $sPrefixedTable */
+                        /** @psalm-suppress InvalidArgument */
                         $sPrefixedTable = get_class($oTable);
-                        $aRow[$oTable->getTitle()] = $sPrefixedTable::createFromObject($oResult);
+                        $sTableName     = $oTable->getTitle();
+                        if ($sTableName) {
+                            $aRow[$sTableName] = $sPrefixedTable::createFromObject($oResult);
+                        }
                     }
                     $oOutput->append($aRow);
                 }
 
                 return $oOutput;
             } else {
+                /** @psalm-suppress InvalidArgument */
                 $sPrefixedTable = get_class($aTables[0]);
                 return new static($oResults->fetchAll(PDO::FETCH_CLASS, $sPrefixedTable));
             }
 
         }
 
-        public function append($value) {
+        /**
+         * @param mixed $value
+         * @throws TablesException
+         * @throws \Exception
+         */
+        public function append($value): void {
             $sClass = static::getTable();
             if ($value instanceof $sClass !== false) {
                 parent::append($value);
             } else {
                 // TODO: Log incorrect value or throw an exception or something
+                throw new TablesException('Cannot Append Table of Type ' . get_class($value) . ' to ' . get_class($this));
             }
         }
 
@@ -114,7 +128,7 @@
          * @param Field|array $mFields
          * @return array
          */
-        public function toValueArray($mFields) {
+        public function toValueArray($mFields): array {
             if ($mFields instanceof Field) {
                 $sField  = $mFields->sColumn;
                 $aReturn = [];
@@ -149,7 +163,7 @@
          * @param string $sValue
          * @return array
          */
-        public function toKeyValueArray($sKey, $sValue) {
+        public function toKeyValueArray(string $sKey, string $sValue): array {
             $aReturn = [];
             foreach($this as $oTable) {
                 $aReturn[$oTable->$sKey->getValue()] = $oTable->$sValue->getValue();
@@ -218,6 +232,7 @@
          */
         public function toCSV() {
             /** @var Table $oRecord */
+            /** @psalm-suppress InvalidScalarArgument */
             $oRecord = $this->offsetGet(0);
             $aFields = [];
             foreach($oRecord->getFields() as $oField) {
@@ -225,6 +240,10 @@
             }
 
             $oOutput = fopen("php://temp", "w");
+
+            if (!$oOutput) {
+                return '';
+            }
 
             fputcsv($oOutput, $aFields);
 

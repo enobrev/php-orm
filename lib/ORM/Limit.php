@@ -2,7 +2,10 @@
     namespace Enobrev\ORM;
     
     class Limit {
+        /** @var null|int */
         private $iStart;
+
+        /** @var null|int */
         private $iOffset;
 
         /**
@@ -10,7 +13,7 @@
          * @param int $iOffset
          * @return Limit
          */
-        public static function create($iStart = null, $iOffset = null) {
+        public static function create(int $iStart = null, int $iOffset = null): self {
             $oLimit = new self;
 
             if ($iOffset !== null) {
@@ -29,7 +32,7 @@
             $this->iOffset = null;
         }
 
-        public function toSQL() {
+        public function toSQL(): string {
             if ($this->iOffset !== null) {
                 if ($this->iStart !== null) {
                     return 'LIMIT ' . $this->iStart . ', ' . $this->iOffset;

@@ -17,7 +17,7 @@
         const TYPE_UPSERT = 'UPSERT';
         const TYPE_DELETE = 'DELETE';
 
-        /** @var string  */
+        /** @var null|string  */
         public $sSQL      = NULL;
 
         /** @var string  */
@@ -56,7 +56,7 @@
         /** @var ORM\Conditions $oConditions */
         private $oConditions;
 
-        public function __construct($sMethod) {
+        public function __construct(string $sMethod) {
             $this->setType($sMethod);
             $this->oConditions  = new ORM\Conditions;
         }
@@ -71,14 +71,14 @@
         /**
          * @param $sType
          */
-        public function setType($sType) {
+        public function setType(string $sType): void {
             $this->sSQLType = $sType;
             $this->sSQL     = null; // Reset SQL so it will be regenerated when using (string) self
         }
 
         /**
-         * @param array ...$aArguments
-         * @return SQLBuilder
+         * @param ORM\Table|array ...$aArguments
+         * @return $this
          */
         public function from(...$aArguments) {
             foreach($aArguments as $oTable) {
@@ -87,7 +87,7 @@
 
                     if (count($this->aTables) == 1) {
                         $this->oTable    = $oTable;
-                        $this->sSQLTable = $oTable->getTitle();
+                        $this->sSQLTable = (string) $oTable->getTitle();
                     }
                 }
             }
@@ -97,7 +97,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function either(...$aArguments) {
             $this->oConditions->add(SQL::either(...$aArguments));
@@ -106,7 +106,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function also(...$aArguments) {
             $this->oConditions->add(SQL::also(...$aArguments));
@@ -115,7 +115,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function eq(...$aArguments) {
             $this->oConditions->add(SQL::eq(...$aArguments));
@@ -125,10 +125,11 @@
         /**
          * @param Field $oField
          * @param mixed $mValue
-         * @return SQLBuilder
+         * @return $this
          * @throws ORM\ConditionsNonConditionException
          */
         public function eq_in(Field $oField, $mValue) {
+            /** @psalm-suppress InvalidArgument */
             if (strpos($mValue, ',')) {
                 $this->oConditions->add(SQL::in($oField, explode(',', $mValue)));
             } else {
@@ -139,7 +140,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function neq(...$aArguments) {
             $this->oConditions->add(SQL::neq(...$aArguments));
@@ -148,7 +149,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function lt(...$aArguments) {
             $this->oConditions->add(SQL::lt(...$aArguments));
@@ -157,7 +158,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function gt(...$aArguments) {
             $this->oConditions->add(SQL::gt(...$aArguments));
@@ -166,7 +167,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function gte(...$aArguments) {
             $this->oConditions->add(SQL::gte(...$aArguments));
@@ -175,7 +176,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function like(...$aArguments) {
             $this->oConditions->add(SQL::like(...$aArguments));
@@ -184,7 +185,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function nlike(...$aArguments) {
             $this->oConditions->add(SQL::nlike(...$aArguments));
@@ -193,7 +194,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function nul(...$aArguments) {
             $this->oConditions->add(SQL::nul(...$aArguments));
@@ -202,7 +203,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function nnul(...$aArguments) {
             $this->oConditions->add(SQL::nnul(...$aArguments));
@@ -211,7 +212,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function in(...$aArguments) {
             $this->oConditions->add(SQL::in(...$aArguments));
@@ -220,7 +221,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function nin(...$aArguments) {
             $this->oConditions->add(SQL::nin(...$aArguments));
@@ -229,7 +230,7 @@
 
         /**
          * @param array ...$aArguments
-         * @return SQLBuilder
+         * @return $this
          */
         public function between(...$aArguments) {
             $this->oConditions->add(SQL::between(...$aArguments));
@@ -239,7 +240,7 @@
         /**
          * @param ORM\Field $oFrom
          * @param ORM\Field $oTo
-         * @return SQLBuilder
+         * @return $this
          */
         public function join(ORM\Field $oFrom, ORM\Field $oTo) {
             $this->aJoins[] = SQL::join($oFrom, $oTo);
@@ -249,7 +250,7 @@
         /**
          * @param int|null $iStart
          * @param int|null $iOffset
-         * @return SQLBuilder
+         * @return $this
          */
         public function limit($iStart = null, $iOffset = null) {
             $this->oLimit = SQL::limit($iStart, $iOffset);
@@ -258,7 +259,7 @@
 
         /**
          * @param ORM\Field[]  ...$aFields
-         * @return SQLBuilder
+         * @return $this
          */
         public function group(...$aFields) {
             $this->oGroup = SQL::group(...$aFields);
@@ -268,7 +269,7 @@
         /**
          * @param ORM\Field $oField
          * @param array $aValues
-         * @return SQLBuilder
+         * @return $this
          */
         public function desc(ORM\Field $oField, Array $aValues = array()) {
             $this->aOrders[] = SQL::desc($oField, $aValues);
@@ -278,7 +279,7 @@
         /**
          * @param ORM\Field $oField
          * @param array $aValues
-         * @return SQLBuilder
+         * @return $this
          */
         public function asc(ORM\Field $oField, Array $aValues = array()) {
             $this->aOrders[] = SQL::asc($oField, $aValues);
@@ -288,7 +289,7 @@
         /**
          * @param ORM\Field $oField
          * @param array $aValues
-         * @return SQLBuilder
+         * @return $this
          */
         public function byfield(ORM\Field $oField, Array $aValues = array()) {
             $this->aOrders[] = SQL::byfield($oField, $aValues);
@@ -297,7 +298,7 @@
 
         /**
          * @param ORM\Field $oField
-         * @return SQLBuilder
+         * @return $this
          */
         public function field(ORM\Field $oField) {
             $this->aFields[] = $oField;
@@ -307,15 +308,18 @@
 
         /**
          * @param ORM\Table|ORM\Field[] $aFields
-         * @return SQLBuilder
+         * @return $this
+         * @psalm-suppress MismatchingDocblockParamType
          */
         public function fields(...$aFields) {
             if (is_array($aFields) && count($aFields) && $aFields[0] instanceof ORM\Table) {
-                /** @var ORM\Table $aFields */
-                $aFields = $aFields[0];
-                $aFields = $aFields->getFields();
+                /** @var ORM\Table $oTable */
+                $oTable  = $aFields[0];
+                $aFields = $oTable->getFields();
             }
 
+            /** @var ORM\Field $oField */
+            /** @psalm-suppress RawObjectIteration */
             foreach ($aFields as $oField) {
                 $this->field($oField);
             }
@@ -324,9 +328,9 @@
         }
 
         /**
-         * @param ORM\Table $oTable
+         * @param ORM\Table   $oTable
          * @param ORM\Field[] ...$aFields
-         * @return SQLBuilder
+         * @return $this
          */
         public static function select(ORM\Table $oTable, ...$aFields) {
             $oBuilder = new self(self::TYPE_SELECT);
@@ -335,6 +339,11 @@
             return $oBuilder;
         }
 
+        /**
+         * @param ORM\Table   $oTable
+         * @param ORM\Field[] ...$aFields
+         * @return $this
+         */
         public static function count(ORM\Table $oTable, ...$aFields) {
             $oBuilder = new self(self::TYPE_COUNT);
             $oBuilder->from($oTable);
@@ -342,30 +351,50 @@
             return $oBuilder;
         }
 
+        /**
+         * @param ORM\Table   $oTable
+         * @return $this
+         */
         public static function insert(ORM\Table $oTable) {
             $oBuilder = new self(self::TYPE_INSERT);
             $oBuilder->from($oTable);
             return $oBuilder;
         }
 
+        /**
+         * @param ORM\Table $oTable
+         * @return $this
+         */
         public static function update(ORM\Table $oTable) {
             $oBuilder = new self(self::TYPE_UPDATE);
             $oBuilder->from($oTable);
             return $oBuilder;
         }
 
+        /**
+         * @param ORM\Table $oTable
+         * @return $this
+         */
         public static function upsert(ORM\Table $oTable) {
             $oBuilder = new self(self::TYPE_UPSERT);
             $oBuilder->from($oTable);
             return $oBuilder;
         }
 
+        /**
+         * @param ORM\Table $oTable
+         * @return $this
+         */
         public static function delete(ORM\Table $oTable) {
             $oBuilder = new self(self::TYPE_DELETE);
             $oBuilder->from($oTable);
             return $oBuilder;
         }
 
+        /**
+         * @return $this
+         * @throws SQLBuilderException
+         */
         public function build() {
             switch($this->sSQLType) {
                 case self::TYPE_SELECT: return $this->buildSelect();
@@ -376,17 +405,20 @@
                 case self::TYPE_DELETE: return $this->buildDelete();
             }
 
-            return null;
+            throw new SQLBuilderException('Invalid SQL Builder Type');
         }
 
         /**
-         * @return SQLBuilder
+         * @return $this
          * @throws SQLBuilderMissingTableOrFieldsException
          */
         private function buildSelect() {
             if (count($this->aFields)) {
                 foreach($this->aFields as $oField) {
-                    $this->aTables[] = $oField->getTable();
+                    $sTable = $oField->getTable();
+                    if ($sTable) {
+                        $this->aTables[] = $sTable;
+                    }
                 }
             } else if (count($this->aTables)) {
                 $this->bStar  = true;
@@ -457,7 +489,7 @@
         }
 
         /**
-         * @return SQLBuilder
+         * @return $this
          */
         private function buildCount() {
             $aSQL     = array(self::TYPE_SELECT);
@@ -500,7 +532,7 @@
         }
 
         /**
-         * @return SQLBuilder
+         * @return $this
          * @throws SQLBuilderMissingTableOrFieldsException
          */
         private function buildInsert() {
@@ -538,7 +570,7 @@
         }
 
         /**
-         * @return SQLBuilder
+         * @return $this
          * @throws SQLBuilderMissingConditionException
          * @throws SQLBuilderMissingTableOrFieldsException
          */
@@ -575,7 +607,7 @@
         }
 
         /**
-         * @return SQLBuilder
+         * @return $this
          * @throws SQLBuilderMissingTableOrFieldsException
          * @throws SQLBuilderPrimaryValuesNotSetException
          */
@@ -621,7 +653,7 @@
         }
 
         /**
-         * @return SQLBuilder
+         * @return $this
          * @throws ORM\ConditionsNonConditionException
          * @throws SQLBuilderMissingTableOrFieldsException
          */
@@ -763,9 +795,13 @@
             return implode(', ', $aColumns);
         }
 
-        public function toString() {
+        public function toString():string {
             if ($this->sSQL === null) {
                 $this->build();
+            }
+
+            if ($this->sSQL === null) {
+                return '';
             }
 
             return $this->sSQL;

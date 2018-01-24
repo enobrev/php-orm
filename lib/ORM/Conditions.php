@@ -8,9 +8,10 @@
         const TYPE_AND = 'AND';
         const TYPE_OR  = 'OR';
 
-        private static $aTypes = array(
+        /** @var array  */
+        private static $aTypes = [
             self::TYPE_AND, self::TYPE_OR
-        );
+        ];
 
         /**
          * @param mixed $sElement
@@ -23,12 +24,15 @@
         /** @var string  */
         private $sType;
 
-        /** @var Condition[] $aConditions */
+        /** @var Condition[]|Conditions[] */
         private $aConditions;
 
         /**
-         * @param Condition[]|Conditions $aConditions
+         * @param Condition[]|Conditions|string[] $aConditions
          * @return Conditions
+         * @throws ConditionsNonConditionException
+         * @psalm-suppress RawObjectIteration
+         * @psalm-suppress MismatchingDocblockParamType
          */
         private static function create(...$aConditions) {
             $oConditions = new self();
@@ -45,6 +49,7 @@
                         break;
 
                     case self::isType($mCondition):
+                        /** @var string $mCondition */
                         $oConditions->sType = $mCondition;
                         break;
                 }
@@ -74,7 +79,11 @@
             $this->aConditions = array();
         }
 
-        public function add($oCondition) {
+        /**
+         * @param Condition|Conditions|Field|Condition[]|Field[]|Conditions[]|string $oCondition
+         * @throws ConditionsNonConditionException
+         */
+        public function add($oCondition):void {
             switch(true) {
                 case $oCondition instanceof self:
                 case $oCondition instanceof Condition:
@@ -104,7 +113,7 @@
             }
         }
 
-        public function count() {
+        public function count():int {
             return count($this->aConditions);
         }
 
@@ -154,7 +163,7 @@
             return implode(' ' . $this->sType . ' ', $aOutput);
         }
 
-        public function toKey() {
+        public function toKey():string {
             // TODO: Order By Field Name
             return preg_replace('/[^0-9a-zA-Z_.<>=-]/', '', $this->toSQL());
         }

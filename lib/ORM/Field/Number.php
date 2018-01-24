@@ -7,9 +7,9 @@
     abstract class Number extends Field {
         /**
          *
-         * @return string|integer
+         * @return string
          */
-        public function __toString() {
+        public function __toString():string {
             return $this->sValue != 0 ? (string) $this->sValue : '0';
         }
         
@@ -17,7 +17,7 @@
          *
          * @return string
          */
-        public function toSQL() {
+        public function toSQL(): string {
             return Escape::string($this->__toString());
         }
     }

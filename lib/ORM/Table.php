@@ -9,11 +9,11 @@
     class TableFieldNotFoundException extends TableException {}
 
     class Table {
-        /** @var string  */
-        protected $sTitle;
+        /** @var null|string  */
+        protected $sTitle = null;
 
-        /** @var stdClass  */
-        public $oResult;
+        /** @var null|stdClass  */
+        public $oResult = null;
 
         /** @var string  */
         public $sKey = __CLASS__;
@@ -58,9 +58,8 @@
         }
 
         /**
-         * @static
          * @param stdClass $oObject
-         * @return static
+         * @return null|static
          */
         public static function createFromObject(stdClass $oObject = NULL) {
             if ($oObject instanceof stdClass === false) {
@@ -150,7 +149,7 @@
                     $this->sTitle = $sTitle;
                 }
 
-                if (strlen($this->sTitle) == 0) {
+                if ($this->sTitle === null || strlen($this->sTitle) == 0) {
                     throw new TableNamelessException;
                 }
 
@@ -161,10 +160,10 @@
             $this->bConstructed = true;
         }
 
-        protected function init() {
+        protected function init(): void {
         }
 
-        public function applyDefaults() {
+        public function applyDefaults(): void {
             /** @var Field $oField */
             foreach ($this->getFields() as $oField) {
                 if ($oField->hasDefault()) {
@@ -177,9 +176,9 @@
 
 
         /**
-         * @return string
+         * @return null|string
          */
-        public function getTitle() {
+        public function getTitle(): ?string {
             return $this->sTitle;
         }
 
@@ -187,7 +186,7 @@
          * @param Field $oField
          * @return bool
          */
-        public function fieldChanged(Field $oField) {
+        public function fieldChanged(Field $oField): bool {
             if (!$this->oResult) {
                 return true;
             }
@@ -206,7 +205,7 @@
         /**
          * @return bool
          */
-        public function changed() {
+        public function changed(): bool {
             if (!property_exists($this, 'oResult')) {
                 return true;
             }
@@ -252,7 +251,7 @@
             return $aPrimary;
         }
 
-        public function getPrimaryFieldNames() {
+        public function getPrimaryFieldNames(): array {
             $aNames = [];
             foreach($this->getPrimary() as $oPrimary) {
                 $aNames[] = $oPrimary->sColumn;
@@ -263,7 +262,7 @@
 
         /**
          * @param Table $oTable
-         * @return Field
+         * @return null|Field
          */
         public function getFieldThatReferencesTable(Table $oTable) {
             $aProperties = get_object_vars($this);
@@ -314,7 +313,7 @@
          * @param array $aMap  data_field => column
          * @param array $aOverride Data that overrides the map
          */
-        public function mapArrayToFields(Array $aData, Array $aMap, Array $aOverride = []) {
+        public function mapArrayToFields(Array $aData, Array $aMap, Array $aOverride = []): void {
             $aMappedData = array();
             foreach($aMap as $sDataField => $mField) {
                 if (isset($aData[$sDataField]) || array_key_exists($sDataField, $aData)) {
@@ -347,7 +346,7 @@
          *
          * @param array $aData
          */
-        public function setPrimaryFromArray(Array $aData) {
+        public function setPrimaryFromArray(Array $aData): void {
             foreach ($this->getPrimary() as $oPrimary) {
                 if (isset($aData[$oPrimary->sColumn]) || array_key_exists($oPrimary->sColumn, $aData)) {
                     $this->{$oPrimary->sColumn}->setValue($aData[$oPrimary->sColumn]);
@@ -356,8 +355,10 @@
         }
 
         /**
-         *
-         * @return static
+         * @return static|null
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws TableException
          */
         public function getByPrimary() {
             return $this->getBy(...$this->getPrimary());
@@ -366,6 +367,8 @@
         /**
          * @param Field[] $aFields
          * @return static|null
+         * @throws DbDuplicateException
+         * @throws DbException
          * @throws TableException
          */
         protected static function getBy(...$aFields) {
@@ -420,8 +423,9 @@
         /**
          * @param Field[] ...$aFields
          * @return void
+         * @psalm-suppress InvalidArgument
          */
-        public function addFields(...$aFields) {
+        public function addFields(...$aFields): void {
             foreach ($aFields as $oField) {
                 $this->addField($oField);
             }
@@ -431,7 +435,7 @@
          * @param Field $oField
          * @return void
          */
-        public function addPrimary(Field $oField) {
+        public function addPrimary(Field $oField): void {
             $this->addField($oField);
             $oField->setPrimary(true);
         }
@@ -440,18 +444,20 @@
          * @param Field[] $aFields
          * @return void
          */
-        public function addPrimaries(...$aFields) {
+        public function addPrimaries(...$aFields): void {
             foreach ($aFields as $oField) {
                 $this->addPrimary($oField);
             }
         }
 
-        protected function preUpdate() {}
-        protected function postUpdate() {}
+        protected function preUpdate():void {}
+        protected function postUpdate(): void {}
 
         /**
          *
          * @return PDOStatement|bool
+         * @throws DbDuplicateException
+         * @throws DbException
          */
         public function update() {
             if (!$this->changed()) {
@@ -471,7 +477,7 @@
             return false;
         }
 
-        public function primaryHasValue() {
+        public function primaryHasValue(): bool {
             $aPrimary = $this->getPrimary();
             foreach($aPrimary as $oPrimary) {
                 if (!$oPrimary->hasValue()) {
@@ -485,6 +491,8 @@
         /**
          *
          * @return PDOStatement|bool
+         * @throws DbDuplicateException
+         * @throws DbException
          */
         public function delete() {
             if ($this->primaryHasValue()) {
@@ -498,12 +506,14 @@
             return false;
         }
 
-        protected function preInsert() {}
-        protected function postInsert() {}
+        protected function preInsert(): void {}
+        protected function postInsert(): void {}
 
         /**
          *
          * @return int
+         * @throws DbDuplicateException
+         * @throws DbException
          */
         public function insert() {
             $bPrimaryAlreadySet = $this->primaryHasValue();
@@ -527,7 +537,7 @@
         /**
          * @param int $iLastInsertId
          */
-        private function updatePrimary($iLastInsertId) {
+        private function updatePrimary(int $iLastInsertId): void {
             $aPrimary = $this->getPrimary();
             if (count($aPrimary) == 1) {
                 /** @var Field\Id $oField */
@@ -539,12 +549,14 @@
             }
         }
 
-        protected function preUpsert() {}
-        protected function postUpsert() {}
+        protected function preUpsert(): void {}
+        protected function postUpsert(): void {}
 
         /**
          *
          * @return int
+         * @throws DbDuplicateException
+         * @throws DbException
          */
         public function upsert() {
             $this->preUpsert();
@@ -579,8 +591,8 @@
             return $aArray;
         }
 
-        public function toHash() {
-            return hash('sha1', json_encode($this->toArray()));
+        public function toHash(): string {
+            return hash('sha1', (string) json_encode($this->toArray()));
         }
 
         /**

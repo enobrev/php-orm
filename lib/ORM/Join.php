@@ -10,10 +10,10 @@
         private $sType;
         
         /** @var  Field */
-        private $oFrom;
+        private $oFrom = null;
 
         /** @var  Field */
-        private $oTo;
+        private $oTo = null;
 
         /**
          * @param Field $oFrom
@@ -29,10 +29,9 @@
 
         public function __construct() {
             $this->sType   = self::LEFT_OUTER;
-            $this->aFields = [];
         }
 
-        public function toSQL() {
+        public function toSQL(): string {
             if ($this->oTo->hasAlias()) {
                 return implode(' ',
                     array(

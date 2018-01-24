@@ -8,7 +8,8 @@
     use Enobrev\ORM\Table;
 
     class Enum extends Field {
-        public $aValues = array();
+        /** @var array  */
+        public $aValues = [];
 
         /**
          * @param string $sTable
@@ -16,13 +17,17 @@
          * @param array $aValues
          */
         public function __construct($sTable, $sColumn, Array $aValues = array()) {
+            $this->sColumn = '';
+
             if (is_array($sColumn)) {
                 $aValues = $sColumn;
                 $sColumn = $sTable;
                 $sTable  = null;
-            }
 
-            parent::__construct($sTable, $sColumn);
+                parent::__construct($sColumn);
+            } else {
+                parent::__construct($sTable, $sColumn);
+            }
             
             if (count($aValues)) {
                 $this->aValues = $aValues;
@@ -45,22 +50,22 @@
          *
          * @return string
          */
-        public function toSQL() {
+        public function toSQL(): string {
             return Escape::string($this->__toString());
         }
         /**
          *
          * @return string
          */
-        public function toSQLLog() {
+        public function toSQLLog(): string {
             return parent::toSQLLog() . ':' . $this->__toString();
         }
 
         /**
          *
-         * @return string
+         * @return array
          */
-        public function toInfoArray() {
+        public function toInfoArray(): array {
             $aInfo = parent::toInfoArray();
             $aInfo['values'] = $this->aValues;
 
@@ -70,7 +75,7 @@
         /**
          * @return bool
          */
-        public function hasValue() {
+        public function hasValue(): bool {
             return parent::hasValue() && strlen((string) $this) > 0;
         }
 
@@ -78,13 +83,13 @@
          * @param string $sValue
          * @return bool
          */
-        public function isValue($sValue) {
+        public function isValue($sValue):bool {
             return in_array($sValue, $this->aValues);
         }
 
         /**
          * @param mixed $sValue
-         * @return Enum
+         * @return $this
          * @throws FieldInvalidValueException
          */
         public function setValue($sValue) {

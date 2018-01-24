@@ -10,8 +10,8 @@
     use Enobrev\SQLBuilder;
 
     class Db {
-        /** @var Db */
-        private static $oInstance;
+        /** @var Db|null */
+        private static $oInstance = null;
 
         /** @var bool */
         private static $bConnected = false;
@@ -22,11 +22,11 @@
         /** @var bool */
         public static $bUpsertUpdated  = false;
 
-        /** @var int */
-        private $iLastInsertId;
+        /** @var mixed */
+        private $sLastInsertId = null;
 
         /** @var int */
-        private $iLastRowsAffected;
+        private $iLastRowsAffected = null;
 
         /** @var PDO $oPDO */
         private static $oPDO;
@@ -67,6 +67,7 @@
          * @param string|null $sDatabase
          * @param array       $aOptions
          * @return PDO
+         * @psalm-suppress PossiblyNullArgument
          */
         public static function defaultMySQLPDO(string $sHost, string $sUsername = null, string $sPassword = null, string $sDatabase = null, array $aOptions = []) {
             $sDSN = "mysql:host=$sHost";
@@ -114,15 +115,18 @@
             self::$oPDO = $oPDO;
         }
 
-        public function close() {
+        /**
+         * @psalm-suppress InvalidPropertyAssignment
+         */
+        public function close(): void {
             if (self::$oInstance instanceof self && self::$bConnected) {
                 self::$oPDO = null;
             }
 
             self::$bConnected = false;
-            self::$oInstance = null;
+            self::$oInstance  = null;
         }
-        
+
         /**
          *
          * @return boolean
@@ -146,20 +150,25 @@
         public static function wasUpsertUpdated() {
             return self::$bUpsertUpdated;
         }
-        
+
+        /**
+         * @return mixed
+         */
         public function getLastInsertId() {
-            return $this->iLastInsertId;
+            return $this->sLastInsertId;
         }
 
-        public function getLastRowsAffected() {
+        public function getLastRowsAffected(): int {
             return $this->iLastRowsAffected;
         }
 
         /**
-         * @param string|string[]   $sName
-         * @param string            $sQuery
+         * @param string|string[]       $sName
+         * @param string|SQLBuilder|SQL $sQuery
          *
          * @return PDOStatement
+         * @throws DbDuplicateException
+         * @throws DbException
          */
         public function namedQuery($sName, $sQuery) {
             if (is_array($sName)) {
@@ -189,6 +198,7 @@
             if ($sSQL instanceof SQL || $sSQL instanceof SQLBuilder) {
                 $sSQL = (string) $sQuery;
 
+                /** @psalm-suppress PossiblyInvalidPropertyFetch */
                 $aLogOutput['sql'] = [
                     'query' => $sSQL,
                     'group' => $sQuery->sSQLGroup,
@@ -220,7 +230,7 @@
                 throw $oException;
             }
 
-            $this->iLastInsertId     = self::$oPDO->lastInsertId();
+            $this->sLastInsertId     = self::$oPDO->lastInsertId();
             $this->iLastRowsAffected = 0;
             if ($mResult instanceof PDOStatement) {
                 switch(self::$oPDO->getAttribute(PDO::ATTR_DRIVER_NAME)) {
@@ -287,18 +297,15 @@
         /**
          *
          * @return DateTime
+         * @psalm-suppress InvalidReturnType
          */
-        public function getDate() {
-            switch(self::$oPDO->getAttribute(PDO::ATTR_DRIVER_NAME)) {
-                default:
-                case 'mysql':
-                    return new DateTime($this->rawQuery('SELECT SYSDATE()')->fetchColumn());
-                    break;
-
-                case 'sqlite':
-                    return new DateTime('now');
-                    break;
+        public function getDate(): DateTime {
+            $sDriver = self::$oPDO->getAttribute(PDO::ATTR_DRIVER_NAME);
+            if ($sDriver == 'sqlite') {
+                return new DateTime('now');
             }
+
+            return new DateTime($this->rawQuery('SELECT SYSDATE()')->fetchColumn());
         }
 
         /**

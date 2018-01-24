@@ -11,7 +11,7 @@
         /**
          *
          * @param mixed $sValue
-         * @return Decimal
+         * @return $this
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -39,7 +39,7 @@
          *
          * @return string
          */
-        public function toSQL() {
+        public function toSQL():string {
             if (!$this->hasValue()) {
                 return 'NULL';
             }

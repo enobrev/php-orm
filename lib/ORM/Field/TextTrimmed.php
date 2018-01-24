@@ -8,7 +8,7 @@
 
         /**
          *
-         * @return string|NULL
+         * @return string
          */
         public function getValue() {
             return trim($this->sValue);
@@ -17,7 +17,7 @@
         /**
          *
          * @param mixed $sValue
-         * @return TextTrimmed
+         * @return $this
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

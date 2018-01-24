@@ -6,9 +6,11 @@
     class Escape {
         /**
          * @param string $sString
+         * @param int    $sPDOType
          * @return string
+         * @throws DbException
          */
-        public static function string(string $sString, $sPDOType = PDO::PARAM_STR) {
+        public static function string(string $sString, int $sPDOType = PDO::PARAM_STR) {
             if (defined('PHPUNIT_ENOBREV_ORM_TESTSUITE') === true) {
                 $sReturn = strtr($sString, [
                     "\x00"  => '\x00',

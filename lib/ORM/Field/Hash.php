@@ -6,7 +6,7 @@
         /**
          *
          * @param mixed $sValue
-         * @return Hash
+         * @return $this
          */
         public function setValue($sValue) {
             parent::setValue($sValue);
@@ -24,7 +24,7 @@
          *
          * @return string
          */
-        public function toSQL() {
+        public function toSQL(): string {
             if ($this->isNull()) {
                 return 'NULL';
             } else {
@@ -36,7 +36,7 @@
          * @param bool $bWithTable
          * @return string
          */
-        public function toSQLColumnsForInsert($bWithTable = true) {
+        public function toSQLColumnsForInsert($bWithTable = true):string {
             if ($bWithTable) {
                 $aTableColumn = array($this->sTable, $this->sColumn);
                 $sTableColumn = "LOWER(HEX(" . implode('.', $aTableColumn) . "))";
@@ -51,18 +51,18 @@
          * @param bool $bWithTable
          * @return string
          */
-        public function toSQLColumnForSelect($bWithTable = true) {
+        public function toSQLColumnForSelect($bWithTable = true):string {
             if ($bWithTable) {
                 $aTableColumn = array($this->sTable, $this->sColumn);
                 $sTableColumn = implode('.', $aTableColumn);
                 $sTableColumn = "LOWER(HEX(" . $sTableColumn . "))";
 
-                if (strlen($this->sAlias)) {
+                if ($this->sAlias && strlen($this->sAlias)) {
                     $aAliasColumn = array($this->sAlias, $this->sColumn);
                     $sAliasColumn = implode('_', $aAliasColumn);
 
                     return implode(' ', array($sTableColumn, "AS", $sAliasColumn));
-                } else if (strlen($this->sTable)) {
+                } else if ($this->sTable && strlen($this->sTable)) {
                     return implode(' ', array($sTableColumn, "AS", $this->sColumn));
                 }
             }

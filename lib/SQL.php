@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev;
 
+    use Enobrev\ORM\Table;
     use stdClass;
 
     class SQLException extends \Exception {}
@@ -38,7 +39,7 @@
          * @return string
          */
         public static function NOW() {
-            return ORM\Field\Date::MYSQL_NOW;
+            return ORM\DateFunction::FUNC_NOW;
         }
 
         /**
@@ -277,21 +278,27 @@
             }
 
             if (count($aFields)) {
+                /** @var ORM\Field $oField */
                 foreach($aFields as $oField) {
                     $aTables[] = $oField->getTable();
                 }
             } else if (count($aTables)) {
                 $bStar  = true;
-            } else {
+            }
+
+            if (count($aTables) === 0) {
                 throw new SQLMissingTableOrFieldsException;
             }
+
+            /** @var ORM\Table $oFromTable */
+            $oFromTable = $aTables[0];
 
             $aSQL = array(self::TYPE_SELECT);
             if ($bStar) {
                 $aSQLFields = array('*');
 
                 // Add hex'd aliases
-                foreach($aTables[0]->getFields() as $oField) {
+                foreach($oFromTable->getFields() as $oField) {
                     if ($oField instanceof ORM\Field\Hash
                     ||  $oField instanceof ORM\Field\UUID) {
                         $aSQLFields[] = $oField->toSQLColumnForSelect();
@@ -300,11 +307,12 @@
 
                 $aSQL[] = implode(', ', $aSQLFields);
             } else {
+                /** @var ORM\Field[] $aFields */
                 $aSQL[] = self::toSQLColumnsForSelect($aFields);
             }
 
             $aSQL[] = 'FROM';
-            $aSQL[] = $aTables[0]->getTitle();
+            $aSQL[] = $oFromTable->getTitle();
 
             if (count($aJoins)) {
                 foreach($aJoins as $oJoin) {
@@ -350,7 +358,7 @@
 
             $oSQL = new self;
             $oSQL->sSQLType  = self::TYPE_SELECT;
-            $oSQL->sSQLTable = $aTables[0]->getTitle();
+            $oSQL->sSQLTable = (string) $oFromTable->getTitle();
             $oSQL->sSQL      = implode(' ', $aSQL);
             $oSQL->sSQLGroup = implode(' ', $aSQLLog);
 
@@ -443,7 +451,7 @@
 
             $oSQL = new self;
             $oSQL->sSQLType  = self::TYPE_SELECT;
-            $oSQL->sSQLTable = $oTable->getTitle();
+            $oSQL->sSQLTable = (string) $oTable->getTitle();
             $oSQL->sSQL      = implode(' ', $aSQL);
             $oSQL->sSQLGroup = implode(' ', $aSQLLog);
 
@@ -483,7 +491,7 @@
 
             $oSQL = new self;
             $oSQL->sSQLType  = self::TYPE_INSERT;
-            $oSQL->sSQLTable = $sTable;
+            $oSQL->sSQLTable = (string) $sTable;
             $oSQL->sSQL      = implode(' ',
                 array(
                     self::TYPE_INSERT . ' INTO',
@@ -561,14 +569,16 @@
             }
 
             if ($oTable instanceof ORM\Table === false) {
-                $sTableObject = 'Table_' . $aFields[0]->sTable;
+                /** @var ORM\Field[] $aFields */
+                $sTableObject = 'Table_' . (string) $aFields[0]->sTable;
 
                 $oTable = new $sTableObject;
             }
 
             $oSQL = new self;
             $oSQL->sSQLType  = self::TYPE_UPDATE;
-            $oSQL->sSQLTable = $oTable->getTitle();
+            $oSQL->sSQLTable = (string) $oTable->getTitle();
+            /** @var ORM\Field[] $aFields */
             $oSQL->sSQL      = implode(' ',
                 array(
                     self::TYPE_UPDATE,
@@ -630,7 +640,8 @@
             }
 
             if ($oTable instanceof ORM\Table === false) {
-                $sTableObject = 'Table_' . $aFields[0]->sTable;
+                /** @var ORM\Field[] $aFields */
+                $sTableObject = 'Table_' . (string) $aFields[0]->sTable;
 
                 $oTable = new $sTableObject;
             }
@@ -641,7 +652,8 @@
 
             $oSQL = new self;
             $oSQL->sSQLType  = 'UPSERT';
-            $oSQL->sSQLTable = $oTable->getTitle();
+            $oSQL->sSQLTable = (string) $oTable->getTitle();
+            /** @var ORM\Field[] $aFields */
             $oSQL->sSQL      = implode(' ',
                 array(
                     'INSERT INTO',
@@ -714,11 +726,14 @@
             }
 
             if ($oConditions->count() == 0) {
+                /** @var ORM\Field[] $aFields */
+                /** @psalm-suppress InvalidArgument */
                 $oConditions->add($aFields);
             }
 
             if ($sTable === NULL) {
-                $sTable = $aFields[0]->sTable;
+                /** @var ORM\Field[] $aFields */
+                $sTable = (string) $aFields[0]->sTable;
             }
 
             $oSQL = new self;

@@ -10,14 +10,14 @@
         const NULL_VALUE     = '00:00:00';
 
         /**
-         * @var \DateTime
+         * @var \DateTime|null
          */
         public $sValue;
 
         /**
          *
          * @param mixed $sValue
-         * @return self
+         * @return $this
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -42,7 +42,7 @@
         /**
          * @return bool
          */
-        public function isNull() {
+        public function isNull():bool {
             $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
             if (substr($sValue, 0, 1) == '-') {
@@ -55,13 +55,13 @@
         /**
          * @return bool
          */
-        public function hasValue() {
+        public function hasValue(): bool {
             return parent::hasValue() && (string) $this != self::NULL_VALUE;
         }
 
         /**
          *
-         * @return string|integer
+         * @return string
          */
         public function __toString() {
             $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
@@ -77,7 +77,7 @@
          *
          * @return string
          */
-        public function toSQL() {
+        public function toSQL():string {
             if ($this->isNull()) {
                 return 'NULL';
             } else {

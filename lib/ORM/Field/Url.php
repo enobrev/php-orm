@@ -9,7 +9,7 @@
         /**
          *
          * @param mixed $sValue
-         * @return Url
+         * @return $this
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

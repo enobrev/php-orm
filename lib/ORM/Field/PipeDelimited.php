@@ -7,14 +7,14 @@
     class PipeDelimited extends Text {
 
         /**
-         * @var array
+         * @var array|null
          */
         public $sValue;
 
         /**
          *
          * @param array|string|Field $sValue
-         * @return PipeDelimited
+         * @return $this
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -39,16 +39,16 @@
         }
 
         /**
-         * @return array
+         * @return array|null
          */
-        public function getValue() {
+        public function getValue(): ?array {
             return $this->sValue;
         }
 
         /**
          * @return bool
          */
-        public function hasValue() {
+        public function hasValue():bool {
             return is_array($this->sValue) && count($this->sValue);
         }
 

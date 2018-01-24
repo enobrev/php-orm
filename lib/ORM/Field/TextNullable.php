@@ -27,7 +27,7 @@
         /**
          *
          * @param mixed $sValue
-         * @return TextNullable
+         * @return $this
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -55,7 +55,7 @@
          *
          * @return string
          */
-        public function toSQL() {
+        public function toSQL():string {
             if ($this->isNull()) {
                 return 'NULL';
             } else {

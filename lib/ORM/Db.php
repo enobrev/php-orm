@@ -49,6 +49,13 @@
         }
 
         /**
+         * @return PDO
+         */
+        public static function getPDO() {
+            return self::$oPDO;
+        }
+
+        /**
          * @param PDO $oPDO
          * @return Db
          */
@@ -292,6 +299,27 @@
          */
         public function quote($sString, $sPDOType = PDO::PARAM_STR) {
             return self::$oPDO->quote($sString, $sPDOType);
+        }
+
+        /**
+         * @return bool
+         */
+        public function beginTransaction(): bool {
+            return self::$oPDO->beginTransaction();
+        }
+
+        /**
+         * @return bool
+         */
+        public function rollBack(): bool {
+            return self::$oPDO->rollBack();
+        }
+
+        /**
+         * @return bool
+         */
+        public function commit(): bool {
+            return self::$oPDO->commit();
         }
 
         /**

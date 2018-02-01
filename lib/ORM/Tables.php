@@ -8,6 +8,7 @@
 
     class TablesException extends DbException {}
     class TablesMultiplePrimaryException extends TablesException {}
+    class TablesInvalidFieldException extends TablesException {}
 
     class Tables extends ArrayIterator {
         /**
@@ -173,39 +174,87 @@
         }
 
         /**
-         * @return Field[]
-         * @throws TablesMultiplePrimaryException
+         * @param string $sField
+         * @return array
+         * @throws TablesInvalidFieldException
          */
-        public function toPrimaryFieldArray() {
+        public function toFieldValueArray(string $sField): array {
+            $aFields = $this->toFieldArray($sField);
             $aReturn = [];
-            foreach($this as $oTable) {
-                $aPrimary = $oTable->getPrimary();
-                if (count($aPrimary) > 1) {
-                    throw new TablesMultiplePrimaryException("Can Only get Primary Array of Tables with Single Primary Keys");
+            if (count($aFields)) {
+                foreach($aFields as $oField) {
+                    $aReturn[] = $oField->getValue();
                 }
-
-                $aReturn[] = $oTable->{$aPrimary[0]->sColumn};
             }
 
             return $aReturn;
         }
 
         /**
-         * @return array
+         * @param string $sField
+         * @return Field[]
+         * @throws TablesInvalidFieldException
+         */
+        public function toFieldArray(string $sField): array {
+            $aReturn = [];
+
+            if (!$this->count()) {
+                return $aReturn;
+            }
+
+            if ($this[0]->$sField instanceof Field === false) {
+                throw new TablesInvalidFieldException("Invalid Field Requested");
+            }
+
+            foreach ($this as $oTable) {
+                $aReturn[] = $oTable->$sField;
+            }
+
+            return $aReturn;
+        }
+
+        /**
+         * @return Field[]
+         * @throws TablesInvalidFieldException
+         * @throws TablesMultiplePrimaryException
+         */
+        public function toPrimaryFieldArray() {
+            $aReturn = [];
+
+            if (!$this->count()) {
+                return $aReturn;
+            }
+
+            return $this->toFieldArray($this->getOnlyPrimary()->sColumn);
+        }
+
+        /**
+         * @return Field[]
+         * @throws TablesInvalidFieldException
          * @throws TablesMultiplePrimaryException
          */
         public function toPrimaryArray() {
             $aReturn = [];
-            foreach($this as $oTable) {
-                $aPrimary = $oTable->getPrimary();
-                if (count($aPrimary) > 1) {
-                    throw new TablesMultiplePrimaryException("Can Only get Primary Array of Tables with Single Primary Keys");
-                }
 
-                $aReturn[] = $oTable->{$aPrimary[0]->sColumn}->getValue();
+            if (!$this->count()) {
+                return $aReturn;
             }
 
-            return $aReturn;
+            return $this->toFieldValueArray($this->getOnlyPrimary()->sColumn);
+        }
+
+        /**
+         * @return Field
+         * @throws TablesMultiplePrimaryException
+         */
+        private function getOnlyPrimary() {
+            /** @var Field[] $aPrimary */
+            $aPrimary = $this[0]->getPrimary();
+            if (count($aPrimary) > 1) {
+                throw new TablesMultiplePrimaryException("Can Only get Primary Array of Tables with Single Primary Keys");
+            }
+
+            return $aPrimary[0];
         }
 
         /**
@@ -224,6 +273,20 @@
                 }
             }
 
+            return $aReturn;
+        }
+
+        /**
+         * @return Table[]
+         * @throws TablesMultiplePrimaryException
+         */
+        public function toPrimaryKeyedArray() {
+            $oPrimary = $this->getOnlyPrimary();
+            $sPrimary = $oPrimary->sColumn;
+            $aReturn  = [];
+            foreach ($this as $oTable) {
+                $aReturn[$oTable->$sPrimary->getValue()] = $oTable;
+            }
             return $aReturn;
         }
 

@@ -202,7 +202,7 @@
                 return $aReturn;
             }
 
-            if ($this[0]->$sField instanceof Field === false) {
+            if (array_values((array) $this)[0]->$sField instanceof Field === false) {
                 throw new TablesInvalidFieldException("Invalid Field Requested");
             }
 
@@ -249,7 +249,7 @@
          */
         private function getOnlyPrimary() {
             /** @var Field[] $aPrimary */
-            $aPrimary = $this[0]->getPrimary();
+            $aPrimary = array_values((array)$this)[0]->getPrimary();
             if (count($aPrimary) > 1) {
                 throw new TablesMultiplePrimaryException("Can Only get Primary Array of Tables with Single Primary Keys");
             }

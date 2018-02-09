@@ -511,21 +511,23 @@
 
         /**
          *
-         * @return int
+         * @return int|mixed
          * @throws DbDuplicateException
          * @throws DbException
          */
         public function insert() {
-            $bPrimaryAlreadySet = $this->primaryHasValue();
-
             $this->preInsert();
+
+            $bPrimaryAlreadySet = $this->primaryHasValue();
 
             Db::getInstance()->namedQuery(get_class($this) . '.insert',
                 SQLBuilder::insert($this)
             );
 
-            $iLastInsertId = Db::getInstance()->getLastInsertId();
-            if (!$bPrimaryAlreadySet) {
+            if ($bPrimaryAlreadySet) {
+                $iLastInsertId = $this->getPrimaryValue();
+            } else {
+                $iLastInsertId = Db::getInstance()->getLastInsertId();
                 $this->updatePrimary($iLastInsertId);
             }
 
@@ -547,6 +549,22 @@
                     $oField->setValue($iLastInsertId);
                 }
             }
+        }
+
+        /**
+         * @return array|mixed
+         */
+        private function getPrimaryValue() {
+            $aPrimary = $this->getPrimary();
+            if (count($aPrimary) > 1) {
+                $aValue = [];
+                foreach ($aPrimary as $oPrimary) {
+                    $aValue[$oPrimary->sColumn] = $oPrimary->getValue();
+                }
+                return $aValue;
+            }
+
+            return $aPrimary[0]->getValue();
         }
 
         protected function preUpsert(): void {}

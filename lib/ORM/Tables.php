@@ -249,7 +249,7 @@
          */
         private function getOnlyPrimary() {
             /** @var Field[] $aPrimary */
-            $aPrimary = array_values((array)$this)[0]->getPrimary();
+            $aPrimary = self::getTable()->getPrimary();
             if (count($aPrimary) > 1) {
                 throw new TablesMultiplePrimaryException("Can Only get Primary Array of Tables with Single Primary Keys");
             }
@@ -281,8 +281,7 @@
          * @throws TablesMultiplePrimaryException
          */
         public function toPrimaryKeyedArray() {
-            $oPrimary = $this->getOnlyPrimary();
-            $sPrimary = $oPrimary->sColumn;
+            $sPrimary = $this->getOnlyPrimary()->sColumn;
             $aReturn  = [];
             foreach ($this as $oTable) {
                 $aReturn[$oTable->$sPrimary->getValue()] = $oTable;

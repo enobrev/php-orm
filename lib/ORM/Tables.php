@@ -26,7 +26,7 @@
         public static function get() {
             $oTable   = static::getTable();
             $oResults = Db::getInstance()->namedQuery(__METHOD__, SQLBuilder::select($oTable));
-            return self::fromResults($oResults, $oTable);
+            return static::fromResults($oResults, $oTable);
         }
 
         /**
@@ -249,7 +249,7 @@
          */
         private function getOnlyPrimary() {
             /** @var Field[] $aPrimary */
-            $aPrimary = self::getTable()->getPrimary();
+            $aPrimary = static::getTable()->getPrimary();
             if (count($aPrimary) > 1) {
                 throw new TablesMultiplePrimaryException("Can Only get Primary Array of Tables with Single Primary Keys");
             }

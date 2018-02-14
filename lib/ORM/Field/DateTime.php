@@ -50,7 +50,7 @@
          * @return bool
          */
         public function isNull():bool {
-            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
+            $sValue = $this->sValue instanceof PHP_DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
             if (substr($sValue, 0, 1) == '-') {
                 return true;
@@ -94,7 +94,7 @@
 
             if ($this->sValue instanceof DateFunction) {
                 return $this->sValue->getName();
-            } else if ($this->sValue instanceof \DateTime) {
+            } else if ($this->sValue instanceof PHP_DateTime) {
                 return Escape::string($this->sValue->format('Y-m-d H:i:s'));
             } else {
                 return 'NULL';
@@ -106,7 +106,7 @@
          * @return bool
          */
         public function is($mValue):bool {
-            if ($mValue instanceof DateTime) {
+            if ($mValue instanceof PHP_DateTime) {
                 $mValue = $mValue->format(self::DEFAULT_FORMAT);
             }
 

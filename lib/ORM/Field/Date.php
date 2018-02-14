@@ -45,7 +45,7 @@
             if ($this->sValue instanceof PHP_DateTime) {
                 $sValue = $this->sValue->format(self::DEFAULT_FORMAT);
             } else if ($this->sValue instanceof DateFunction) {
-                $sValue = (new DateTime())->format(self::DEFAULT_FORMAT);
+                $sValue = (new PHP_DateTime())->format(self::DEFAULT_FORMAT);
             }
 
             if (substr($sValue, 0, 1) == '-') {
@@ -92,7 +92,7 @@
                     break;
 
                 case $sValue === null:
-                case $sValue instanceof DateTime:
+                case $sValue instanceof PHP_DateTime:
                 case $sValue instanceof DateFunction:
                     $this->sValue = $sValue;
                     break;
@@ -102,7 +102,7 @@
                     break;
 
                 default:
-                    $this->sValue = new DateTime($sValue);
+                    $this->sValue = new PHP_DateTime($sValue);
                     break;
             }
 

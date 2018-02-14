@@ -544,8 +544,7 @@
             if (count($aPrimary) == 1) {
                 /** @var Field\Id $oField */
                 $oField =& $aPrimary[0];
-                if ( $oField instanceof Field\Id
-                ||   $oField instanceof Field\Integer ) {
+                if ( $oField instanceof Field\Id ) {
                     $oField->setValue($iLastInsertId);
                 }
             }

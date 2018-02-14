@@ -110,10 +110,10 @@
     
     while ($oTable = $oTables->fetchObject()) {
         $sTable  = $oTable->table_name;
-        $oFields = $Db->query("SELECT table_name, column_name, ordinal_position, is_nullable, data_type, column_key, column_type, column_default, column_comment FROM information_schema.columns WHERE table_schema = '$sName' AND table_name = '$sTable' ORDER BY ordinal_position ASC");
+        $oFields = $Db->query("SELECT table_name, column_name, ordinal_position, is_nullable, data_type, column_key, column_type, column_default, column_comment, extra FROM information_schema.columns WHERE table_schema = '$sName' AND table_name = '$sTable' ORDER BY ordinal_position ASC");
         $aFields = array();
         $aTableNames[] = $sTable;
-        
+
         while ($oField = $oFields->fetchObject()) {
             $aFields[$oField->column_name] = $oField;
         }
@@ -249,19 +249,20 @@
 
             $sShort = str_replace($aData['table']['singular'] . '_', '', $sField);
             $oTemplateField = array(
-                'short'       => $sShort,
-                'short_title' => str_replace(' ', '', (ucwords(str_replace('_', ' ', $sShort)))),
-                'name'        => $sField,
-                'title'       => getFieldTitle($sField),
-                'plural'      => pluralize(getFieldTitle($sField)),
-                'primary'     => false,
-                'unique'      => false,
-                'boolean'     => false,
-                'nullable'    => strtolower($oField->is_nullable) == 'yes' ? true : false,
-                'var'         => getFieldTitle($sField),
-                'var_array'   => 'a' . pluralize(getFieldTitle($sField)),
-                'default'     => strlen($oField->column_default) ? $oField->column_default : null,
-                'comment'     => $oField->column_comment
+                'short'             => $sShort,
+                'short_title'       => str_replace(' ', '', (ucwords(str_replace('_', ' ', $sShort)))),
+                'name'              => $sField,
+                'title'             => getFieldTitle($sField),
+                'plural'            => pluralize(getFieldTitle($sField)),
+                'primary'           => false,
+                'unique'            => false,
+                'boolean'           => false,
+                'auto_increment'    => strtolower($oField->extra) == 'auto_increment' ? true : false,
+                'nullable'          => strtolower($oField->is_nullable) == 'yes' ? true : false,
+                'var'               => getFieldTitle($sField),
+                'var_array'         => 'a' . pluralize(getFieldTitle($sField)),
+                'default'           => strlen($oField->column_default) ? $oField->column_default : null,
+                'comment'           => $oField->column_comment
             );
 
             $iFieldNameLength      = max($iFieldNameLength,         strlen($oTemplateField['name']));
@@ -278,13 +279,14 @@
                     break;
 
                 case strpos($oField->data_type, 'int') !== false:
-                    if ($oField->column_key == 'PRI') {
+                    if ($oField->column_key == 'PRI' && $oField->extra == 'auto_increment') {
                         $oTemplateField['type'] = 'Field\\Id';
                         $oTemplateField['qltype'] = 'id';
                     } else {
                         $oTemplateField['type'] = 'Field\\Integer';
                         $oTemplateField['qltype'] = 'int';
                     }
+
                     $oTemplateField['php_type'] = 'int';
                     $oTemplateField['var']  = 'i' . $oTemplateField['var'];
                     break;
@@ -537,4 +539,3 @@
     file_put_contents($sJsonFile, json_encode($aAllData, JSON_PRETTY_PRINT));
 
     echo 'Created ' . $sJsonFile . "\n";
-?>

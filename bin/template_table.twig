@@ -192,7 +192,7 @@
 {% endif %}
 {% if date_added or date_updated %}
 
-        public function preInsert() {
+        public function preInsert():void {
 {% if primary %}
 {% for field in primary %}
 {% if field.type == 'Field\\UUID' or field.type == 'Field\\UUIDNullable' %}
@@ -210,7 +210,7 @@
 {% endif %}
         }
 
-        public function preUpsert() {
+        public function preUpsert():void {
 {% if primary %}
 {% for field in primary %}
 {% if field.type == 'Field\\UUID' or field.type == 'Field\\UUIDNullable' %}
@@ -229,7 +229,7 @@
         }
 {% if date_updated %}
 
-        public function preUpdate() {
+        public function preUpdate():void {
 {% if date_updated %}
             $this->{{date_updated.name}}->setValue($this->now());
 {% endif %}

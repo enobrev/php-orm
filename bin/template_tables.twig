@@ -82,9 +82,9 @@
          * @throws \Enobrev\ORM\DbException
          */
 {% if date_updated %}
-        public static function getMostRecentUpdatedDate() {
+        public static function getMostRecentUpdatedDate():DateTime {
 {% else %}
-        public static function getMostRecentAddedDate() {
+        public static function getMostRecentAddedDate():DateTime {
 {% endif %}
             $oTable = static::getTable();
             $oSQL = SQLBuilder::select($oTable)->limit(1);

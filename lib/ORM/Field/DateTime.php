@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
-    use DateTime as PHPDateTime;
+    use DateTime as PHP_DateTime;
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
@@ -9,11 +9,11 @@
 
     class DateTime extends Date {
 
-        const DEFAULT_FORMAT = PHPDateTime::RFC3339;
+        const DEFAULT_FORMAT = PHP_DateTime::RFC3339;
         const NULL_VALUE     = '0000-00-00 00:00:00';
 
         /**
-         * @var PHPDateTime|null
+         * @var PHP_DateTime|null
          */
         public $sValue;
 
@@ -31,7 +31,7 @@
                 $sValue = $sValue->getValue();
             }
 
-            if ($sValue instanceof PHPDateTime) {
+            if ($sValue instanceof PHP_DateTime) {
                 $sValue = $sValue->format(self::DEFAULT_FORMAT);
             }
 
@@ -70,10 +70,10 @@
         public function __toString():string {
             $sValue = self::NULL_VALUE;
 
-            if ($this->sValue instanceof PHPDateTime) {
+            if ($this->sValue instanceof PHP_DateTime) {
                 $sValue = $this->sValue->format(self::DEFAULT_FORMAT);
             } else if ($this->sValue instanceof DateFunction) {
-                $sValue = (new PHPDateTime())->format(self::DEFAULT_FORMAT);
+                $sValue = (new PHP_DateTime())->format(self::DEFAULT_FORMAT);
             }
 
             if (substr($sValue, 0, 1) == '-') {
@@ -99,5 +99,17 @@
             } else {
                 return 'NULL';
             }
+        }
+
+        /**
+         * @param mixed $mValue
+         * @return bool
+         */
+        public function is($mValue):bool {
+            if ($mValue instanceof DateTime) {
+                $mValue = $mValue->format(self::DEFAULT_FORMAT);
+            }
+
+            return parent::is($mValue);
         }
     }

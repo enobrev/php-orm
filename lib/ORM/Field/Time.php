@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use DateTime as PHP_DateTime;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
 
@@ -10,7 +11,7 @@
         const NULL_VALUE     = '00:00:00';
 
         /**
-         * @var \DateTime|null
+         * @var PHP_DateTime|null
          */
         public $sValue;
 
@@ -43,7 +44,7 @@
          * @return bool
          */
         public function isNull():bool {
-            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
+            $sValue = $this->sValue instanceof PHP_DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
             if (substr($sValue, 0, 1) == '-') {
                 return true;
@@ -64,7 +65,7 @@
          * @return string
          */
         public function __toString() {
-            $sValue = $this->sValue instanceof \DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
+            $sValue = $this->sValue instanceof DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
             if (substr($sValue, 0, 1) == '-') {
                 $sValue = 'NULL';
@@ -83,6 +84,18 @@
             } else {
                 return parent::toSQL();
             }
+        }
+
+        /**
+         * @param mixed $mValue
+         * @return bool
+         */
+        public function is($mValue):bool {
+            if ($mValue instanceof PHP_DateTime) {
+                $mValue = $mValue->format(self::DEFAULT_FORMAT);
+            }
+
+            return parent::is($mValue);
         }
     }
 ?>

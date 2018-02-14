@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
-    use DateTime;
+    use DateTime as PHP_DateTime;
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
@@ -13,16 +13,16 @@
         const NULL_VALUE     = '0000-00-00 00:00:00';
 
         /**
-         * @var \DateTime|DateFunction|null
+         * @var PHP_DateTime|DateFunction|null
          */
         public $sValue;
 
         /**
-         * @return \DateTime|null
+         * @return PHP_DateTime|null
          */
         public function getValue() {
             if ($this->sValue instanceof DateFunction) {
-                return new \DateTime();
+                return new PHP_DateTime();
             }
 
             return $this->sValue;
@@ -42,7 +42,7 @@
         public function __toString() {
             $sValue = self::NULL_VALUE;
 
-            if ($this->sValue instanceof \DateTime) {
+            if ($this->sValue instanceof PHP_DateTime) {
                 $sValue = $this->sValue->format(self::DEFAULT_FORMAT);
             } else if ($this->sValue instanceof DateFunction) {
                 $sValue = (new DateTime())->format(self::DEFAULT_FORMAT);
@@ -65,7 +65,7 @@
 
             if ($this->sValue instanceof DateFunction) {
                 return $this->sValue->getName();
-            } else if ($this->sValue instanceof \DateTime) {
+            } else if ($this->sValue instanceof PHP_DateTime) {
                 return Escape::string($this->sValue->format('Y-m-d'));
             } else {
                 return 'NULL';
@@ -114,6 +114,10 @@
          * @return bool
          */
         public function is($mValue):bool {
+            if ($mValue instanceof PHP_DateTime) {
+                $mValue = $mValue->format(self::DEFAULT_FORMAT);
+            }
+
             if ($mValue instanceof \stdClass) {
                 if (property_exists($mValue, 'date')) { // coming from json
                     $mValue = $mValue->date;

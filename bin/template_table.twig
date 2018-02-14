@@ -38,7 +38,7 @@
 
 {% endfor %}
 
-        protected function init() {
+        protected function init():void {
 {% if primary %}
 {% for field in primary %}
             $this->addPrimary(new {{field.type}}('{{field.name}}'));

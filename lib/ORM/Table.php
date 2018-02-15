@@ -73,24 +73,36 @@
         }
 
         /**
-         * @param array $aData
-         * @param array $aMap
-         * @param array $aOverride
+         * @param array      $aData
+         * @param array      $aMap
+         * @param array      $aOverride
+         * @param string     $sPrimaryField
          * @return static
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws TableException
          */
-        public static function createAndUpdateFromMap(Array $aData, Array $aMap, Array $aOverride = []) {
+        public static function createAndUpdateFromMap(Array $aData, Array $aMap, Array $aOverride = [], string $sPrimaryField = null) {
             /** @var Table $oTable */
             $oTable = new static;
             $oTable->mapArrayToFields($aData, $aMap, $aOverride);
 
-            if ($oTable->primaryHasValue()) {
-                /** @var Table $oExisting */
-                $oExisting = $oTable->getByPrimary();
-                if ($oExisting instanceof static) {
-                    $oExisting->mapArrayToFields($aData, $aMap, $aOverride);
-                    $oExisting->update();
-                    return $oExisting;
+            /** @var Table $oExisting */
+            $oExisting = null;
+
+            if ($sPrimaryField) {
+                if ($oTable->$sPrimaryField->hasValue()) {
+                    $oExisting = $oTable->getBy($oTable->$sPrimaryField);
                 }
+            } else if ($oTable->primaryHasValue()) {
+                $oExisting = $oTable->getByPrimary();
+            }
+
+            if ($oExisting instanceof static) {
+                $oExisting->mapArrayToFields($aData, $aMap, $aOverride);
+                $oExisting->update();
+
+                return $oExisting;
             }
 
             $oTable->insert();
@@ -371,7 +383,7 @@
          * @throws DbException
          * @throws TableException
          */
-        protected static function getBy(...$aFields) {
+        public static function getBy(...$aFields) {
             /** @var Table $oTable */
             $oTable = new static;
             $oSQL   = SQLBuilder::select($oTable)->also($aFields);

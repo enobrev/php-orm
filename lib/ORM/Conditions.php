@@ -1,6 +1,8 @@
 <?php
     namespace Enobrev\ORM;
     
+    use function Enobrev\dbg;
+
     class ConditionsException extends DbException {}
     class ConditionsNonConditionException extends ConditionsException {}
 
@@ -26,6 +28,12 @@
 
         /** @var Condition[]|Conditions[] */
         private $aConditions;
+
+        public function __clone() {
+            foreach($this->aConditions as $iIndex => $mCondition) {
+                $this->aConditions[$iIndex] = clone $mCondition;
+            }
+        }
 
         /**
          * @param Condition[]|Conditions|string[] $aConditions
@@ -76,7 +84,7 @@
 
         public function __construct() {
             $this->sType       = self::TYPE_AND;
-            $this->aConditions = array();
+            $this->aConditions = [];
         }
 
         /**

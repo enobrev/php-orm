@@ -56,6 +56,48 @@
         /** @var ORM\Conditions $oConditions */
         private $oConditions;
 
+        public function __clone() {
+            if ($this->oTable) {
+                $this->oTable = clone $this->oTable;
+            }
+
+            if (count($this->aFields)) {
+                foreach($this->aFields as $iIndex => $oField) {
+                    $this->aFields[$iIndex] = clone $oField;
+                }
+            }
+
+            if (count($this->aTables)) {
+                foreach($this->aTables as $iIndex => $oTable) {
+                    $this->aTables[$iIndex] = clone $oTable;
+                }
+            }
+
+            if (count($this->aJoins)) {
+                foreach($this->aJoins as $iIndex => $oJoin) {
+                    $this->aJoins[$iIndex] = clone $oJoin;
+                }
+            }
+
+            if (count($this->aOrders)) {
+                foreach($this->aOrders as $iIndex => $oOrder) {
+                    $this->aOrders[$iIndex] = clone $oOrder;
+                }
+            }
+
+            if ($this->oGroup) {
+                $this->oGroup = clone $this->oGroup;
+            }
+
+            if ($this->oLimit) {
+                $this->oLimit = clone $this->oLimit;
+            }
+
+            if ($this->oConditions) {
+                $this->oConditions = clone $this->oConditions;
+            }
+        }
+
         public function __construct(string $sMethod) {
             $this->setType($sMethod);
             $this->oConditions  = new ORM\Conditions;

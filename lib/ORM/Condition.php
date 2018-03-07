@@ -1,6 +1,8 @@
 <?php
     namespace Enobrev\ORM;
     
+    use function Enobrev\dbg;
+
     class ConditionException extends DbException {}
     class ConditionInvalidTypeException extends ConditionException {}
     class ConditionMissingBetweenValueException extends ConditionException {}
@@ -32,6 +34,12 @@
         private static $aSigns = [
             self::NOTNULL, self::LT, self::LTE, self::GT, self::GTE, self::EQUAL, self::NEQ, self::LIKE, self::NLIKE, self::ISNULL, self::BETWEEN, self::IN, self::NIN
         ];
+
+        public function __clone() {
+            foreach ($this->aElements as $iElement => $mElement) {
+                $this->aElements[$iElement] = clone $mElement;
+            }
+        }
 
         /**
          * @param mixed $sElement
@@ -161,6 +169,10 @@
          * @return string
          */
         public function toSQL() {
+            if (!count($this->aElements)) {
+                return '';
+            }
+
             /** @var Field $oField */
             $oField = $this->aElements[0];
 

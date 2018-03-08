@@ -289,10 +289,7 @@
             return $aReturn;
         }
 
-        /**
-         * @return string
-         */
-        public function toCSV() {
+        protected function getCSVFields() {
             /** @var Table $oRecord */
             /** @psalm-suppress InvalidScalarArgument */
             $oRecord = $this->offsetGet(0);
@@ -301,6 +298,14 @@
                 $aFields[] = $oField->toSQLColumnForFields(false);
             }
 
+            return $aFields;
+        }
+
+        /**
+         * @return string
+         */
+        public function toCSV() {
+            $aFields = $this->getCSVFields();
             $oOutput = fopen("php://temp", "w");
 
             if (!$oOutput) {

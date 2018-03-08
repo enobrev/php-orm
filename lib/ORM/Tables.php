@@ -301,22 +301,58 @@
             return $aFields;
         }
 
+        protected function getCSVHeaders() {
+            /** @var Table $oRecord */
+            /** @psalm-suppress InvalidScalarArgument */
+            $oRecord = $this->offsetGet(0);
+            $aFields = [];
+            foreach($oRecord->getFields() as $oField) {
+                $aFields[] = $oField->toSQLColumnForFields(false);
+            }
+
+            return $aFields;
+        }
+
         /**
+         * @param array $aExclude
          * @return string
          */
-        public function toCSV() {
-            $aFields = $this->getCSVFields();
+        public function toCSV(array $aExclude = []) {
+            /** @var Table $oRecord */
+            /** @psalm-suppress InvalidScalarArgument */
+            $oRecord = $this->offsetGet(0);
+            $aHeaders = [];
+            foreach($oRecord->getFields() as $oField) {
+                if (in_array($oField->sColumn, $aExclude)) {
+                    continue;
+                }
+
+                $aHeaders[] = $oField->toSQLColumnForFields(false);
+            }
+
             $oOutput = fopen("php://temp", "w");
 
             if (!$oOutput) {
                 return '';
             }
 
-            fputcsv($oOutput, $aFields);
+            fputcsv($oOutput, $aHeaders);
 
             foreach($this as $oTable) {
-                fputcsv($oOutput, $oTable->toArray());
+                $aValues   = $oTable->toArray();
+                $aFiltered = [];
+
+                foreach($aValues as $sKey => $sValue) {
+                    if (in_array($sKey, $aExclude)) {
+                        continue;
+                    }
+
+                    $aFiltered[$sKey] = $sValue;
+                }
+
+                fputcsv($oOutput, $aFiltered);
             }
+
             rewind($oOutput);
 
             $sOutput = '';

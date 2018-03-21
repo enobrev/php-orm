@@ -37,7 +37,11 @@
 
         public function __clone() {
             foreach ($this->aElements as $iElement => $mElement) {
-                $this->aElements[$iElement] = clone $mElement;
+                if ($mElement instanceof Field) {
+                    $this->aElements[$iElement] = clone $mElement;
+                } else {
+                    $this->aElements[$iElement] = $mElement;
+                }
             }
         }
 

@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM;
 
+    use Exception;
     use ArrayIterator;
     use Enobrev\SQLBuilder;
     use PDO;
@@ -108,6 +109,23 @@
                 return new static($oResults->fetchAll(PDO::FETCH_CLASS, $sPrefixedTable));
             }
 
+        }
+
+        /**
+         * @param PDOStatement $oResults
+         * @param Table $oTable
+         * @return static
+         * @throws TablesException
+         * @throws Exception
+         */
+        protected static function fromResultsWithMeta(PDOStatement $oResults, Table $oTable) {
+            /** @var Table $sPrefixedTable */
+            $sPrefixedTable = get_class($oTable);
+            $oOutput        = new static;
+            while ($oResult = $oResults->fetchObject()) {
+                $oOutput->append($sPrefixedTable::createFromObject($oResult));
+            }
+            return $oOutput;
         }
 
         /**

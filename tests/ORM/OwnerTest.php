@@ -20,7 +20,7 @@
         private $aAddresses;
 
         public function setUp() {
-            Log::setName('OwnerTest');
+            Log::setPurpose('OwnerTest');
 
             $sDatabase = file_get_contents(__DIR__ . '/../Mock/sqlite.sql');
             $aDatabase = explode(';', $sDatabase);

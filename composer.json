@@ -23,12 +23,12 @@
     "require": {
         "php": ">=7.0.09",
         "nategood/commando": "^0.2.8",
-        "twig/twig": "^1.24"
+        "twig/twig": "^2.4"
     },
     "require-dev": {
         "enobrev/php-tools":  "dev-master",
-        "phpunit/phpunit": "^5.1",
-        "phpunit/phpunit-mock-objects": "^3.0"
+        "phpunit/phpunit": "^7.1",
+        "phpunit/phpunit-mock-objects": "^6.1"
     },
     "autoload": {
         "psr-4": {

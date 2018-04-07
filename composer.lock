@@ -290,20 +290,20 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/enobrev/php-tools.git",
-                "reference": "a7847fb95fd08eedab40486e1240105f176a1f9b"
+                "reference": "73bafc45a4b4c5ebf2b222960146d164715508b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/a7847fb95fd08eedab40486e1240105f176a1f9b",
-                "reference": "a7847fb95fd08eedab40486e1240105f176a1f9b",
+                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/73bafc45a4b4c5ebf2b222960146d164715508b6",
+                "reference": "73bafc45a4b4c5ebf2b222960146d164715508b6",
                 "shasum": ""
             },
             "require": {
                 "monolog/monolog": "^1.21"
             },
             "require-dev": {
-                "phpunit/phpunit": "^5.7",
-                "vimeo/psalm": "^0"
+                "phpunit/phpunit": "^7.1",
+                "vimeo/psalm": "^1.0"
             },
             "type": "library",
             "autoload": {
@@ -333,7 +333,7 @@
                 "source": "https://github.com/enobrev/php-tools/tree/master",
                 "issues": "https://github.com/enobrev/php-tools/issues"
             },
-            "time": "2018-02-21T05:57:22+00:00"
+            "time": "2018-04-07T08:03:14+00:00"
         },
         {
             "name": "monolog/monolog",

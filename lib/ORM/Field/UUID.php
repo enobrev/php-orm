@@ -36,8 +36,10 @@
                 return $this->is($mValue->getValue());
             }
 
-            if ($mValue === null && $this->isNull()) {
-                return true;
+            if ($mValue === null) {
+                return $this->isNull(); // Both Null
+            } else if ($this->isNull()) {
+                return false;           // My Value is null but comparator is not
             }
 
             try {
@@ -57,4 +59,3 @@
             return strtolower(str_replace('-', '', (string) $this->sValue));
         }
     }
-?>

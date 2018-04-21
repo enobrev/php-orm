@@ -2,6 +2,7 @@
     namespace Enobrev\ORM\Field;
 
     use DateTime as PHP_DateTime;
+    use function Enobrev\dbg;
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
@@ -105,11 +106,31 @@
          * @param mixed $mValue
          * @return bool
          */
-        public function is($mValue):bool {
+        public function is($mValue): bool {
+            if ($mValue instanceof Table) {
+                $mValue = $mValue->{$this->sColumn};
+            }
+
+            if ($mValue instanceof self) {
+                $mValue = $mValue->getValue();
+            }
+
             if ($mValue instanceof PHP_DateTime) {
                 $mValue = $mValue->format(self::DEFAULT_FORMAT);
             }
 
-            return parent::is($mValue);
+            if ($mValue instanceof \stdClass) {
+                if (property_exists($mValue, 'date')) { // coming from json
+                    $mValue = $mValue->date;
+                }
+            }
+
+            if ($mValue === null) {
+                return $this->isNull(); // Both Null
+            } else if ($this->isNull()) {
+                return false;           // My Value is null but comparator is not
+            }
+
+            return (string) $this == (string) (new self($this->sTable))->setValue($mValue);
         }
     }

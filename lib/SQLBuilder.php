@@ -799,8 +799,9 @@
 
             foreach($aFields as $oField) {
                 if ($oResult !== NULL) {
-                    if (property_exists($oResult, $oField->sColumn)) {
-                        if ($oField->is($oResult->{$oField->sColumn})) {
+                    $sColumn = $oField->sColumn;
+                    if (property_exists($oResult, $sColumn)) {
+                        if ($oField->is($oResult->$sColumn)) {
                             continue;
                         }
                     }
@@ -839,7 +840,16 @@
 
         public function toString():string {
             if ($this->sSQL === null) {
-                $this->build();
+                /*
+                try {
+                */
+                    $this->build();
+                /*
+                } catch (\Exception $e) {
+                    dbg($e);
+                    throw $e;
+                }
+                */
             }
 
             if ($this->sSQL === null) {

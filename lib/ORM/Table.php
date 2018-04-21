@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM;
 
+    use function Enobrev\dbg;
     use Enobrev\SQLBuilder;
     use stdClass;
     use PDOStatement;
@@ -26,7 +27,7 @@
          */
         public static function Field($sField, $sAlias = null) {
             $oTable = new static;
-            
+
             if ($oTable->$sField instanceof Field) {
                 if ($sAlias !== null) {
                     $oTable->$sField->sAlias = $sAlias;
@@ -34,7 +35,7 @@
 
                 return $oTable->$sField;
             }
-            
+
             throw new TableFieldNotFoundException($sField);
         }
 
@@ -421,11 +422,11 @@
                 $mExistingValue = $this->$sField;
 
                 if ($mExistingValue) {
-                    $oField->setValue($mExistingValue);
+                    $oField->setValue($this->$sField);
+                }
 
-                    if ($this->bFromPDO) {
-                        $this->oResult->$sField = $mExistingValue;
-                    }
+                if ($this->bFromPDO) {
+                    $this->oResult->$sField = $mExistingValue;
                 }
             }
 

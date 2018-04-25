@@ -290,12 +290,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/enobrev/php-tools.git",
-                "reference": "73bafc45a4b4c5ebf2b222960146d164715508b6"
+                "reference": "ac5d05e070ad9909930a9317f5cc532e084aec9b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/73bafc45a4b4c5ebf2b222960146d164715508b6",
-                "reference": "73bafc45a4b4c5ebf2b222960146d164715508b6",
+                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/ac5d05e070ad9909930a9317f5cc532e084aec9b",
+                "reference": "ac5d05e070ad9909930a9317f5cc532e084aec9b",
                 "shasum": ""
             },
             "require": {
@@ -333,7 +333,7 @@
                 "source": "https://github.com/enobrev/php-tools/tree/master",
                 "issues": "https://github.com/enobrev/php-tools/issues"
             },
-            "time": "2018-04-07T08:03:14+00:00"
+            "time": "2018-04-25T13:52:52+00:00"
         },
         {
             "name": "monolog/monolog",

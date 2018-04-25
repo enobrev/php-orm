@@ -88,4 +88,3 @@
             $this->assertEquals('(users.user_id = 1 AND users.user_name_first = "Mark") OR (users.user_id = 2 AND users.user_name_first = "Test")', $oConditions->toSQL());
         }
     }
-?>

@@ -62,4 +62,3 @@
             return implode('|', $sValue);
         }
     }
-?>

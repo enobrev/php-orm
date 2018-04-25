@@ -271,4 +271,3 @@
             $this->assertEquals("users.user_id >= '10'", $oCondition->toSQL());
         }
     }
-?>

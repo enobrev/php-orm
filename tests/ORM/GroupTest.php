@@ -35,4 +35,3 @@
             $this->assertEquals('posts.post_id, posts.user_id', $oGroup->toSQL());
         }
     }
-?>

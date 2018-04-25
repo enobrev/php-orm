@@ -40,4 +40,3 @@
             return trim($this->sValue);
         }
     }
-?>

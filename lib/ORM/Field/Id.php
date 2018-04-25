@@ -9,4 +9,3 @@
             return parent::hasValue() && (int) $this->sValue > 0;
         }
     }
-?>

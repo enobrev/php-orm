@@ -64,4 +64,3 @@
             return Escape::string($this->__toString(), PDO::PARAM_INT);
         }
     }
-?>

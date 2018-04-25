@@ -27,4 +27,3 @@
             $this->assertEquals($oUsers->tag_title->getValue(), 'I am trimmed');
         }
     }
-?>

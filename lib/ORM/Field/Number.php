@@ -21,4 +21,3 @@
             return Escape::string($this->__toString());
         }
     }
-?>

@@ -151,7 +151,6 @@
          *
          * @param string $sTitle
          * @param bool   $bFromPDO
-         * @throws TableNamelessException
          */
         public function __construct($sTitle = '', $bFromPDO = false) {
             if ($this->bConstructed === false) {

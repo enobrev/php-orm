@@ -23,7 +23,8 @@
     "require": {
         "php": ">=7.0.09",
         "nategood/commando": "^0.2.8",
-        "twig/twig": "^2.4"
+        "twig/twig": "^2.4",
+        "moneyphp/money": "^3.1"
     },
     "require-dev": {
         "enobrev/php-tools":  "dev-master",

@@ -65,4 +65,32 @@
             $this->assertEquals('500', $oMoney->getValue()->getAmount());
             $this->assertEquals('USD', $oMoney->getValue()->getCurrency());
         }
+
+        public function testSetValueFromArray() {
+            $oCurrency = new Field\Text('currency');
+            $oMoney = new Field\Money('my_money');
+            $oMoney->setCurrencyField($oCurrency->sColumn);
+            $oMoney->setValueFromArray([
+                'id'        => 1,
+                'currency'  => 'USD',
+                'my_money'  => 500
+            ]);
+            $this->assertInstanceOf('Money\\Money', $oMoney->getValue());
+            $this->assertEquals('500', $oMoney->getValue()->getAmount());
+            $this->assertEquals('USD', $oMoney->getValue()->getCurrency());
+        }
+
+        public function testSetValueFromObject() {
+            $oCurrency = new Field\Text('currency');
+            $oMoney = new Field\Money('my_money');
+            $oMoney->setCurrencyField($oCurrency->sColumn);
+            $oRecord = new \stdClass();
+            $oRecord->id = 1;
+            $oRecord->my_money = 500;
+            $oRecord->currency = 'USD';
+            $oMoney->setValueFromData($oRecord);
+            $this->assertInstanceOf('Money\\Money', $oMoney->getValue());
+            $this->assertEquals('500', $oMoney->getValue()->getAmount());
+            $this->assertEquals('USD', $oMoney->getValue()->getCurrency());
+        }
     }

@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use Enobrev\ORM\Field;
     use Enobrev\ORM\FieldInvalidValueException;
     use stdClass;
 
@@ -19,6 +20,9 @@
         /** @var Currency */
         protected $oCurrency;
 
+        /** @var string */
+        protected $sCurrencyField;
+
         /**
          * @return MoneyPHP|null
          */
@@ -31,6 +35,10 @@
          */
         public function setCurrency(string $sCurrency) {
             $this->oCurrency = new Currency($sCurrency);
+        }
+
+        public function setCurrencyField($sField) {
+            $this->sCurrencyField = $sField instanceof Field ? $sField->sColumn : $sField;
         }
 
         /**
@@ -64,6 +72,34 @@
         public function setValueFromDecimal($sValue) {
             $oParser = new DecimalMoneyParser(new Currencies\ISOCurrencies());
             $this->sValue = $oParser->parse($sValue, $this->getCurrency());
+        }
+
+        /**
+         *
+         * @param stdClass $oData
+         */
+        public function setValueFromData($oData): void {
+            if (isset($oData->{$this->sColumn})) {
+                if ($this->sCurrencyField && isset($oData->{$this->sCurrencyField})) {
+                    $this->setCurrency($oData->{$this->sCurrencyField});
+                }
+
+                $this->setValue($oData->{$this->sColumn});
+            }
+        }
+
+        /**
+         *
+         * @param array $aData
+         */
+        public function setValueFromArray($aData): void {
+            if (isset($aData[$this->sColumn]) || array_key_exists($this->sColumn, $aData)) {
+                if (isset($aData[$this->sCurrencyField]) || array_key_exists($this->sCurrencyField, $aData)) {
+                    $this->setCurrency($aData[$this->sCurrencyField]);
+                }
+
+                $this->setValue($aData[$this->sColumn]);
+            }
         }
 
         /**

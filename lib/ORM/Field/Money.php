@@ -7,6 +7,8 @@
     use function Enobrev\dbg;
     use Money\Currency;
     use Money\Money as MoneyPHP;
+    use Money\Parser\DecimalMoneyParser;
+    use Money\Currencies;
 
     class Money extends Number {
         const DEFAULT_CURRENCY = 'USD';
@@ -54,6 +56,14 @@
             }
 
             return $sValue;
+        }
+
+        /**
+         * @param $sValue
+         */
+        public function setValueFromDecimal($sValue) {
+            $oParser = new DecimalMoneyParser(new Currencies\ISOCurrencies());
+            $this->sValue = $oParser->parse($sValue, $this->getCurrency());
         }
 
         /**

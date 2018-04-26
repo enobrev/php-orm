@@ -420,8 +420,8 @@
             if (property_exists($this, $sField)) {
                 $mExistingValue = $this->$sField;
 
-                if ($mExistingValue) {
-                    $oField->setValue($this->$sField);
+                if ($mExistingValue !== null) {
+                    $oField->setValue($mExistingValue);
                 }
 
                 if ($this->bFromPDO) {

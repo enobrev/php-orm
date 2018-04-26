@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SelectInTest extends \PHPUnit_Framework_TestCase {
+    class SelectInTest extends \PHPUnit\Framework\TestCase {
         public function testSelectIntInValue() {
             $oUser = new User();
             $oSQL = SQL::select(

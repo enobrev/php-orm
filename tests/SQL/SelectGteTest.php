@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SelectGteTest extends \PHPUnit_Framework_TestCase {
+    class SelectGteTest extends \PHPUnit\Framework\TestCase {
         public function testSelectIntGreaterEqualValue() {
             $oUser = new User();
             $oSQL = SQL::select(

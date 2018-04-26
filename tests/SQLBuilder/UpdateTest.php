@@ -5,7 +5,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLBuilderUpdateTest extends \PHPUnit_Framework_TestCase {
+    class SQLBuilderUpdateTest extends \PHPUnit\Framework\TestCase {
         public function testOne() {
             $oUser    = new User();
             $oUser->user_id->setValue(2);
@@ -20,7 +20,7 @@
                 )->eq($oUser->user_id, 1)
                  ->eq($oUser->user_email, 'test@example.com');
 
-            $this->assertEquals('UPDATE users SET users.user_id = 2, users.user_name = "Testtttt", users.user_email = "whynot@fuckit.com" WHERE users.user_id = 1 AND users.user_email = "test@example.com"', (string) $oSQL);
+            $this->assertEquals('UPDATE users SET user_id = 2, user_name = "Testtttt", user_email = "whynot@fuckit.com" WHERE users.user_id = 1 AND users.user_email = "test@example.com"', (string) $oSQL);
         }
 
         public function testTwo() {
@@ -31,7 +31,7 @@
 
             $oSQL     = SQLBuilder::update($oUser)->eq($oUser->user_id, 1);
 
-            $this->assertEquals('UPDATE users SET users.user_id = 2, users.user_name = "Testtttt", users.user_email = "whynot@fuckit.com", users.user_happy = 0, users.user_date_added = NULL WHERE users.user_id = 1', (string) $oSQL);
+            $this->assertEquals('UPDATE users SET user_id = 2, user_name = "Testtttt", user_email = "whynot@fuckit.com", user_happy = 0, user_date_added = NULL WHERE users.user_id = 1', (string) $oSQL);
         }
     }
 

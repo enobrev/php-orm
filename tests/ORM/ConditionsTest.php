@@ -8,7 +8,7 @@
     use Enobrev\ORM\Db;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
-    use PHPUnit_Framework_TestCase as TestCase;
+    use PHPUnit\Framework\TestCase;
  
     class MySQLConditionsTest extends TestCase {
         public function setUp() {

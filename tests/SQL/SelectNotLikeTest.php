@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SelectNotLikeTest extends \PHPUnit_Framework_TestCase {
+    class SelectNotLikeTest extends \PHPUnit\Framework\TestCase {
         public function testSelectIntNotLikeValue() {
             $oUser = new User();
             $oSQL = SQL::select(

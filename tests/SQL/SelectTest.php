@@ -4,7 +4,7 @@
     use Enobrev\ORM\Mock\Table\Address;
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLSelectTest extends \PHPUnit_Framework_TestCase {
+    class SQLSelectTest extends \PHPUnit\Framework\TestCase {
         public function testSelectStar() {
             $this->assertEquals("SELECT * FROM users", (string) SQL::select(new User()));
         }

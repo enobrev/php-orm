@@ -2,8 +2,9 @@
     namespace Enobrev;
 
     use Enobrev\ORM\Mock\Table\User;
+    use PHPUnit\Framework\TestCase;
 
-    class SelectBetweenTest extends \PHPUnit_Framework_TestCase {
+    class SelectBetweenTest extends TestCase {
         public function testSelectIntBetweenValues() {
             $oUser = new User();
             $oSQL = SQL::select(

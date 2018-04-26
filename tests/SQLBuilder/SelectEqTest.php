@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLBuilderSelectEqTest extends \PHPUnit_Framework_TestCase {
+    class SQLBuilderSelectEqTest extends \PHPUnit\Framework\TestCase {
         public function testSelectIntEqualsValue() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->eq($oUser->user_id, 1);

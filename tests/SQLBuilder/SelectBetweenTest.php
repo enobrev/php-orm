@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLBuilderSelectBetweenTest extends \PHPUnit_Framework_TestCase {
+    class SQLBuilderSelectBetweenTest extends \PHPUnit\Framework\TestCase {
         public function testSelectIntBetweenValues() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->between($oUser->user_id, 1, 5);

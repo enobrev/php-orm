@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLBuilderSelectEitherTest extends \PHPUnit_Framework_TestCase {
+    class SQLBuilderSelectEitherTest extends \PHPUnit\Framework\TestCase {
         public function testSelectEitherBookended() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->either(

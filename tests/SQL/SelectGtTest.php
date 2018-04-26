@@ -6,7 +6,7 @@
     use Enobrev\ORM\Db;
     use Enobrev\ORM\Mock\Table\User;
 
-    class SelectGtTest extends \PHPUnit_Framework_TestCase {
+    class SelectGtTest extends \PHPUnit\Framework\TestCase {
         public function setUp() {
             Db::getInstance(Db::defaultSQLiteMemory());
         }
@@ -17,7 +17,7 @@
                 $oUser,
                 SQL::gt($oUser->user_id, 1)
             );
-            $this->assertEquals("SELECT * FROM users WHERE users.user_id > '1'", (string) $oSQL);
+            $this->assertEquals("SELECT * FROM users WHERE users.user_id > 1", (string) $oSQL);
         }
 
         public function testSelectIntGreaterThanSelf() {
@@ -27,7 +27,7 @@
                 $oUser,
                 SQL::gt($oUser->user_id)
             );
-            $this->assertEquals("SELECT * FROM users WHERE users.user_id > '1'", (string) $oSQL);
+            $this->assertEquals("SELECT * FROM users WHERE users.user_id > 1", (string) $oSQL);
         }
 
         public function testSelectIntFieldGreaterThanField() {
@@ -38,7 +38,7 @@
                 $oUser,
                 SQL::gt($oUser->user_id, $oOtherUser->user_id)
             );
-            $this->assertEquals("SELECT * FROM users WHERE users.user_id > '1'", (string) $oSQL);
+            $this->assertEquals("SELECT * FROM users WHERE users.user_id > 1", (string) $oSQL);
         }
 
         public function testSelectDateFieldGreaterThanNow() {

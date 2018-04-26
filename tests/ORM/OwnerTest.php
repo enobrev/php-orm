@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev;
 
-    use PHPUnit_Framework_TestCase as TestCase;
+    use PHPUnit\Framework\TestCase;
 
     use Enobrev\ORM\Mock\Table;
     use Enobrev\ORM\Db;

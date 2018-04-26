@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLBuilderSQLOrderTest extends \PHPUnit_Framework_TestCase {
+    class SQLBuilderSQLOrderTest extends \PHPUnit\Framework\TestCase {
         public function testSelectOrderAsc() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->asc($oUser->user_id);

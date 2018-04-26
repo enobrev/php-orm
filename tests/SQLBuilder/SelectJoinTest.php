@@ -4,7 +4,7 @@
     use Enobrev\ORM\Mock\Table\Address;
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLBuilderSelectJoinTest extends \PHPUnit_Framework_TestCase {
+    class SQLBuilderSelectJoinTest extends \PHPUnit\Framework\TestCase {
         public function testSelectJoin() {
             $oUser    = new User();
             $oAddress = new Address();

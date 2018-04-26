@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLLimitTest extends \PHPUnit_Framework_TestCase {
+    class SQLLimitTest extends \PHPUnit\Framework\TestCase {
         public function testSelectLimitCount() {
             $oSQL = SQL::select(
                 new User(),

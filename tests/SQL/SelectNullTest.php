@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SelectNullTest extends \PHPUnit_Framework_TestCase {
+    class SelectNullTest extends \PHPUnit\Framework\TestCase {
         public function testSelectIntNull() {
             $oUser = new User();
             $oSQL = SQL::select(

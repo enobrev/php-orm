@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SelectEitherTest extends \PHPUnit_Framework_TestCase {
+    class SelectEitherTest extends \PHPUnit\Framework\TestCase {
         public function testSelectEitherBookended() {
             $oUser = new User();
             $oSQL = SQL::select(

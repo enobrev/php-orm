@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev;
 
-    use PHPUnit_Framework_TestCase as TestCase;
+    use PHPUnit\Framework\TestCase;
 
     use Enobrev\ORM\Mock\Table;
     use Enobrev\ORM\Db;
@@ -21,6 +21,7 @@
 
         public function setUp() {
             Log::setPurpose('ModifiedDateTest');
+            Log::setService('ModifiedDateTest');
 
             $sDatabase = file_get_contents(__DIR__ . '/../Mock/sqlite.sql');
             $aDatabase = explode(';', $sDatabase);

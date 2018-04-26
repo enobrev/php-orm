@@ -8,7 +8,7 @@
 
     use Enobrev\ORM\Join;
     use Enobrev\ORM\Table;
-    use PHPUnit_Framework_TestCase as TestCase;
+    use PHPUnit\Framework\TestCase;
  
     class MySQLJoinTest extends TestCase {
         public function setUp() {

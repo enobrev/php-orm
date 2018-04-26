@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SelectLikeTest extends \PHPUnit_Framework_TestCase {
+    class SelectLikeTest extends \PHPUnit\Framework\TestCase {
         public function testSelectIntLikeValue() {
             $oUser = new User();
             $oSQL = SQL::select(

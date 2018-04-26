@@ -4,7 +4,7 @@
     require __DIR__ . '/../../vendor/autoload.php';
 
     use Enobrev\ORM\Mock\Table\User;
-    use PHPUnit_Framework_TestCase as TestCase;
+    use PHPUnit\Framework\TestCase;
 
     class SelectAlsoTest extends TestCase {
         public function testSelectAlsoFlat() {

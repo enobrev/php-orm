@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLBuilderSelectGteTest extends \PHPUnit_Framework_TestCase {
+    class SQLBuilderSelectGteTest extends \PHPUnit\Framework\TestCase {
         public function testSelectIntGreaterEqualValue() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->gte($oUser->user_id, 1);

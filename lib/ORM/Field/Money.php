@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\FieldInvalidValueException;
     use stdClass;
@@ -57,11 +58,13 @@
          * @return string
          */
         public function __toString():string {
+            $sValue = 0;
+
             if ($this->sValue instanceof MoneyPHP) {
-                return $this->sValue->getAmount();
+                $sValue = $this->sValue->getAmount();
             }
 
-            return $this->sValue === null ? '' : $this->sValue;
+            return $sValue != 0 ? (string) $sValue : '0';
         }
 
         /**
@@ -109,7 +112,7 @@
             }
 
             if ($this->sValue instanceof MoneyPHP) {
-                return $this->sValue->getAmount();
+                return Escape::string($this->__toString(), PDO::PARAM_INT);
             } else {
                 return 'NULL';
             }

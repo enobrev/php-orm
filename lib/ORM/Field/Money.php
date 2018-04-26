@@ -167,6 +167,10 @@
                     }
                     break;
 
+                case trim($sValue) === '':
+                    $this->sValue = null;
+                    break;
+
                 default:
                     $this->sValue = new MoneyPHP($sValue, $this->getCurrency());
                     break;

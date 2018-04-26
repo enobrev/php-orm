@@ -57,13 +57,11 @@
          * @return string
          */
         public function __toString():string {
-            $sValue = null;
-
             if ($this->sValue instanceof MoneyPHP) {
-                $sValue = $this->sValue->getAmount();
+                return $this->sValue->getAmount();
             }
 
-            return $sValue;
+            return $this->sValue === null ? '' : $this->sValue;
         }
 
         /**

@@ -474,66 +474,64 @@
 
     foreach ($aAllData['tables'] as $sTable => $aData) {
 
-            if (isset($aReferences[$sTable])) {
-                if (count($aReferences[$sTable])) {
-                    foreach($aReferences[$sTable] as $sColumn => $aReference) {
-                        $iIndex            = array_search($sColumn, array_column($aAllData['tables'][$sTable]['fields'], 'name'));
-                        $sReferencedTable  = $aReference['table'];
-                        $sReferencedField  = $aReference['field'];
+        if (isset($aReferences[$sTable])) {
+            if (count($aReferences[$sTable])) {
+                foreach($aReferences[$sTable] as $sColumn => $aReference) {
+                    $iIndex            = array_search($sColumn, array_column($aAllData['tables'][$sTable]['fields'], 'name'));
+                    $sReferencedTable  = $aReference['table'];
+                    $sReferencedField  = $aReference['field'];
+                    $aReferencedFields = $aAllData['tables'][$sReferencedTable]['fields'];
+
+                    $aReferencedTable = $aAllData['tables'][$sReferencedTable]['table'];
+                    $aReferencedField = $aReferencedFields[array_search($sReferencedField, array_column($aReferencedFields, 'name'))];
+
+                    unset($aReferencedField['reference']);
+                    unset($aReferencedField['inbound_reference']);
+
+                    $aAllData['tables'][$sTable]['fields'][$iIndex]['reference'] = [
+                        'title'         => getClassName(str_replace($sReferencedField, '', $sColumn)) . $aReferencedTable['title'],
+                        'title_plural'  => getClassNamePlural(str_replace($sReferencedField, '', $sColumn) . $aReferencedTable['title']),
+                        'table'         => $aReferencedTable,
+                        'field'         => $aReferencedField
+                    ];
+
+                    $aAllData['tables'][$sTable]['count']['outbound']++;
+
+                    if ($sColumn == 'user_id') {
+                        $aAllData['tables'][$sTable]['has_owner']    = true;
+                        $aAllData['tables'][$sTable]['interfaces'][] = 'OwnerColumn';
+                    }
+                }
+            }
+        }
+
+        if (isset($aReverseReferences[$sTable])) {
+            if (count($aReverseReferences[$sTable])) {
+                foreach ($aReverseReferences[$sTable] as $sColumn => $aReverseReferencesForColumn) {
+                    $iIndex = array_search($sColumn, array_column($aAllData['tables'][$sTable]['fields'], 'name'));
+                    foreach($aReverseReferencesForColumn as $aReverseReference) {
+                        $sReferencedTable  = $aReverseReference['table'];
+                        $sReferencedField  = $aReverseReference['field'];
                         $aReferencedFields = $aAllData['tables'][$sReferencedTable]['fields'];
 
-                        $aReferencedTable = $aAllData['tables'][$sReferencedTable]['table'];
-                        $aReferencedField = $aReferencedFields[array_search($sReferencedField, array_column($aReferencedFields, 'name'))];
+                        $aReferencedTable  = $aAllData['tables'][$sReferencedTable]['table'];
+                        $aReferencedField  = $aReferencedFields[array_search($sReferencedField, array_column($aReferencedFields, 'name'))];
 
                         unset($aReferencedField['reference']);
                         unset($aReferencedField['inbound_reference']);
 
-                        $aAllData['tables'][$sTable]['fields'][$iIndex]['reference'] = [
-                            'title'         => getClassName(str_replace($sReferencedField, '', $sColumn)) . $aReferencedTable['title'],
-                            'title_plural'  => getClassNamePlural(str_replace($sReferencedField, '', $sColumn) . $aReferencedTable['title']),
-                            'table'         => $aReferencedTable,
-                            'field'         => $aReferencedField
+                        $aAllData['tables'][$sTable]['fields'][$iIndex]['inbound_reference'][] = [
+                            'table' => $aReferencedTable,
+                            'field' => $aReferencedField
                         ];
-
-                        $aAllData['tables'][$sTable]['count']['outbound']++;
-
-                        if ($sColumn == 'user_id') {
-                            $aAllData['tables'][$sTable]['has_owner']    = true;
-                            $aAllData['tables'][$sTable]['interfaces'][] = 'OwnerColumn';
-                        }
                     }
+
+                    $aAllData['tables'][$sTable]['count']['inbound']++;
                 }
             }
+        }
 
-            if (isset($aReverseReferences[$sTable])) {
-                if (count($aReverseReferences[$sTable])) {
-                    foreach ($aReverseReferences[$sTable] as $sColumn => $aReverseReferencesForColumn) {
-                        $iIndex = array_search($sColumn, array_column($aAllData['tables'][$sTable]['fields'], 'name'));
-                        foreach($aReverseReferencesForColumn as $aReverseReference) {
-                            $sReferencedTable  = $aReverseReference['table'];
-                            $sReferencedField  = $aReverseReference['field'];
-                            $aReferencedFields = $aAllData['tables'][$sReferencedTable]['fields'];
-
-                            $aReferencedTable  = $aAllData['tables'][$sReferencedTable]['table'];
-                            $aReferencedField  = $aReferencedFields[array_search($sReferencedField, array_column($aReferencedFields, 'name'))];
-
-                            unset($aReferencedField['reference']);
-                            unset($aReferencedField['inbound_reference']);
-
-                            $aAllData['tables'][$sTable]['fields'][$iIndex]['inbound_reference'][] = [
-                                'table' => $aReferencedTable,
-                                'field' => $aReferencedField
-                            ];
-                        }
-
-                        $aAllData['tables'][$sTable]['count']['inbound']++;
-                    }
-                }
-
-                $aAllData['tables'][$sTable]['interfaces'] = implode(', ', array_unique($aData['interfaces']));
-            }
-
-
+        $aAllData['tables'][$sTable]['interfaces'] = implode(', ', array_unique($aAllData['tables'][$sTable]['interfaces']));
     }
 
     $sJsonFile = getcwd() . '/sql.json';

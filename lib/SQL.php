@@ -86,6 +86,14 @@
          * @param array ...$aArguments
          * @return ORM\Condition
          */
+        public static function lte(...$aArguments) {
+            return ORM\Condition::lte(...$aArguments);
+        }
+
+        /**
+         * @param array ...$aArguments
+         * @return ORM\Condition
+         */
         public static function gte(...$aArguments) {
             return ORM\Condition::gte(...$aArguments);
         }

@@ -211,6 +211,15 @@
          * @param array ...$aArguments
          * @return $this
          */
+        public function lte(...$aArguments) {
+            $this->oConditions->add(SQL::lte(...$aArguments));
+            return $this;
+        }
+
+        /**
+         * @param array ...$aArguments
+         * @return $this
+         */
         public function gte(...$aArguments) {
             $this->oConditions->add(SQL::gte(...$aArguments));
             return $this;

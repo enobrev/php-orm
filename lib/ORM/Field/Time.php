@@ -5,7 +5,7 @@
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
 
-    class Time extends Date {
+    class Time extends DateTime {
 
         const DEFAULT_FORMAT = 'H:i:s';
         const NULL_VALUE     = '00:00:00';

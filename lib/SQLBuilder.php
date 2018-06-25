@@ -291,10 +291,12 @@
         /**
          * @param ORM\Field $oFrom
          * @param ORM\Field $oTo
+         * @param ORM\Condition|ORM\Conditions|null $oConditions
          * @return $this
+         * @throws ORM\ConditionsNonConditionException
          */
-        public function join(ORM\Field $oFrom, ORM\Field $oTo) {
-            $this->aJoins[] = SQL::join($oFrom, $oTo);
+        public function join(ORM\Field $oFrom, ORM\Field $oTo, $oConditions = null) {
+            $this->aJoins[] = SQL::join($oFrom, $oTo, $oConditions);
             return $this;
         }
 

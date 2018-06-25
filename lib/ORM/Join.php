@@ -15,15 +15,31 @@
         /** @var  Field */
         private $oTo = null;
 
+        /** @var  Condition|Conditions */
+        private $oConditions = null;
+
         /**
-         * @param Field $oFrom
-         * @param Field $oTo
+         * @param $oFrom
+         * @param $oTo
+         * @param $oConditions
          * @return Join
+         * @throws ConditionsNonConditionException
          */
-        public static function create($oFrom, $oTo) {            
+        public static function create($oFrom, $oTo, $oConditions = null) {
             $oJoin = new self;
-            $oJoin->oFrom = $oFrom;
-            $oJoin->oTo   = $oTo;
+            $oJoin->oFrom       = $oFrom;
+            $oJoin->oTo         = $oTo;
+
+            $oJoinCondition = new Conditions();
+            $oJoinCondition->add(Condition::eq($oFrom, $oTo, Condition::JOIN));
+
+            if ($oConditions instanceof Condition
+            ||  $oConditions instanceof Conditions) {
+                $oJoinCondition->add($oConditions);
+            }
+
+            $oJoin->oConditions = $oJoinCondition;
+
             return $oJoin;
         }
 
@@ -33,31 +49,25 @@
 
         public function toSQL(): string {
             if ($this->oTo->hasAlias()) {
-                return implode(' ',
-                    array(
-                        $this->sType,
-                        'JOIN',
-                        $this->oTo->sTable,
-                        'AS',
-                        $this->oTo->sAlias,
-                        'ON',
-                        $this->oFrom->toSQLColumn(),
-                        '=',
-                        $this->oTo->toSQLColumn()
-                    )
-                );
+                $aResponse = [
+                    $this->sType,
+                    'JOIN',
+                    $this->oTo->sTable,
+                    'AS',
+                    $this->oTo->sAlias,
+                    'ON',
+                    $this->oConditions->toSQL()
+                ];
             } else {
-                return implode(' ',
-                    array(
-                        $this->sType,
-                        'JOIN',
-                        $this->oTo->sTable,
-                        'ON',
-                        $this->oFrom->toSQLColumn(),
-                        '=',
-                        $this->oTo->toSQLColumn()
-                    )
-                );
+                $aResponse = [
+                    $this->sType,
+                    'JOIN',
+                    $this->oTo->sTable,
+                    'ON',
+                    $this->oConditions->toSQL()
+                ];
             }
+
+            return implode(' ', $aResponse);
         }
     }

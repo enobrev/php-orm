@@ -157,10 +157,12 @@
         /**
          * @param ORM\Field $oFrom
          * @param ORM\Field $oTo
+         * @param ORM\Condition|ORM\Conditions|null $oConditions
          * @return ORM\Join
+         * @throws ORM\ConditionsNonConditionException
          */
-        public static function join(ORM\Field $oFrom, ORM\Field $oTo) {
-            return ORM\Join::create($oFrom, $oTo);
+        public static function join(ORM\Field $oFrom, ORM\Field $oTo, $oConditions = null) {
+            return ORM\Join::create($oFrom, $oTo, $oConditions);
         }
 
         /**

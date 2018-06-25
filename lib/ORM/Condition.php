@@ -10,6 +10,9 @@
     class ConditionMissingFieldException extends ConditionException {}
 
     class Condition {
+        const FIELD_TO_FIELD = '_FIELD_TO_FIELD_';
+        const JOIN           = '_FIELD_TO_FIELD_';
+
         const LT           = '<';
         const LTE          = '<=';
         const GT           = '>';
@@ -25,13 +28,16 @@
         const BETWEEN      = 'BETWEEN';
 
         /** @var string  */
-        private $sSign;
+        protected $sSign;
+
+        /** @var bool */
+        protected $bFieldToField = false;
 
         /** @var array  */
-        private $aElements = [];
+        protected $aElements = [];
 
         /** @var array  */
-        private static $aSigns = [
+        protected static $aSigns = [
             self::NOTNULL, self::LT, self::LTE, self::GT, self::GTE, self::EQUAL, self::NEQ, self::LIKE, self::NLIKE, self::ISNULL, self::BETWEEN, self::IN, self::NIN
         ];
 
@@ -49,7 +55,7 @@
          * @param mixed $sElement
          * @return bool
          */
-        private static function isSign($sElement) {
+        protected static function isSign($sElement) {
             return in_array($sElement, self::$aSigns);
         }
 
@@ -62,7 +68,7 @@
          * @throws ConditionMissingFieldException
          * @throws ConditionMissingInValueException
          */
-        private static function create(string $sSign, ...$aElements) {
+        protected static function create(string $sSign, ...$aElements) {
             if (!self::isSign($sSign)) {
                 throw new ConditionInvalidTypeException();
             }
@@ -71,7 +77,9 @@
             $oCondition->sSign = $sSign;
 
             foreach($aElements as $mElement) {
-                if ($mElement instanceof Field) {
+                if ($mElement === self::FIELD_TO_FIELD) {
+                    $oCondition->bFieldToField = true;
+                } else if ($mElement instanceof Field) {
                     $oCondition->aElements[] = $mElement;
                 } else if (isset($oCondition->aElements[0])
                        &&        $oCondition->aElements[0] instanceof Field) { // Value should be of the same field type as Field
@@ -180,7 +188,18 @@
             /** @var Field $oField */
             $oField = $this->aElements[0];
 
-            if (count($this->aElements) == 1) {
+            if ($this->bFieldToField) {
+                /** @var Field $oField1 */
+                $oField1 = $this->aElements[1];
+
+                return implode(' ',
+                    array(
+                        $oField->toSQLColumn(),
+                        $this->sSign,
+                        $oField1->toSQLColumn()
+                    )
+                );
+            } else if (count($this->aElements) == 1) {
                 if ($this->sSign == self::ISNULL
                 ||  $this->sSign == self::NOTNULL) {
                     return implode(' ',
@@ -263,7 +282,18 @@
             /** @var Field $oField */
             $oField = $this->aElements[0];
 
-            if (count($this->aElements) == 1) {
+            if ($this->bFieldToField) {
+                /** @var Field $oField1 */
+                $oField1 = $this->aElements[1];
+
+                return implode(' ',
+                    array(
+                        $oField->toSQLColumn(),
+                        $this->sSign,
+                        $oField1->toSQLColumn()
+                    )
+                );
+            } else if (count($this->aElements) == 1) {
                 if ($this->sSign == self::ISNULL) {
                     return implode(' ',
                         array(

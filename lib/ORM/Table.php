@@ -141,10 +141,15 @@
 
         /**
          * @param PDOStatement $oResults
-         * @return static
+         * @return static|null
          */
-        public function createFromPDOStatement(PDOStatement $oResults) {
-            return $oResults->fetchObject(get_class($this), [$this->getTitle(), true]);
+        public function createFromPDOStatement(PDOStatement $oResults): ?Table {
+            $oResponse = $oResults->fetchObject(get_class($this), [$this->getTitle(), true]);
+            if ($oResponse) {
+                return $oResponse;
+            }
+
+            return null;
         }
 
         /**

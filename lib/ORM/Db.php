@@ -223,7 +223,7 @@
             } catch(PDOException $e) {
                 $iCode = (int) $e->getCode();
 
-                if ($iCode == 1062) {
+                if ($iCode == 1062 || $iCode == 23000) {
                     $oException = new DbDuplicateException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
                 } else {
                     $oException = new DbException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);

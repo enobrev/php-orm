@@ -172,13 +172,15 @@
          */
         public function eq_in(Field $oField, $mValue) {
             /** @psalm-suppress InvalidArgument */
-            if (strpos($mValue, ',')) {
+            if (is_array($mValue)) {
+                $this->oConditions->add(SQL::in($oField, $mValue));
+            } else if (is_string($mValue) && strpos($mValue, ',')) {
                 $this->oConditions->add(SQL::in($oField, explode(',', $mValue)));
             } else {
                 $this->oConditions->add(SQL::eq($oField, $mValue));
             }
             return $this;
-        }
+        } 
 
         /**
          * @param array ...$aArguments

@@ -64,7 +64,7 @@
          *
          * @return string
          */
-        public function __toString() {
+        public function __toString():string {
             $sValue = $this->sValue instanceof PHP_DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
             if (substr($sValue, 0, 1) == '-') {

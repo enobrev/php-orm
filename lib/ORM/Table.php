@@ -254,6 +254,21 @@
         /**
          * @return Field[]
          */
+        public function getColumnsWithFields() {
+            $aFields = [];
+            $aProperties = get_object_vars($this);
+            foreach(array_keys($aProperties) as $sProperty) {
+                if ($this->$sProperty instanceof Field) {
+                    $aFields[$sProperty] =& $this->$sProperty;
+                }
+            }
+
+            return $aFields;
+        }
+
+        /**
+         * @return Field[]
+         */
         public function getPrimary() {
             $aPrimary = [];
             $aProperties = get_object_vars($this);

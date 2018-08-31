@@ -5,6 +5,8 @@
     use Exception;
     use PDO;
     use PDOStatement;
+    use ReflectionClass;
+    use ReflectionException;
 
     use Enobrev\Log;
     use Enobrev\SQL;
@@ -39,7 +41,6 @@
          * @return Table
          */
         public static function getTable() {
-            throw new TablesException('This Method Should Have Been Overridden');
         }
 
         /**
@@ -139,17 +140,14 @@
         /**
          * @param int|null $iPage
          * @param int|null $iPer
-         * @param null|string $sSearch
-         * @param null|string $sSortField
+         * @param array|null $aSearch
+         * @param array|null $aSort
          * @param null|string $sSyncDate
          * @return Table[]|Tables
-         * @throws ConditionsNonConditionException
-         * @throws DbDuplicateException
          * @throws DbException
          * @throws TablesException
          * @throws TablesInvalidReferenceException
          * @throws TablesInvalidTableException
-         * @throws \ReflectionException
          */
         public static function getForCMS(?int $iPage = 1, ?int $iPer = 100, ?array $aSearch = null, ?array $aSort = null, ?string $sSyncDate = null) {
             $iStart      = $iPer * ($iPage - 1);
@@ -236,23 +234,40 @@
 
                         $oSortReference = $oSortTable->getFieldThatReferencesTable($oTable);
                         if ($oSortReference instanceof Field !== false) {
-                            // The SortBy Field is in a table that references our Primary Table
-                            // Join from the Referenced Primary Table Field to the Sort Table Referencing Field
-                            $sReferenceField = $oSortReference->referenceField();
-                            $oQuery->fields($oTable); // Setting Primary Table fields to ensure joined fields aren't the only ones returned
-                            $oQuery->join($oTable->$sReferenceField, $oSortReference);
+                            try {
+                                // The SortBy Field is in a table that references our Primary Table
+                                // Join from the Referenced Primary Table Field to the Sort Table Referencing Field
+                                $sReferenceField = $oSortReference->referenceField();
+                                $oQuery->fields($oTable); // Setting Primary Table fields to ensure joined fields aren't the only ones returned
+                                $oQuery->join($oTable->$sReferenceField, $oSortReference);
+                            } catch (ConditionsNonConditionException $e) {
+                                Log::e('Tables.getForCMS.Sort.Foreign.JoinConditionError', ['error' => $e]);
+                            }
                         } else {
                             $oSortReference = $oTable->getFieldThatReferencesTable($oSortTable);
 
                             if ($oSortReference instanceof Field === false) {
-                                throw new TablesInvalidReferenceException("Cannot Associate " . (new \ReflectionClass($oTable))->getShortName() . ' with ' . (new \ReflectionClass($oSortReference))->getShortName());
+                                $sTableName = '[Table]';
+                                $sRefTableName = '[Referenced Table]';
+                                try {
+                                    $sTableName    = (new ReflectionClass($oTable))->getShortName();
+                                    $sRefTableName = (new ReflectionClass($oSortReference))->getShortName();
+                                } catch (ReflectionException $e) {
+                                    // No worries
+                                }
+                                
+                                throw new TablesInvalidReferenceException("Cannot Associate $sTableName with  $sRefTableName");
                             }
 
-                            // The SortBy Field is in a table that our Primary Table references
-                            // Join from the Referencing Primary Table Field to the Referenced Sort Table Field Base Table Field
-                            $sReferenceField = $oSortReference->referenceField();
-                            $oQuery->fields($oTable); // Setting Primary Table fields to ensure joined fields aren't the only ones returned
-                            $oQuery->join($oSortReference, $oSortTable->$sReferenceField);
+                            try {
+                                // The SortBy Field is in a table that our Primary Table references
+                                // Join from the Referencing Primary Table Field to the Referenced Sort Table Field Base Table Field
+                                $sReferenceField = $oSortReference->referenceField();
+                                $oQuery->fields($oTable); // Setting Primary Table fields to ensure joined fields aren't the only ones returned
+                                $oQuery->join($oSortReference, $oSortTable->$sReferenceField);
+                            } catch (ConditionsNonConditionException $e) {
+                                Log::e('Tables.getForCMS.Sort.Foreign.JoinConditionError', ['error' => $e]);
+                            }
                         }
 
                         $oQuery->asc($oSortTable->$sSortTableField);

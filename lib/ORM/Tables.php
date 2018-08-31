@@ -53,6 +53,10 @@
             return static::fromResults($oResults, $oTable);
         }
 
+        /**
+         * @param null|string $sSearch
+         * @return array
+         */
         public static function searchTermPreProcess(?string $sSearch): array {
             if (!$sSearch) {
                 return [];
@@ -99,6 +103,10 @@
             return $aResponse;
         }
 
+        /**
+         * @param string $sSort
+         * @return array
+         */
         public static function sortTermPreProcess(string $sSort): array {
             if (!$sSort) {
                 return [];
@@ -133,6 +141,7 @@
          * @param int|null $iPer
          * @param null|string $sSearch
          * @param null|string $sSortField
+         * @param null|string $sSyncDate
          * @return Table[]|Tables
          * @throws ConditionsNonConditionException
          * @throws DbDuplicateException
@@ -142,7 +151,7 @@
          * @throws TablesInvalidTableException
          * @throws \ReflectionException
          */
-        public static function getForCMS(?int $iPage = 1, ?int $iPer = 100, ?array $aSearch = null, ?array $aSort = null) {
+        public static function getForCMS(?int $iPage = 1, ?int $iPer = 100, ?array $aSearch = null, ?array $aSort = null, ?string $sSyncDate = null) {
             $iStart      = $iPer * ($iPage - 1);
 
             $oTable      = static::getTable();
@@ -253,6 +262,14 @@
                             $oQuery->asc($oSortField);
                         }
                     }
+                }
+            }
+
+            if ($sSyncDate) {
+                if ($oTable instanceof ModifiedDateColumn) {
+                    $oQuery->also(
+                        SQL::gte($oTable->getModifiedDateField(), $sSyncDate)
+                    );
                 }
             }
 

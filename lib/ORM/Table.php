@@ -6,7 +6,6 @@
     use stdClass;
     use PDOStatement;
 
-    class TableNamelessException extends TableException {}
     class TableFieldNotFoundException extends TableException {}
 
     class Table {
@@ -164,10 +163,6 @@
 
                 if (strlen($sTitle)) {
                     $this->sTitle = $sTitle;
-                }
-
-                if ($this->sTitle === null || strlen($this->sTitle) == 0) {
-                    throw new TableNamelessException;
                 }
 
                 $this->init();

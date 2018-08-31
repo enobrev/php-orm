@@ -1,17 +1,40 @@
 <?php
     namespace Enobrev\ORM;
 
-    use Exception;
     use ArrayIterator;
-    use Enobrev\SQLBuilder;
+    use Exception;
     use PDO;
     use PDOStatement;
 
+    use Enobrev\Log;
+    use Enobrev\SQL;
+    use Enobrev\SQLBuilder;
+
     class TablesException extends DbException {}
-    class TablesMultiplePrimaryException extends TablesException {}
-    class TablesInvalidFieldException extends TablesException {}
+    class TablesMultiplePrimaryException  extends TablesException {}
+    class TablesInvalidTableException     extends TablesException {}
+    class TablesInvalidFieldException     extends TablesException {}
+    class TablesInvalidReferenceException extends TablesException {}
 
     class Tables extends ArrayIterator {
+
+        /** @var string */
+        private static $sNamespaceTable = null;
+        /**
+         * @param string $sNamespaceTable
+         */
+        public static function init(string $sNamespaceTable): void {
+            self::$sNamespaceTable = trim($sNamespaceTable, '\\');
+        }
+
+        /**
+         * @param string $sTableClass
+         * @return string
+         */
+        public static function _getNamespacedTableClassName(string $sTableClass): string {
+            return implode('\\', [self::$sNamespaceTable, $sTableClass]);
+        }
+
         /**
          * @return Table
          */
@@ -27,6 +50,213 @@
         public static function get() {
             $oTable   = static::getTable();
             $oResults = Db::getInstance()->namedQuery(__METHOD__, SQLBuilder::select($oTable));
+            return static::fromResults($oResults, $oTable);
+        }
+
+        public static function searchTermPreProcess(?string $sSearch): array {
+            if (!$sSearch) {
+                return [];
+            }
+
+            $aResponse = [
+                'type'       => 'OR',
+                'conditions' => []
+            ];
+
+            if (preg_match('/^(AND|OR)/', $sSearch, $aMatches)) {
+                $aResponse['type'] = $aMatches[1];
+                $sSearch = trim(preg_replace('/^(AND|OR)/', '', $sSearch));
+            };
+
+            $sSearch = preg_replace('/\s+/', ' ', $sSearch);
+            $sSearch = preg_replace('/(\w+)([:><])"(\w+)/', '"${1}${2}${3}', $sSearch); // Make things like field:"Some Value" into "field: Some Value"
+            $aSearch = str_getcsv($sSearch, ' ');
+
+            foreach($aSearch as $sSearchTerm) {
+                if (strpos($sSearchTerm, ':') !== false) {
+                    $aCondition = [];
+                    $aSearchTerm  = explode(':', $sSearchTerm);
+                    $aCondition['operator'] = ':';
+                    $aCondition['field']    = array_shift($aSearchTerm);
+                    $aCondition['value']    = implode(':', $aSearchTerm);
+                    $aResponse['conditions'][] = $aCondition;
+
+                } else if (strpos($sSearchTerm, '>') !== false) {
+                    // FIXME: Obviously ridiculous.  we should be parsing this properly instead of repeating
+                    $aCondition = [];
+                    $aSearchTerm  = explode('>', $sSearchTerm);
+                    $aCondition['operator'] = '>';
+                    $aCondition['field']    = array_shift($aSearchTerm);
+                    $aCondition['value']    = implode('>', $aSearchTerm);
+                    $aResponse['conditions'][] = $aCondition;
+                } else {
+                    $aCondition['operator'] = '::';
+                    $aCondition['value']    = $sSearchTerm;
+                    $aResponse['conditions'][] = $aCondition;
+                }
+            }
+
+            return $aResponse;
+        }
+
+        public static function sortTermPreProcess(string $sSort): array {
+            if (!$sSort) {
+                return [];
+            }
+
+            $aResponse = [];
+            $sSort     = trim($sSort);
+            $sGetSort  = preg_replace('/,\s+/', ',', $sSort);
+            $aSort     = explode(',', $sGetSort);
+
+            foreach($aSort as $sSort) {
+                if (strpos($sSort, '.')) {
+                    $aSplit = explode('.', $sSort);
+                    if (count($aSplit) == 2) {
+                        $aResponse[] = [
+                            'table' => $aSplit[0],
+                            'field' => $aSplit[1]
+                        ];
+                    }
+                } else {
+                    $aResponse[] = [
+                        'field' => $sSort
+                    ];
+                }
+            }
+
+            return $aResponse;
+        }
+
+        /**
+         * @param int|null $iPage
+         * @param int|null $iPer
+         * @param null|string $sSearch
+         * @param null|string $sSortField
+         * @return Table[]|Tables
+         * @throws ConditionsNonConditionException
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws TablesException
+         * @throws TablesInvalidReferenceException
+         * @throws TablesInvalidTableException
+         * @throws \ReflectionException
+         */
+        public static function getForCMS(?int $iPage = 1, ?int $iPer = 100, ?array $aSearch = null, ?array $aSort = null) {
+            $iStart      = $iPer * ($iPage - 1);
+
+            $oTable      = static::getTable();
+            $oQuery      = SQLBuilder::select($oTable)->limit($iStart, $iPer);
+
+            if ($aSearch) {
+                $aSQLConditions = [];
+
+                foreach($aSearch['conditions'] as $aCondition) {
+                    $sSearchValue = $aCondition['value'];
+                    $sSearchField = $aCondition['field'] ?? null;
+
+                    Log::d('Tables.getForCMS', [
+                        'table'     => $oTable->getTitle(),
+                        'condition' => $aCondition
+                    ]);
+
+                    if ($sSearchField) {
+                        $oSearchField = $oTable->$sSearchField;
+
+                        if ($oSearchField instanceof Field === false) {
+                            // TODO: Throw Error
+                            continue;
+                        }
+                    }
+
+                    switch($aCondition['operator']) {
+                        case '::':
+                            // Search all Searchable fields - we should be checking if this is a general search (no colons or >'s or anything) and then only do this in that case
+                            foreach ($oTable->getFields() as $oField) {
+                                if ($oField instanceof Field\Date) {
+                                    // TODO: handle dates
+                                } else if ($oField instanceof Field\Text) {
+                                    $aSQLConditions[] = SQL::like($oField, '%' . $sSearchValue . '%');
+                                }
+                            }
+                            break;
+
+                        case ':':
+                            if ($sSearchValue == 'null') {
+                                $aSQLConditions[] = SQL::nul($oSearchField);
+                            } else if ($oSearchField instanceof Field\Number
+                                   ||  $oSearchField instanceof Field\Enum
+                                   ||  $oSearchField instanceof Field\Date) {
+                                $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
+                            } else {
+                                $aSQLConditions[] = SQL::like($oSearchField, '%' . $sSearchValue . '%');
+                            }
+                            break;
+
+                        case '>':
+                            if ($oSearchField instanceof Field\Number
+                            ||  $oSearchField instanceof Field\Date) {
+                                $aSQLConditions[] = SQL::gt($oSearchField, $sSearchValue);
+                            }
+                            break;
+                    }
+                }
+
+                if (count($aSQLConditions)) {
+                    if ($aSearch['type'] == 'AND') {
+                        $oQuery->also(...$aSQLConditions);
+                    } else {
+                        $oQuery->either(...$aSQLConditions);
+                    }
+                }
+            }
+
+            if ($aSort) {
+                foreach($aSort as $aField) {
+                    $sSortTableField = $aField['field'];
+
+                    if (isset($aField['table'])) {
+                        Log::d('Tables.getForCMS.Sort.Foreign', $aField);
+                        $sSortTableClass = $aField['table'];
+
+                        /** @var Table $oSortTable */
+                        $oSortTable = new $sSortTableClass();
+                        if (!$oSortTable instanceof Table) {
+                            throw new TablesInvalidTableException($sSortTableClass . " is not a valid Table");
+                        }
+
+                        $oSortReference = $oSortTable->getFieldThatReferencesTable($oTable);
+                        if ($oSortReference instanceof Field !== false) {
+                            // The SortBy Field is in a table that references our Primary Table
+                            // Join from the Referenced Primary Table Field to the Sort Table Referencing Field
+                            $sReferenceField = $oSortReference->referenceField();
+                            $oQuery->fields($oTable); // Setting Primary Table fields to ensure joined fields aren't the only ones returned
+                            $oQuery->join($oTable->$sReferenceField, $oSortReference);
+                        } else {
+                            $oSortReference = $oTable->getFieldThatReferencesTable($oSortTable);
+
+                            if ($oSortReference instanceof Field === false) {
+                                throw new TablesInvalidReferenceException("Cannot Associate " . (new \ReflectionClass($oTable))->getShortName() . ' with ' . (new \ReflectionClass($oSortReference))->getShortName());
+                            }
+
+                            // The SortBy Field is in a table that our Primary Table references
+                            // Join from the Referencing Primary Table Field to the Referenced Sort Table Field Base Table Field
+                            $sReferenceField = $oSortReference->referenceField();
+                            $oQuery->fields($oTable); // Setting Primary Table fields to ensure joined fields aren't the only ones returned
+                            $oQuery->join($oSortReference, $oSortTable->$sReferenceField);
+                        }
+
+                        $oQuery->asc($oSortTable->$sSortTableField);
+                    } else {
+                        $oSortField = $oTable->$sSortTableField;
+                        if ($oSortField instanceof Field) {
+                            $oQuery->asc($oSortField);
+                        }
+                    }
+                }
+            }
+
+            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oQuery);
             return static::fromResults($oResults, $oTable);
         }
 

@@ -144,16 +144,55 @@
          * @param array|null $aSort
          * @param null|string $sSyncDate
          * @return Table[]|Tables
+         * @throws DbDuplicateException
          * @throws DbException
          * @throws TablesException
          * @throws TablesInvalidReferenceException
          * @throws TablesInvalidTableException
          */
         public static function getForCMS(?int $iPage = 1, ?int $iPer = 100, ?array $aSearch = null, ?array $aSort = null, ?string $sSyncDate = null) {
-            $iStart      = $iPer * ($iPage - 1);
+            $oQuery = self::getQueryForCMS($aSearch, $iPage, $iPer, $aSort, $sSyncDate);
+            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oQuery);
+            return static::fromResults($oResults, static::getTable());
+        }
 
+        /**
+         * @param array|null $aSearch
+         * @return int
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws TablesInvalidReferenceException
+         * @throws TablesInvalidTableException
+         */
+        public static function countForCMS(?array $aSearch = null): int {
+            $oQuery = self::getQueryForCMS($aSearch);
+            $oQuery->setType(SQLBuilder::TYPE_COUNT);
+            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oQuery);
+            return (int) $oResults->fetchObject()->row_count;
+        }
+
+        /**
+         * @param array|null $aSearch
+         * @param int|null $iPage
+         * @param int|null $iPer
+         * @param array|null $aSort
+         * @param null|string $sSyncDate
+         * @return SQLBuilder
+         * @throws TablesInvalidReferenceException
+         * @throws TablesInvalidTableException
+         */
+        private static function getQueryForCMS(?array $aSearch = null, ?int $iPage = null, ?int $iPer = null, ?array $aSort = null, ?string $sSyncDate = null) {
             $oTable      = static::getTable();
-            $oQuery      = SQLBuilder::select($oTable)->limit($iStart, $iPer);
+            $oQuery      = SQLBuilder::select($oTable);
+
+            if ($iPer) {
+                if (!$iPage) {
+                    $iPage = 1;
+                }
+
+                $iStart = $iPer * ($iPage - 1);
+                $oQuery->limit($iStart, $iPer);
+            }
 
             if ($aSearch) {
                 $aSQLConditions = [];
@@ -288,8 +327,7 @@
                 }
             }
 
-            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oQuery);
-            return static::fromResults($oResults, $oTable);
+            return $oQuery;
         }
 
         /**

@@ -209,6 +209,13 @@
     foreach($aTables as $sTable => $aTable) {
         $aOutput = array();
 
+        $sClassName       = 'Table\\' . getClassName($sTable);
+        $sClassNamePlural = 'Table\\' . getClassNamePlural($sTable);
+
+        if ($sClassNamePlural == $sClassName) {
+            $sClassNamePlural .= 's'; // TODO: In my experience this only happens with 'beta'.  Probably happens with any "uncountable" from the pluralizer
+        }
+
         $aData = array(
             'table' => array(
                 'name'                  => $sTable,
@@ -220,8 +227,8 @@
                 'spaced_singular_title' => ucwords(depluralize(str_replace('_', ' ', $sTable))),
                 'spaced_title'          => ucwords(str_replace('_', ' ', $sTable)),
                 'comment'               => $aTable['comment'],
-                'class'                 => 'Table\\' . getClassName($sTable),
-                'class_plural'          => 'Table\\' . getClassNamePlural($sTable),
+                'class'                 => $sClassName,
+                'class_plural'          => $sClassNamePlural,
             ),
             'count' => [
                 'outbound'  => 0,

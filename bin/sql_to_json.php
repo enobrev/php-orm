@@ -446,8 +446,6 @@
 
             if ($oField->column_key == 'PRI') {
                 $oTemplateField['primary'] = true;
-                $aData['primary'][] = $oTemplateField;
-                $aData['count']['primary']++;
 
                 if ($sField == 'user_id') {
                     $aData['has_owner']    = true;
@@ -457,8 +455,6 @@
 
             if ($oField->column_key == 'UNI') {
                 $oTemplateField['unique'] = true;
-                $aData['unique'][] = $oTemplateField;
-                $aData['count']['unique']++;
             }
 
             $aData['fields'][] = $oTemplateField;
@@ -472,6 +468,14 @@
         foreach($aData['fields'] as &$aField) {
             $aField['short_pad'] = str_replace($aField['short'], '', str_pad($aField['short'], $iFieldNameShortLength, ' ', STR_PAD_RIGHT));
             $aField['name_pad']  = str_replace($aField['name'],  '', str_pad($aField['name'],  $iFieldNameLength,      ' ', STR_PAD_RIGHT));
+
+            if ($aField['primary']) {
+                $aData['primary'][] = $aField;
+                $aData['count']['primary']++;
+            } else if ($aField['unique']) {
+                $aData['unique'][] = $aField;
+                $aData['count']['unique']++;
+            }
         }
 
         $aData['interfaces'] = array_values(array_unique($aData['interfaces']));

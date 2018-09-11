@@ -211,9 +211,12 @@
 
         $sClassName       = 'Table\\' . getClassName($sTable);
         $sClassNamePlural = 'Table\\' . getClassNamePlural($sTable);
+        $sNamePlural      = getClassNamePlural($sTable);
 
         if ($sClassNamePlural == $sClassName) {
-            $sClassNamePlural .= 's'; // TODO: In my experience this only happens with 'beta'.  Probably happens with any "uncountable" from the pluralizer
+            // TODO: In my experience this only happens with 'beta'.  Probably happens with any "uncountable" from the pluralizer
+            $sClassNamePlural .= 's'; 
+            $sNamePlural      .= 's';
         }
 
         $aData = array(
@@ -221,7 +224,7 @@
                 'name'                  => $sTable,
                 'singular'              => depluralize($sTable),
                 'title'                 => getClassName($sTable),
-                'plural'                => getClassNamePlural($sTable),
+                'plural'                => $sNamePlural,
                 'spaced'                => str_replace('_', ' ', $sTable),
                 'spaced_singular'       => depluralize(str_replace('_', ' ', $sTable)),
                 'spaced_singular_title' => ucwords(depluralize(str_replace('_', ' ', $sTable))),

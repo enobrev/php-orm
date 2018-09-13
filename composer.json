@@ -18,16 +18,21 @@
         {
             "type": "vcs",
             "url":  "https://github.com/enobrev/php-orm"
+        },
+        {
+            "type": "vcs",
+            "url":  "https://github.com/melbings/php-dot-notation.git"
         }
     ],
     "require": {
         "php": ">=7.0.09",
         "nategood/commando": "^0.3.0",
         "twig/twig": "^2.4",
-        "moneyphp/money": "^3.1"
+        "moneyphp/money": "^3.1",
+        "adbario/php-dot-notation": "dev-recursive-merge",
+        "enobrev/php-tools": "dev-master"
     },
     "require-dev": {
-        "enobrev/php-tools":  "dev-master",
         "phpunit/phpunit": "^7.1"
     },
     "autoload": {

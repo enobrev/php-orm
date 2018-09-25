@@ -167,6 +167,7 @@
 
                 $this->init();
                 $this->applyDefaults();
+                $this->applyResult();
             }
 
             $this->bConstructed = true;
@@ -182,6 +183,20 @@
                     if (!$oField->hasValue()) {
                         $oField->applyDefault();
                     }
+                }
+            }
+        }
+
+        private function applyResult(): void {
+            $aProperties = get_object_vars($this);
+            foreach(array_keys($aProperties) as $sProperty) {
+                if (preg_match('/^[a-z][A-Z]/', $sProperty)) {
+                    // Skip Vars - we just want properties from Queries - FIXME: This is definitely imperfect and relies upon convention
+                    continue;
+                }
+
+                if ($this->$sProperty instanceof Field === false) {
+                    $this->oResult->$sProperty = $this->$sProperty;
                 }
             }
         }

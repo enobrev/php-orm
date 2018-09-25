@@ -406,7 +406,7 @@
             } else {
                 /** @psalm-suppress InvalidArgument */
                 $sPrefixedTable = get_class($aTables[0]);
-                return new static($oResults->fetchAll(PDO::FETCH_CLASS, $sPrefixedTable));
+                return new static($oResults->fetchAll(PDO::FETCH_CLASS, $sPrefixedTable, ['', true]));
             }
 
         }

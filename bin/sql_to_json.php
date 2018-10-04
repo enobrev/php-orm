@@ -239,7 +239,8 @@
                 'enum'      => 0,
                 'primary'   => 0,
                 'unique'    => 0,
-                'boolean'   => 0
+                'boolean'   => 0,
+                'skipped'   => 0
             ],
             'm2m'            => isset($aM2MTables[$sTable]),
             'has_owner'      => false,
@@ -256,6 +257,10 @@
         $iFieldNameLength      = 0;
         $iFieldNameShortLength = 0;
         foreach($aTable['fields'] as $sField => $oField) {
+            if (in_array($oField->column_type, ['point', 'geometry', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon', 'geometrycollection'])) {
+                $aData['count']['skipped']++;
+                continue;
+            }
 
             $sShort = str_replace($aData['table']['singular'] . '_', '', $sField);
             $oTemplateField = array(

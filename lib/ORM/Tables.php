@@ -181,7 +181,7 @@
          * @throws TablesInvalidReferenceException
          * @throws TablesInvalidTableException
          */
-        private static function getQueryForCMS(?array $aSearch = null, ?int $iPage = null, ?int $iPer = null, ?array $aSort = null, ?string $sSyncDate = null) {
+        protected static function getQueryForCMS(?array $aSearch = null, ?int $iPage = null, ?int $iPer = null, ?array $aSort = null, ?string $sSyncDate = null) {
             $oTable      = static::getTable();
             $oQuery      = SQLBuilder::select($oTable);
 

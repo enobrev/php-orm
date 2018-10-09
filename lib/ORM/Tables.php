@@ -33,7 +33,7 @@
          * @param string $sTableClass
          * @return string
          */
-        public static function _getNamespacedTableClassName(string $sTableClass): string {
+        public static function getNamespacedTableClassName(string $sTableClass): string {
             return implode('\\', [self::$sNamespaceTable, $sTableClass]);
         }
 

@@ -351,6 +351,9 @@
          * @param array $aData
          * @param array $aMap
          * @return Table[]|static
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws TableException
          */
         public static function createAndUpdateFromMap(Table $oTable, Array $aData, Array $aMap) {
             $aOutput = new static;

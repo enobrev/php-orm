@@ -553,6 +553,8 @@
         $aAllData['tables'][$sTable]['interfaces'] = implode(', ', array_unique($aAllData['tables'][$sTable]['interfaces']));
     }
 
+    ksort($aAllData['tables']);
+
     $sJsonFile = getcwd() . '/sql.json';
     file_put_contents($sJsonFile, json_encode($aAllData, JSON_PRETTY_PRINT));
 

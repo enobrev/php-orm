@@ -280,7 +280,7 @@
                 'comment'           => $oField->column_comment
             );
 
-            $sDefault = strtolower(trim($oTemplateField['default'], '\'"'));
+            $sDefault = preg_replace('/[^a-z]/', '', strtolower($oTemplateField['default']));
             if ($sDefault === 'null') {
                 $oTemplateField['default'] = null;
             }
@@ -565,7 +565,7 @@
         foreach($aTable['fields'] as $iFieldIndex => &$aField) {
             if (isset($aField['inbound_reference'])) {
                 usort($aField['inbound_reference'], function($a, $b) {
-                    return strcmp($a['table']['name'], $b['table']['name']);
+                    return $a['table']['name'] <=> $b['table']['name'] ?: $a['field']['name'] <=> $b['field']['name'];
                 });
             }
         }

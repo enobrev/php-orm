@@ -333,7 +333,7 @@
                 return new DateTime('now');
             }
 
-            return new DateTime($this->rawQuery('SELECT SYSDATE()')->fetchColumn());
+            return new DateTime($this->rawQuery('SELECT SYSDATE(6)')->fetchColumn());
         }
 
         /**

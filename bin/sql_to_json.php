@@ -563,12 +563,10 @@
 
     foreach($aAllData['tables'] as $sTable => &$aTable) {
         foreach($aTable['fields'] as $iFieldIndex => &$aField) {
-            if (isset($aField['reference'])) {
-                ksort($aField['reference']);
-            }
-
             if (isset($aField['inbound_reference'])) {
-                ksort($aField['inbound_reference']);
+                usort($aField['inbound_reference'], function($a, $b) {
+                    return strcmp($a['table']['name'], $b['table']['name']);
+                });
             }
         }
     }

@@ -280,6 +280,11 @@
                 'comment'           => $oField->column_comment
             );
 
+            $sDefault = strtolower(trim($oTemplateField['default'], '\'"'));
+            if ($sDefault === 'null') {
+                $oTemplateField['default'] = null;
+            }
+
             $iFieldNameLength      = max($iFieldNameLength,         strlen($oTemplateField['name']));
             $iFieldNameShortLength = max($iFieldNameShortLength,    strlen($oTemplateField['short']));
 
@@ -553,7 +558,20 @@
         $aAllData['tables'][$sTable]['interfaces'] = implode(', ', array_unique($aAllData['tables'][$sTable]['interfaces']));
     }
 
+    // Ensuring objects are sorted consistently
     ksort($aAllData['tables']);
+
+    foreach($aAllData['tables'] as $sTable => &$aTable) {
+        foreach($aTable['fields'] as $iFieldIndex => &$aField) {
+            if (isset($aField['reference'])) {
+                ksort($aField['reference']);
+            }
+
+            if (isset($aField['inbound_reference'])) {
+                ksort($aField['inbound_reference']);
+            }
+        }
+    }
 
     $sJsonFile = getcwd() . '/sql.json';
     file_put_contents($sJsonFile, json_encode($aAllData, JSON_PRETTY_PRINT));

@@ -110,7 +110,7 @@
     
     while ($oTable = $oTables->fetchObject()) {
         $sTable  = $oTable->table_name;
-        $oFields = $Db->query("SELECT table_name, column_name, ordinal_position, is_nullable, data_type, column_key, column_type, column_default, column_comment, extra FROM information_schema.columns WHERE table_schema = '$sName' AND table_name = '$sTable' ORDER BY ordinal_position ASC");
+        $oFields = $Db->query("SELECT table_name, column_name, ordinal_position, is_nullable, data_type, character_maximum_length, numeric_precision, datetime_precision, column_key, column_type, column_default, column_comment, extra FROM information_schema.columns WHERE table_schema = '$sName' AND table_name = '$sTable' ORDER BY ordinal_position ASC");
         $aFields = array();
         $aTableNames[] = $sTable;
 
@@ -215,7 +215,7 @@
 
         if ($sClassNamePlural == $sClassName) {
             // TODO: In my experience this only happens with 'beta'.  Probably happens with any "uncountable" from the pluralizer
-            $sClassNamePlural .= 's'; 
+            $sClassNamePlural .= 's';
             $sNamePlural      .= 's';
         }
 
@@ -277,8 +277,21 @@
                 'var'               => getFieldTitle($sField),
                 'var_array'         => 'a' . pluralize(getFieldTitle($sField)),
                 'default'           => strlen($oField->column_default) ? $oField->column_default : null,
-                'comment'           => $oField->column_comment
+                'comment'           => $oField->column_comment,
+                'mysql_type'        => $oField->data_type
             );
+
+            if (property_exists($oField, 'character_maximum_length') && $oField->character_maximum_length) {
+                $oTemplateField['max_length'] = $oField->character_maximum_length;
+            }
+
+            if (property_exists($oField, 'numeric_precision') && $oField->numeric_precision) {
+                $oTemplateField['numeric_precision'] = $oField->numeric_precision;
+            }
+
+            if (property_exists($oField, 'datetime_precision') && $oField->datetime_precision) {
+                $oTemplateField['datetime_precision'] = $oField->datetime_precision;
+            }
 
             $sDefault = preg_replace('/[^a-z]/', '', strtolower($oTemplateField['default']));
             if ($sDefault === 'null') {

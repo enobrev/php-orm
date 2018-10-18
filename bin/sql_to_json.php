@@ -293,11 +293,6 @@
                 $oTemplateField['datetime_precision'] = $oField->datetime_precision;
             }
 
-            $sDefault = preg_replace('/[^a-z]/', '', strtolower($oTemplateField['default']));
-            if ($sDefault === 'null') {
-                $oTemplateField['default'] = null;
-            }
-
             $iFieldNameLength      = max($iFieldNameLength,         strlen($oTemplateField['name']));
             $iFieldNameShortLength = max($iFieldNameShortLength,    strlen($oTemplateField['short']));
 
@@ -348,6 +343,16 @@
                         $oTemplateField['type'] = 'Field\\Text';
                     }
 
+                    $oTemplateField['qltype']   = 'string';
+                    $oTemplateField['php_type'] = 'string';
+                    $oTemplateField['var']      = 's' . $oTemplateField['var'];
+                    if ($oField->column_default) {
+                        $oTemplateField['default'] = '"' . $oField->column_default . '"';
+                    }
+                    break;
+
+                case $oField->data_type == 'json':
+                    $oTemplateField['type']     = 'Field\\JSONText';
                     $oTemplateField['qltype']   = 'string';
                     $oTemplateField['php_type'] = 'string';
                     $oTemplateField['var']      = 's' . $oTemplateField['var'];
@@ -481,6 +486,12 @@
 
             if ($oField->column_key == 'UNI') {
                 $oTemplateField['unique'] = true;
+            }
+
+            $sDefault = strlen($oField->column_default) ? $oField->column_default : null;
+            $sDefault = preg_replace('/[^a-z]/', '', strtolower($sDefault));
+            if ($sDefault === 'null') {
+                $oTemplateField['default'] = null;
             }
 
             $aData['fields'][] = $oTemplateField;

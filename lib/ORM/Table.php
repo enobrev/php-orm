@@ -19,6 +19,15 @@
         public $sKey = __CLASS__;
 
         /**
+         * @param string $sTableClass
+         * @return Table
+         */
+        public static function getInstanceFromName(string $sTableClass): self {
+            $sTable = Tables::getNamespacedTableClassName($sTableClass);
+            return new $sTable;
+        }
+
+        /**
          * @param string $sField
          * @param string|null $sAlias
          * @return Field

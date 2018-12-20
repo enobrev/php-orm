@@ -55,6 +55,22 @@
         }
 
         /**
+         * @param int $iCount
+         * @return Table[]|Tables
+         */
+        public static function getRandom(int $iCount = 1) {
+            if (!$iCount) {
+                return new self();
+            }
+
+            $oTable   = static::getTable();
+            $oSQL     = SQLBuilder::select($oTable);
+            $sSQL     = $oSQL->toString() . ' ORDER BY RAND() ' . SQL::limit($iCount)->toSQL();
+            $oResults = Db::getInstance()->namedQuery(__METHOD__, $sSQL);
+            return self::fromResults($oResults, $oTable);
+        }
+
+        /**
          * @param null|string $sSearch
          * @return array
          */

@@ -90,7 +90,7 @@
             };
 
             $sSearch = preg_replace('/\s+/', ' ', $sSearch);
-            $sSearch = preg_replace('/(\w+)([:><])"(\w+)/', '"${1}${2}${3}', $sSearch); // Make things like field:"Some Value" into "field: Some Value"
+            $sSearch = preg_replace('/(\w+)([:><!])"(\w+)/', '"${1}${2}${3}', $sSearch); // Make things like field:"Some Value" into "field: Some Value"
             $aSearch = str_getcsv($sSearch, ' ');
 
             foreach($aSearch as $sSearchTerm) {
@@ -109,6 +109,14 @@
                     $aCondition['operator'] = '>';
                     $aCondition['field']    = array_shift($aSearchTerm);
                     $aCondition['value']    = implode('>', $aSearchTerm);
+                    $aResponse['conditions'][] = $aCondition;
+                } else if (strpos($sSearchTerm, '!') !== false) {
+                    // FIXME: Obviously ridiculous.  we should be parsing this properly instead of repeating
+                    $aCondition = [];
+                    $aSearchTerm  = explode('!', $sSearchTerm);
+                    $aCondition['operator'] = '!';
+                    $aCondition['field']    = array_shift($aSearchTerm);
+                    $aCondition['value']    = implode('!', $aSearchTerm);
                     $aResponse['conditions'][] = $aCondition;
                 } else {
                     $aCondition['operator'] = '::';
@@ -255,10 +263,29 @@
                             }
                             break;
 
+                        case '!':
+                            if ($sSearchValue == 'null') {
+                                $aSQLConditions[] = SQL::nnul($oSearchField);
+                            } else if ($oSearchField instanceof Field\Number
+                                   ||  $oSearchField instanceof Field\Enum
+                                   ||  $oSearchField instanceof Field\Date) {
+                                $aSQLConditions[] = SQL::neq($oSearchField, $sSearchValue);
+                            } else {
+                                $aSQLConditions[] = SQL::nlike($oSearchField, '%' . $sSearchValue . '%');
+                            }
+                            break;
+
                         case '>':
                             if ($oSearchField instanceof Field\Number
                             ||  $oSearchField instanceof Field\Date) {
                                 $aSQLConditions[] = SQL::gt($oSearchField, $sSearchValue);
+                            }
+                            break;
+
+                        case '<':
+                            if ($oSearchField instanceof Field\Number
+                            ||  $oSearchField instanceof Field\Date) {
+                                $aSQLConditions[] = SQL::lt($oSearchField, $sSearchValue);
                             }
                             break;
                     }

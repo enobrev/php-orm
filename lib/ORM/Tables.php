@@ -216,13 +216,20 @@
          * @param int|null $iPer
          * @param array|null $aSort
          * @param null|string $sSyncDate
+         * @param null|Field[] $aFields
          * @return SQLBuilder
          * @throws TablesInvalidReferenceException
          * @throws TablesInvalidTableException
          */
-        protected static function getQueryForCMS(?array $aSearch = null, ?int $iPage = null, ?int $iPer = null, ?array $aSort = null, ?string $sSyncDate = null) {
+        protected static function getQueryForCMS(?array $aSearch = null, ?int $iPage = null, ?int $iPer = null, ?array $aSort = null, ?string $sSyncDate = null, ?array $aFields = []) {
             $oTable      = static::getTable();
-            $oQuery      = SQLBuilder::select($oTable)->fields($oTable);
+            $oQuery      = SQLBuilder::select($oTable);
+
+            if (count($aFields)) {
+                $oQuery->fields(...$aFields);
+            } else {
+                $oQuery->fields($oTable);
+            }
 
             if ($iPer) {
                 if (!$iPage) {

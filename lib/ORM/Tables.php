@@ -90,7 +90,7 @@
             };
 
             $sSearch = preg_replace('/\s+/', ' ', $sSearch);
-            $sSearch = preg_replace('/(\w+)([:><!])"(\w+)/', '"${1}${2}${3}', $sSearch); // Make things like field:"Some Value" into "field: Some Value"
+            $sSearch = preg_replace('/(\w+)([%:><!]+)"(\w+)/', '"${1}${2}${3}', $sSearch); // Make things like field:"Some Value" into "field: Some Value"
             $aSearch = str_getcsv($sSearch, ' ');
 
             foreach($aSearch as $sSearchTerm) {
@@ -100,6 +100,14 @@
                     $aCondition['operator'] = ':';
                     $aCondition['field']    = array_shift($aSearchTerm);
                     $aCondition['value']    = implode(':', $aSearchTerm);
+                    $aResponse['conditions'][] = $aCondition;
+
+                } else if (strpos($sSearchTerm, '%') !== false) {
+                    $aCondition = [];
+                    $aSearchTerm  = explode('%', $sSearchTerm);
+                    $aCondition['operator'] = '%';
+                    $aCondition['field']    = array_shift($aSearchTerm);
+                    $aCondition['value']    = implode('%', $aSearchTerm);
                     $aResponse['conditions'][] = $aCondition;
 
                 } else if (strpos($sSearchTerm, '>') !== false) {
@@ -252,6 +260,14 @@
                             break;
 
                         case ':':
+                            if ($sSearchValue == 'null') {
+                                $aSQLConditions[] = SQL::nul($oSearchField);
+                            } else {
+                                $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
+                            }
+                            break;
+
+                        case '%':
                             if ($sSearchValue == 'null') {
                                 $aSQLConditions[] = SQL::nul($oSearchField);
                             } else if ($oSearchField instanceof Field\Number

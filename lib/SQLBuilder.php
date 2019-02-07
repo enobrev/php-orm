@@ -29,6 +29,9 @@
         /** @var string  */
         public $sSQLType  = NULL;
 
+        /** @var string  */
+        public $sSelectFieldExtra  = NULL;
+
         /** @var bool  */
         private $bStar       = false;
 
@@ -180,7 +183,7 @@
                 $this->oConditions->add(SQL::eq($oField, $mValue));
             }
             return $this;
-        } 
+        }
 
         /**
          * @param array ...$aArguments
@@ -383,6 +386,15 @@
         }
 
         /**
+         * @param string $sExtra
+         * @return $this
+         */
+        public function selectFieldsExtra(string $sExtra) {
+            $this->sSelectFieldExtra = $sExtra;
+            return $this;
+        }
+
+        /**
          * @param ORM\Table   $oTable
          * @param ORM\Field[] ...$aFields
          * @return $this
@@ -492,9 +504,17 @@
                     }
                 }
 
+                if ($this->sSelectFieldExtra) {
+                    $aSQLFields[] = trim($this->sSelectFieldExtra, ',');
+                }
+
                 $aSQL[] = implode(', ', $aSQLFields);
             } else {
                 $aSQL[] = self::toSQLColumnsForSelect($this->aFields);
+
+                if ($this->sSelectFieldExtra) {
+                    $aSQL[] = ', ' . trim($this->sSelectFieldExtra, ',');
+                }
             }
 
             $aSQL[] = 'FROM';

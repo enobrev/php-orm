@@ -197,6 +197,13 @@
          * @throws TablesInvalidTableException
          */
         public static function countForCMS(?array $aSearch = null): int {
+            if (!$aSearch) {
+                $oTable   = static::getTable();
+                $sTable   = $oTable->getTitle();
+                $oResults = Db::getInstance()->namedQuery(__METHOD__, "SHOW TABLE STATUS LIKE '$sTable'");
+                return (int) $oResults->fetchObject()->Rows;
+            }
+
             $oQuery = self::getQueryForCMS($aSearch);
             $oQuery->setType(SQLBuilder::TYPE_COUNT);
             $oResults = Db::getInstance()->namedQuery(__METHOD__, $oQuery);

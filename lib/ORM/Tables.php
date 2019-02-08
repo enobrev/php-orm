@@ -280,12 +280,19 @@
                         case ':':
                             if ($sSearchValue == 'null') {
                                 $aSQLConditions[] = SQL::nul($oSearchField);
-                            } else if ($oSearchField instanceof Field\Number
-                                   ||  $oSearchField instanceof Field\Enum
-                                   ||  $oSearchField instanceof Field\Date) {
+                            } else if ($oSearchField instanceof Field\Date) {
                                 $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
+                            } else if ($oSearchField instanceof Field\Number
+                                   ||  $oSearchField instanceof Field\Enum) {
+                                if (strpos($sSearchValue, ',') !== false) {
+                                    $aSQLConditions[] = SQL::in($oSearchField, explode(',', $sSearchValue));
+                                } else {
+                                    $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
+                                }
                             } else if (strpos($sSearchValue, '%') !== false) {
                                 $aSQLConditions[] = SQL::like($oSearchField, $sSearchValue);
+                            } else if (strpos($sSearchValue, ',') !== false) {
+                                $aSQLConditions[] = SQL::in($oSearchField, explode(',', $sSearchValue));
                             } else {
                                 $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
                             }
@@ -294,12 +301,21 @@
                         case '!':
                             if ($sSearchValue == 'null') {
                                 $aSQLConditions[] = SQL::nnul($oSearchField);
-                            } else if ($oSearchField instanceof Field\Number
-                                   ||  $oSearchField instanceof Field\Enum
-                                   ||  $oSearchField instanceof Field\Date) {
+                            } else if ($oSearchField instanceof Field\Date) {
                                 $aSQLConditions[] = SQL::neq($oSearchField, $sSearchValue);
+                            } else if ($oSearchField instanceof Field\Number
+                                   ||  $oSearchField instanceof Field\Enum) {
+                                if (strpos($sSearchValue, ',') !== false) {
+                                    $aSQLConditions[] = SQL::nin($oSearchField, explode(',', $sSearchValue));
+                                } else {
+                                    $aSQLConditions[] = SQL::neq($oSearchField, $sSearchValue);
+                                }
+                            } else if (strpos($sSearchValue, '%') !== false) {
+                                $aSQLConditions[] = SQL::nlike($oSearchField, $sSearchValue);
+                            } else if (strpos($sSearchValue, ',') !== false) {
+                                $aSQLConditions[] = SQL::nin($oSearchField, explode(',', $sSearchValue));
                             } else {
-                                $aSQLConditions[] = SQL::nlike($oSearchField, '%' . $sSearchValue . '%');
+                                $aSQLConditions[] = SQL::neq($oSearchField, $sSearchValue);
                             }
                             break;
 

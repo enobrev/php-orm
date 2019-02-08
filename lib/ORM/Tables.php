@@ -102,14 +102,6 @@
                     $aCondition['value']    = implode(':', $aSearchTerm);
                     $aResponse['conditions'][] = $aCondition;
 
-                } else if (strpos($sSearchTerm, '%') !== false) {
-                    $aCondition = [];
-                    $aSearchTerm  = explode('%', $sSearchTerm);
-                    $aCondition['operator'] = '%';
-                    $aCondition['field']    = array_shift($aSearchTerm);
-                    $aCondition['value']    = implode('%', $aSearchTerm);
-                    $aResponse['conditions'][] = $aCondition;
-
                 } else if (strpos($sSearchTerm, '>') !== false) {
                     // FIXME: Obviously ridiculous.  we should be parsing this properly instead of repeating
                     $aCondition = [];
@@ -117,6 +109,14 @@
                     $aCondition['operator'] = '>';
                     $aCondition['field']    = array_shift($aSearchTerm);
                     $aCondition['value']    = implode('>', $aSearchTerm);
+                    $aResponse['conditions'][] = $aCondition;
+                } else if (strpos($sSearchTerm, '<') !== false) {
+                    // FIXME: Obviously ridiculous.  we should be parsing this properly instead of repeating
+                    $aCondition = [];
+                    $aSearchTerm  = explode('<', $sSearchTerm);
+                    $aCondition['operator'] = '<';
+                    $aCondition['field']    = array_shift($aSearchTerm);
+                    $aCondition['value']    = implode('<', $aSearchTerm);
                     $aResponse['conditions'][] = $aCondition;
                 } else if (strpos($sSearchTerm, '!') !== false) {
                     // FIXME: Obviously ridiculous.  we should be parsing this properly instead of repeating
@@ -265,10 +265,14 @@
                         case '::':
                             // Search all Searchable fields - we should be checking if this is a general search (no colons or >'s or anything) and then only do this in that case
                             foreach ($oTable->getFields() as $oField) {
-                                if ($oField instanceof Field\Date) {
-                                    // TODO: handle dates
-                                } else if ($oField instanceof Field\Text) {
-                                    $aSQLConditions[] = SQL::like($oField, '%' . $sSearchValue . '%');
+                                if ($oField instanceof Field\Number
+                                ||  $oField instanceof Field\Enum
+                                ||  $oField instanceof Field\Date) {
+                                    $aSQLConditions[] = SQL::eq($oField, $sSearchValue);
+                                } else if ($oField instanceof Field\Text && strpos($sSearchValue, '%') !== false) {
+                                    $aSQLConditions[] = SQL::like($oField, $sSearchValue);
+                                } else {
+                                    $aSQLConditions[] = SQL::eq($oField, $sSearchValue);
                                 }
                             }
                             break;
@@ -276,20 +280,14 @@
                         case ':':
                             if ($sSearchValue == 'null') {
                                 $aSQLConditions[] = SQL::nul($oSearchField);
-                            } else {
-                                $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
-                            }
-                            break;
-
-                        case '%':
-                            if ($sSearchValue == 'null') {
-                                $aSQLConditions[] = SQL::nul($oSearchField);
                             } else if ($oSearchField instanceof Field\Number
                                    ||  $oSearchField instanceof Field\Enum
                                    ||  $oSearchField instanceof Field\Date) {
                                 $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
+                            } else if (strpos($sSearchValue, '%') !== false) {
+                                $aSQLConditions[] = SQL::like($oSearchField, $sSearchValue);
                             } else {
-                                $aSQLConditions[] = SQL::like($oSearchField, '%' . $sSearchValue . '%');
+                                $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
                             }
                             break;
 

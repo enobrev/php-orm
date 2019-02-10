@@ -18,6 +18,10 @@
         /** @var string  */
         public $sKey = __CLASS__;
 
+        protected static function Db() {
+            return Db::getInstance();
+        }
+
         /**
          * @param string $sTableClass
          * @return Table
@@ -440,7 +444,7 @@
             $aClass     = explode('\\', $sClass);
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 
-            if ($oResult = Db::getInstance()->namedQuery($sQueryName, $oSQL)) {
+            if ($oResult = static::Db()->namedQuery($sQueryName, $oSQL)) {
                 return $oTable->createFromPDOStatement($oResult);
             }
 
@@ -517,7 +521,7 @@
 
             if ($this->primaryHasValue()) {
                 $this->preUpdate();
-                $oReturn = Db::getInstance()->namedQuery(get_class($this) . '.update',
+                $oReturn = static::Db()->namedQuery(get_class($this) . '.update',
                     SQLBuilder::update($this)->also($this->getPrimary())
                 );
                 $this->postUpdate();
@@ -547,7 +551,7 @@
          */
         public function delete() {
             if ($this->primaryHasValue()) {
-                $oReturn = Db::getInstance()->namedQuery(get_class($this) . '.delete',
+                $oReturn = static::Db()->namedQuery(get_class($this) . '.delete',
                     SQLBuilder::delete($this)->also($this->getPrimary())
                 );
 
@@ -571,14 +575,14 @@
 
             $bPrimaryAlreadySet = $this->primaryHasValue();
 
-            Db::getInstance()->namedQuery(get_class($this) . '.insert',
+            static::Db()->namedQuery(get_class($this) . '.insert',
                 SQLBuilder::insert($this)
             );
 
             if ($bPrimaryAlreadySet) {
                 $iLastInsertId = $this->getPrimaryValue();
             } else {
-                $iLastInsertId = Db::getInstance()->getLastInsertId();
+                $iLastInsertId = static::Db()->getLastInsertId();
                 $this->updatePrimary($iLastInsertId);
             }
 
@@ -628,11 +632,11 @@
          */
         public function upsert() {
             $this->preUpsert();
-            Db::getInstance()->namedQuery(get_class($this) . '.upsert',
+            static::Db()->namedQuery(get_class($this) . '.upsert',
                 SQLBuilder::upsert($this)
             );
 
-            $iLastInsertId = Db::getInstance()->getLastInsertId();
+            $iLastInsertId = static::Db()->getLastInsertId();
             $this->updatePrimary($iLastInsertId);
             $this->postUpsert();
 
@@ -643,7 +647,7 @@
          * @return \DateTime
          * */
         public function now() {
-            return Db::getInstance()->getDate();
+            return static::Db()->getDate();
         }
 
         /**

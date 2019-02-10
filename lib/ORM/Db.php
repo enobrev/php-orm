@@ -13,6 +13,9 @@
         /** @var Db|null */
         private static $oInstance = null;
 
+        /** @var Db|null */
+        private static $oInstance2 = null;
+
         /** @var bool */
         private static $bConnected = false;
 
@@ -29,7 +32,7 @@
         private $iLastRowsAffected = null;
 
         /** @var PDO $oPDO */
-        private static $oPDO;
+        private $oPDO;
 
         /**
          * @param PDO|null $oPDO
@@ -49,10 +52,28 @@
         }
 
         /**
+         * Hackish and Silly.  There are definitely cleaner ways to do this.  But I want two databases at once with minimal effort, and this does it for now
+         * @param PDO|null $oPDO
+         * @return Db
+         * @throws DbException
+         */
+        public static function getInstance2(PDO $oPDO = null) {
+            if (!self::$oInstance2 instanceof self) {
+                if ($oPDO === null) {
+                    throw new DbException('Db Has Not been Initialized Properly');
+                }
+
+                self::$oInstance2 = new self($oPDO);
+            }
+
+            return self::$oInstance2;
+        }
+
+        /**
          * @return PDO
          */
-        public static function getPDO() {
-            return self::$oPDO;
+        public function getPDO() {
+            return $this->oPDO;
         }
 
         /**
@@ -93,6 +114,28 @@
         }
 
         /**
+         * @param string      $sHost
+         * @param string|null $sUsername
+         * @param string|null $sPassword
+         * @param string|null $sDatabase
+         * @param array       $aOptions
+         * @return PDO
+         * @psalm-suppress PossiblyNullArgument
+         */
+        public static function defaultPostgresPDO(string $sHost, string $sUsername = null, string $sPassword = null, string $sDatabase = null, array $aOptions = []) {
+            $sDSN = "pgsql:host=$sHost";
+            if ($sDatabase) {
+                $sDSN .= ";dbname=$sDatabase";
+            }
+
+            $oPDO = new PDO($sDSN, $sUsername, $sPassword, $aOptions);
+            $oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
+            $oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+            return $oPDO;
+        }
+
+        /**
          * @return PDO
          */
         public static function defaultSQLiteMemory() {
@@ -119,7 +162,7 @@
          * @param PDO $oPDO
          */
         private function __construct(PDO $oPDO) {
-            self::$oPDO = $oPDO;
+            $this->oPDO = $oPDO;
         }
 
         /**
@@ -127,7 +170,7 @@
          */
         public function close(): void {
             if (self::$oInstance instanceof self && self::$bConnected) {
-                self::$oPDO = null;
+                $this->oPDO = null;
             }
 
             self::$bConnected = false;
@@ -207,14 +250,16 @@
 
                 /** @psalm-suppress PossiblyInvalidPropertyFetch */
                 $aLogOutput['sql'] = [
-                    'query' => $sSQL,
-                    'group' => $sQuery->sSQLGroup,
-                    'table' => $sQuery->sSQLTable,
-                    'type'  => $sQuery->sSQLType
+                    'driver' => $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME),
+                    'query'  => $sSQL,
+                    'group'  => $sQuery->sSQLGroup,
+                    'table'  => $sQuery->sSQLTable,
+                    'type'   => $sQuery->sSQLType
                 ];
             } else {
                 $aLogOutput['sql'] = [
-                    'query' => $sSQL
+                    'driver' => $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME),
+                    'query'  => $sSQL
                 ];
             }
 
@@ -237,16 +282,16 @@
                 throw $oException;
             }
 
-            $this->sLastInsertId     = self::$oPDO->lastInsertId();
             $this->iLastRowsAffected = 0;
             if ($mResult instanceof PDOStatement) {
-                switch(self::$oPDO->getAttribute(PDO::ATTR_DRIVER_NAME)) {
-                    default:
+                switch($this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME)) {
                     case 'mysql':
+                        $this->sLastInsertId     = $this->oPDO->lastInsertId();
                         $this->iLastRowsAffected = $mResult->rowCount();
                         break;
 
                     case 'sqlite':
+                        $this->sLastInsertId     = $this->oPDO->lastInsertId();
                         if (!preg_match('/^select/i', $sSQL)) {
                             $this->iLastRowsAffected = $mResult->rowCount();
                         } else {
@@ -257,6 +302,10 @@
 
                             $mResult = $this->rawQuery($sSQL);
                         }
+                        break;
+
+                    default:
+                        $this->iLastRowsAffected = $mResult->rowCount();
                         break;
                 }
             }
@@ -281,7 +330,7 @@
          * @return PDOStatement
          */
         public function rawQuery($sQuery) {
-            return self::$oPDO->query($sQuery);
+            return $this->oPDO->query($sQuery);
         }
 
         /**
@@ -289,7 +338,7 @@
          * @return PDOStatement
          */
         public function prepare(string $sStatement) {
-            return self::$oPDO->prepare($sStatement);
+            return $this->oPDO->prepare($sStatement);
         }
 
         /**
@@ -298,28 +347,28 @@
          * @return string
          */
         public function quote($sString, $sPDOType = PDO::PARAM_STR) {
-            return self::$oPDO->quote($sString, $sPDOType);
+            return $this->oPDO->quote($sString, $sPDOType);
         }
 
         /**
          * @return bool
          */
         public function beginTransaction(): bool {
-            return self::$oPDO->beginTransaction();
+            return $this->oPDO->beginTransaction();
         }
 
         /**
          * @return bool
          */
         public function rollBack(): bool {
-            return self::$oPDO->rollBack();
+            return $this->oPDO->rollBack();
         }
 
         /**
          * @return bool
          */
         public function commit(): bool {
-            return self::$oPDO->commit();
+            return $this->oPDO->commit();
         }
 
         /**
@@ -328,7 +377,7 @@
          * @psalm-suppress InvalidReturnType
          */
         public function getDate(): DateTime {
-            $sDriver = self::$oPDO->getAttribute(PDO::ATTR_DRIVER_NAME);
+            $sDriver = $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME);
             if ($sDriver == 'sqlite') {
                 return new DateTime('now');
             }

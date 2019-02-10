@@ -22,6 +22,10 @@
 
         /** @var string */
         private static $sNamespaceTable = null;
+
+        protected static function Db() {
+            return Db::getInstance();
+        }
         /**
          * @param string $sNamespaceTable
          */
@@ -50,7 +54,7 @@
          */
         public static function get() {
             $oTable   = static::getTable();
-            $oResults = Db::getInstance()->namedQuery(__METHOD__, SQLBuilder::select($oTable));
+            $oResults = static::Db()->namedQuery(__METHOD__, SQLBuilder::select($oTable));
             return static::fromResults($oResults, $oTable);
         }
 
@@ -66,7 +70,7 @@
             $oTable   = static::getTable();
             $oSQL     = SQLBuilder::select($oTable);
             $sSQL     = $oSQL->toString() . ' ORDER BY RAND() ' . SQL::limit($iCount)->toSQL();
-            $oResults = Db::getInstance()->namedQuery(__METHOD__, $sSQL);
+            $oResults = static::Db()->namedQuery(__METHOD__, $sSQL);
             return self::fromResults($oResults, $oTable);
         }
 
@@ -184,7 +188,7 @@
          */
         public static function getForCMS(?int $iPage = 1, ?int $iPer = 100, ?array $aSearch = null, ?array $aSort = null, ?string $sSyncDate = null) {
             $oQuery = self::getQueryForCMS($aSearch, $iPage, $iPer, $aSort, $sSyncDate);
-            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oQuery);
+            $oResults = static::Db()->namedQuery(__METHOD__, $oQuery);
             return static::fromResults($oResults, static::getTable());
         }
 
@@ -200,13 +204,13 @@
             if (!$aSearch) {
                 $oTable   = static::getTable();
                 $sTable   = $oTable->getTitle();
-                $oResults = Db::getInstance()->namedQuery(__METHOD__, "SHOW TABLE STATUS LIKE '$sTable'");
+                $oResults = static::Db()->namedQuery(__METHOD__, "SHOW TABLE STATUS LIKE '$sTable'");
                 return (int) $oResults->fetchObject()->Rows;
             }
 
             $oQuery = self::getQueryForCMS($aSearch);
             $oQuery->setType(SQLBuilder::TYPE_COUNT);
-            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oQuery);
+            $oResults = static::Db()->namedQuery(__METHOD__, $oQuery);
             return (int) $oResults->fetchObject()->row_count;
         }
 
@@ -423,7 +427,7 @@
          */
         public static function total() {
             $oTable   = static::getTable();
-            $oResults = Db::getInstance()->namedQuery(__METHOD__, SQLBuilder::count($oTable));
+            $oResults = static::Db()->namedQuery(__METHOD__, SQLBuilder::count($oTable));
             $iTotal   = $oResults->fetchColumn();
             /** @psalm-suppress TypeDoesNotContainType */
             if ($iTotal !== false) {

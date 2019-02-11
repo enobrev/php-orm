@@ -169,7 +169,7 @@
         echo 'Using ' . $sJsonM2MFile . "\n";
 
         $sJsonM2MContents = file_get_contents($sJsonM2MFile);
-        $aJsonM2M         = json_decode($sJsonM2MFile, true);
+        $aJsonM2M         = json_decode($sJsonM2MContents, true);
         if (count($aJsonM2M)) {
             foreach(array_keys($aJsonM2M) as $sTable) {
                 $aM2MTables[$sTable] = 1;

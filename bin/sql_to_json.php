@@ -329,6 +329,7 @@
 
                 case $oField->data_type == 'varchar':
                 case $oField->data_type == 'text':
+                case $oField->data_type == 'mediumtext':
                 case $oField->data_type == 'longtext':
                 case $oField->data_type == 'char':
                     if (strtolower($oField->column_type) == 'char(32)') {

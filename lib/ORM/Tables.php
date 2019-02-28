@@ -269,10 +269,18 @@
                         case '::':
                             // Search all Searchable fields - we should be checking if this is a general search (no colons or >'s or anything) and then only do this in that case
                             foreach ($oTable->getFields() as $oField) {
-                                if ($oField instanceof Field\Number
-                                ||  $oField instanceof Field\Enum
-                                ||  $oField instanceof Field\Date) {
+                                if ($oField instanceof Field\Number) {
                                     $aSQLConditions[] = SQL::eq($oField, $sSearchValue);
+                                } else if ($oField instanceof Field\Date) {
+                                    try {
+                                        $aSQLConditions[] = SQL::eq($oField, $sSearchValue);
+                                    } catch (Exception $e) {
+                                        Log::w('Tables.getQueryForCMS.InvalidValueForDateSearch');
+                                    }
+                                } else if ($oField instanceof Field\Enum) {
+                                    if ($oField->isValue($sSearchValue)) {
+                                        $aSQLConditions[] = SQL::eq($oField, $sSearchValue);
+                                    }
                                 } else if ($oField instanceof Field\Text && strpos($sSearchValue, '%') !== false) {
                                     $aSQLConditions[] = SQL::like($oField, $sSearchValue);
                                 } else {
@@ -285,9 +293,16 @@
                             if ($sSearchValue == 'null') {
                                 $aSQLConditions[] = SQL::nul($oSearchField);
                             } else if ($oSearchField instanceof Field\Date) {
-                                $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
-                            } else if ($oSearchField instanceof Field\Number
-                                   ||  $oSearchField instanceof Field\Enum) {
+                                try {
+                                    $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
+                                } catch (Exception $e) {
+                                    Log::w('Tables.getQueryForCMS.InvalidValueForDateSearch');
+                                }
+                            } else if ($oSearchField instanceof Field\Enum) {
+                                if ($oSearchField->isValue($sSearchValue)) {
+                                    $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
+                                }
+                            } else if ($oSearchField instanceof Field\Number) {
                                 if (strpos($sSearchValue, ',') !== false) {
                                     $aSQLConditions[] = SQL::in($oSearchField, explode(',', $sSearchValue));
                                 } else {

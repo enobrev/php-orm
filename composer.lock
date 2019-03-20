@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3b22cfab60d774423a13d594f0908b2f",
+    "content-hash": "58b62032576b83818d3c033a5bc2658b",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
@@ -61,19 +61,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/enobrev/php-tools.git",
-                "reference": "8daa9453047bfa6e392580afa7cbd12c402c2a95"
+                "reference": "7033fd68d1651e558139968e632f070113650fd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/8daa9453047bfa6e392580afa7cbd12c402c2a95",
-                "reference": "8daa9453047bfa6e392580afa7cbd12c402c2a95",
+                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/7033fd68d1651e558139968e632f070113650fd3",
+                "reference": "7033fd68d1651e558139968e632f070113650fd3",
                 "shasum": ""
             },
             "require": {
                 "adbario/php-dot-notation": "^2.2",
                 "ext-json": "*",
                 "monolog/monolog": "^1.21",
-                "php": ">=7.1.0",
+                "php": ">=7.2",
                 "zendframework/zend-diactoros": "1.8.6"
             },
             "require-dev": {
@@ -108,7 +108,7 @@
                 "source": "https://github.com/enobrev/php-tools/tree/master",
                 "issues": "https://github.com/enobrev/php-tools/issues"
             },
-            "time": "2019-02-28T11:27:31+00:00"
+            "time": "2019-03-20T01:56:53+00:00"
         },
         {
             "name": "kevinlebrun/colors.php",
@@ -2135,10 +2135,10 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.0.09"
+        "php": ">=7.2"
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "7.1"
+        "php": "7.2"
     }
 }

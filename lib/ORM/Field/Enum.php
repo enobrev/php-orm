@@ -13,7 +13,7 @@
 
         /**
          * @param string $sTable
-         * @param string $sColumn
+         * @param array|string $sColumn
          * @param array $aValues
          */
         public function __construct($sTable, $sColumn, Array $aValues = array()) {

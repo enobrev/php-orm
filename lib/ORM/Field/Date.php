@@ -1,7 +1,10 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use Enobrev\Log;
+    use Exception;
     use DateTime as PHP_DateTime;
+
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
@@ -102,7 +105,17 @@
                     break;
 
                 default:
-                    $this->sValue = new PHP_DateTime($sValue);
+                    try {
+                        $this->sValue = new PHP_DateTime($sValue);
+                    } catch (Exception $e) {
+                        if (stripos($e->getMessage(), 'Double time') !== false) { // GMT 0 dates end up with 00:00 appended to the date without any indication that it's for timezone.  This resolves that
+                            $sValue = trim(preg_replace('/\d{1,2}:\d{2}$/', '', $sValue));
+                            $this->sValue = new PHP_DateTime($sValue);
+                        } else {
+                            Log::e('Date.setValue', ['date' => $sValue, 'error' => $e]);
+                            throw $e;
+                        }
+                    }
                     break;
             }
 

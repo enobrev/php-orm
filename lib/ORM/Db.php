@@ -187,6 +187,14 @@
 
         /**
          *
+         * Keep the connection alive on a long-lived process
+         */
+        public function ping() {
+            $this->rawQuery('SELECT 1');
+        }
+
+        /**
+         *
          * @return boolean
          */
         public static function wasUpsertInserted() {

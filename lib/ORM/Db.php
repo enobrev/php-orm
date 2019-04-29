@@ -262,12 +262,19 @@
                     'query'  => $sSQL,
                     'group'  => $sQuery->sSQLGroup,
                     'table'  => $sQuery->sSQLTable,
-                    'type'   => $sQuery->sSQLType
+                    'type'   => $sQuery->sSQLType,
+                    'hash'   => [
+                        'group' => hash('sha1', $sQuery->sSQLGroup),
+                        'query' => hash('sha1', $sSQL)
+                    ]
                 ];
             } else {
                 $aLogOutput['sql'] = [
                     'driver' => $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME),
-                    'query'  => $sSQL
+                    'query'  => $sSQL,
+                    'hash'   => [
+                        'query' => hash('sha1', $sSQL)
+                    ]
                 ];
             }
 

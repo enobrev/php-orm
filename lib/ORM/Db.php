@@ -276,6 +276,32 @@
                         'query' => hash('sha1', $sSQL)
                     ]
                 ];
+
+                $sSQLLower = strtolower($sSQL);
+                $sType     = strtok($sSQLLower, ' ');
+                if (in_array($sType, ['insert', 'update', 'delete', 'select'])) {
+                    $aLogOutput['sql']['type'] = $sType;
+                    switch($sType) {
+                        case 'insert':
+                            if (preg_match('/into\s+(\S+)/', $sSQLLower, $aMatches)) {
+                                $aLogOutput['sql']['table'] = $aMatches[1];
+                            }
+                            break;
+
+                        case 'update':
+                            if (preg_match('/update\s+(\S+)/', $sSQLLower, $aMatches)) {
+                                $aLogOutput['sql']['table'] = $aMatches[1];
+                            }
+                            break;
+
+                        case 'delete':
+                        case 'select':
+                            if (preg_match('/from\s+(\S+)/', $sSQLLower, $aMatches)) {
+                                $aLogOutput['sql']['table'] = $aMatches[1];
+                            }
+                            break;
+                    }
+                }
             }
 
             try {

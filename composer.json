@@ -33,7 +33,7 @@
         "enobrev/php-tools": "dev-master",
         "moneyphp/money": "^3.1",
         "nategood/commando": "^0.3.0",
-        "twig/twig": "^2.4",
+        "twig/twig": "^2.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.1"

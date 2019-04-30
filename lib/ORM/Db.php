@@ -277,25 +277,44 @@
                     ]
                 ];
 
+                $aTypes = [
+                    SQLBuilder::TYPE_INSERT,
+                    SQLBuilder::TYPE_UPDATE,
+                    SQLBuilder::TYPE_DELETE,
+                    SQLBuilder::TYPE_SELECT,
+                    SQLBuilder::TYPE_UPSERT
+                ];
+
+                $sSQLUpper = strtoupper($sSQL);
                 $sSQLLower = strtolower($sSQL);
-                $sType     = strtok($sSQLLower, ' ');
-                if (in_array($sType, ['insert', 'update', 'delete', 'select'])) {
+                $sType     = strtok($sSQLUpper, ' ');
+                if (in_array($sType, $aTypes, true)) {
                     $aLogOutput['sql']['type'] = $sType;
+
+                    if ($sType === SQLBuilder::TYPE_SELECT) {
+                        $sCount = strtok(' ');
+                        if ($sCount === 'COUNT') {
+                            $aLogOutput['sql']['type'] = SQLBuilder::TYPE_COUNT;
+                        }
+                    }
+
                     switch($sType) {
-                        case 'insert':
+                        case SQLBuilder::TYPE_INSERT:
+                        case SQLBuilder::TYPE_UPSERT:
                             if (preg_match('/into\s+(\S+)/', $sSQLLower, $aMatches)) {
                                 $aLogOutput['sql']['table'] = $aMatches[1];
                             }
                             break;
 
-                        case 'update':
+                        case SQLBuilder::TYPE_UPDATE:
                             if (preg_match('/update\s+(\S+)/', $sSQLLower, $aMatches)) {
                                 $aLogOutput['sql']['table'] = $aMatches[1];
                             }
                             break;
 
-                        case 'delete':
-                        case 'select':
+                        case SQLBuilder::TYPE_DELETE:
+                        case SQLBuilder::TYPE_SELECT:
+                        case SQLBuilder::TYPE_COUNT:
                             if (preg_match('/from\s+(\S+)/', $sSQLLower, $aMatches)) {
                                 $aLogOutput['sql']['table'] = $aMatches[1];
                             }

@@ -269,10 +269,15 @@
                     ]
                 ];
             } else {
+                // We have no pre-defined group, so the name or the query itself becomes the group
+                $sGroup     = trim($sName) !== '' ? $sName : $sSQL;
+
                 $aLogOutput['sql'] = [
                     'driver' => $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME),
                     'query'  => $sSQL,
+                    'group'  => $sGroup,
                     'hash'   => [
+                        'group' => hash('sha1', $sGroup),
                         'query' => hash('sha1', $sSQL)
                     ]
                 ];

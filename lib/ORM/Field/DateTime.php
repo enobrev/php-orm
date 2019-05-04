@@ -2,10 +2,13 @@
     namespace Enobrev\ORM\Field;
 
     use DateTime as PHP_DateTime;
+    use Enobrev\ORM\DbException;
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
     use Enobrev\ORM\DateFunction;
+    use Exception;
+    use stdClass;
 
     class DateTime extends Date {
 
@@ -20,7 +23,9 @@
         /**
          *
          * @param mixed $sValue
+         *
          * @return $this
+         * @throws Exception
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -86,6 +91,7 @@
         /**
          *
          * @return string
+         * @throws DbException
          */
         public function toSQL():string {
             if ($this->isNull()) {
@@ -103,7 +109,9 @@
 
         /**
          * @param mixed $mValue
+         *
          * @return bool
+         * @throws Exception
          */
         public function is($mValue): bool {
             if ($mValue instanceof Table) {
@@ -118,7 +126,7 @@
                 $mValue = $mValue->format(self::DEFAULT_FORMAT);
             }
 
-            if ($mValue instanceof \stdClass) {
+            if ($mValue instanceof stdClass) {
                 if (property_exists($mValue, 'date')) { // coming from json
                     $mValue = $mValue->date;
                 }

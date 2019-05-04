@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use Enobrev\ORM\DbException;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
 
@@ -50,10 +51,11 @@
 
             return $this;
         }
-        
+
         /**
          *
          * @return string
+         * @throws DbException
          */
         public function toSQL():string {
             if ($this->isNull()) {

@@ -2,6 +2,8 @@
     namespace Enobrev\ORM;
 
 
+    use Exception;
+
     trait Owner {
 
         /**
@@ -19,7 +21,7 @@
         /**
          * @param Table|null $oOwner
          * @return bool
-         * @throws \Exception
+         * @throws Exception
          */
         public function hasOwner(Table $oOwner = null) {
             /** @var Field $oOwnerField */
@@ -29,13 +31,13 @@
             $bOwnerIsRightType   = $oOwner instanceof $sTable;
 
             if (!$bOwnerIsRightType) {
-                throw new \Exception('Invalid Owner Table');
+                throw new Exception('Invalid Owner Table');
             }
 
             $bOwnerHasRightField = $oOwner->{$oOwnerField->sColumn} instanceof Field;
 
             if (!$bOwnerHasRightField) {
-                throw new \Exception('Owner Table does not have Owner Field');
+                throw new Exception('Owner Table does not have Owner Field');
             }
 
             $bOwnerHasRightValue = $oOwnerField->is($oOwner->{$oOwnerField->sColumn});

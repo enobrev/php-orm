@@ -1,4 +1,6 @@
 <?php
     namespace Enobrev\ORM;
 
-    class DbException extends \Exception {}
+    use Exception;
+
+    class DbException extends Exception {}

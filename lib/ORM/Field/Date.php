@@ -2,6 +2,7 @@
     namespace Enobrev\ORM\Field;
 
     use Enobrev\Log;
+    use Enobrev\ORM\DbException;
     use Exception;
     use DateTime as PHP_DateTime;
 
@@ -9,6 +10,7 @@
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
     use Enobrev\ORM\DateFunction;
+    use stdClass;
 
     class Date extends Text {
 
@@ -22,6 +24,7 @@
 
         /**
          * @return PHP_DateTime|null
+         * @throws Exception
          */
         public function getValue() {
             if ($this->sValue instanceof DateFunction) {
@@ -41,6 +44,7 @@
         /**
          *
          * @return string
+         * @throws Exception
          */
         public function __toString() {
             $sValue = self::NULL_VALUE;
@@ -60,6 +64,7 @@
 
         /**
          * @return string
+         * @throws DbException
          */
         public function toSQL():string {
             if ($this->isNull()) {
@@ -78,7 +83,10 @@
         /**
          *
          * @param mixed $sValue
+         *
          * @return $this
+         * @throws Exception
+         * @throws Exception
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -124,7 +132,9 @@
 
         /**
          * @param mixed $mValue
+         *
          * @return bool
+         * @throws Exception
          */
         public function is($mValue): bool {
             if ($mValue instanceof Table) {
@@ -139,7 +149,7 @@
                 $mValue = $mValue->format(self::DEFAULT_FORMAT);
             }
 
-            if ($mValue instanceof \stdClass) {
+            if ($mValue instanceof stdClass) {
                 if (property_exists($mValue, 'date')) { // coming from json
                     $mValue = $mValue->date;
                 }

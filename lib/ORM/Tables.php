@@ -2,6 +2,7 @@
     namespace Enobrev\ORM;
 
     use ArrayIterator;
+    use Enobrev\SQLBuilderException;
     use Exception;
     use PDO;
     use PDOStatement;
@@ -23,6 +24,10 @@
         /** @var string */
         private static $sNamespaceTable = null;
 
+        /**
+         * @return Db
+         * @throws DbException
+         */
         protected static function Db() {
             return Db::getInstance();
         }
@@ -42,6 +47,7 @@
         }
 
         /**
+         * @noinspection PhpDocSignatureInspection
          * @return Table
          */
         public static function getTable() {
@@ -60,7 +66,11 @@
 
         /**
          * @param int $iCount
+         *
          * @return Table[]|Tables
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws SQLBuilderException
          */
         public static function getRandom(int $iCount = 1) {
             if (!$iCount) {
@@ -215,13 +225,19 @@
         }
 
         /**
-         * @param array|null $aSearch
-         * @param int|null $iPage
-         * @param int|null $iPer
-         * @param array|null $aSort
-         * @param null|string $sSyncDate
+         * @param array|null   $aSearch
+         * @param int|null     $iPage
+         * @param int|null     $iPer
+         * @param array|null   $aSort
+         * @param null|string  $sSyncDate
          * @param null|Field[] $aFields
+         *
          * @return SQLBuilder
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         * @throws ConditionsNonConditionException
          * @throws TablesInvalidReferenceException
          * @throws TablesInvalidTableException
          */
@@ -476,7 +492,11 @@
         /**
          * @param Table $oTable
          * @param array $aData
+         *
          * @return Table[]|static
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws TableException
          */
         public static function createAndUpdate(Table $oTable, Array $aData) {
             $aOutput = new static;
@@ -525,7 +545,6 @@
          * @param PDOStatement $oResults
          * @param Table $oTable
          * @return static
-         * @throws TablesException
          * @throws Exception
          */
         protected static function fromResultsWithMeta(PDOStatement $oResults, Table $oTable) {
@@ -541,7 +560,7 @@
         /**
          * @param mixed $value
          * @throws TablesException
-         * @throws \Exception
+         * @throws Exception
          */
         public function append($value): void {
             $sClass = static::getTable();

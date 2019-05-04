@@ -131,50 +131,158 @@
             return self::create(self::EQUAL, ...$aArguments);
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function neq(...$aArguments): Condition {
             return self::create(self::NEQ, ...$aArguments);
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function lt(...$aArguments): Condition {
             return self::create(self::LT, ...$aArguments);
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function lte(...$aArguments): Condition {
             return self::create(self::LTE, ...$aArguments);
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function gt(...$aArguments): Condition {
             return self::create(self::GT, ...$aArguments);
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function gte(...$aArguments): Condition {
             return self::create(self::GTE, ...$aArguments);
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function like(...$aArguments): Condition {
             return self::create(self::LIKE, ...$aArguments);
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function nlike(...$aArguments): Condition {
             return self::create(self::NLIKE, ...$aArguments);
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function in(...$aArguments): Condition {
             return self::create(self::IN, ...$aArguments);
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function nin(...$aArguments): Condition {
             return self::create(self::NIN, ...$aArguments);
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function nul(...$aArguments): Condition {
             return self::create(self::ISNULL, ...$aArguments);
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function nnul(...$aArguments): Condition {
             return self::create(self::NOTNULL, ...$aArguments);
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function between(...$aArguments): Condition {
             return self::create(self::BETWEEN, ...$aArguments);
         }

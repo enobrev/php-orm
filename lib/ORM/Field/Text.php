@@ -2,6 +2,7 @@
     namespace Enobrev\ORM\Field;
 
 
+    use Enobrev\ORM\DbException;
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
@@ -24,10 +25,11 @@
         public function __toString() {
             return (string) $this->sValue;
         }
-        
+
         /**
          *
          * @return string
+         * @throws DbException
          */
         public function toSQL():string {
             if ($this->isNull()) {

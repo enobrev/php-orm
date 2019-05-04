@@ -1,6 +1,8 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use Enobrev\ORM\DbException;
+
     class Hash extends Text {
 
         /**
@@ -23,6 +25,7 @@
         /**
          *
          * @return string
+         * @throws DbException
          */
         public function toSQL(): string {
             if ($this->isNull()) {

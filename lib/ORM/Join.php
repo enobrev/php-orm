@@ -22,7 +22,12 @@
          * @param $oFrom
          * @param $oTo
          * @param $oConditions
+         *
          * @return Join
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
          * @throws ConditionsNonConditionException
          */
         public static function create($oFrom, $oTo, $oConditions = null) {

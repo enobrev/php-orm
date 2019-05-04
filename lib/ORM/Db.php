@@ -2,6 +2,7 @@
     namespace Enobrev\ORM;
 
     use Enobrev\Log;
+    use Exception;
     use PDO;
     use PDOException;
     use PDOStatement;
@@ -78,7 +79,9 @@
 
         /**
          * @param PDO $oPDO
+         *
          * @return Db
+         * @throws DbException
          */
         public static function replaceInstance(PDO $oPDO) {
             if (self::$oInstance instanceof self && self::$bConnected) {
@@ -440,6 +443,7 @@
          *
          * @return DateTime
          * @psalm-suppress InvalidReturnType
+         * @throws Exception
          */
         public function getDate(): DateTime {
             $sDriver = $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME);
@@ -452,7 +456,9 @@
 
         /**
          * @param string $sModification
+         *
          * @return DateTime
+         * @throws Exception
          */
         public function getModifiedDate($sModification) {
             $oDate = $this->getDate();

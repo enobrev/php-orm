@@ -1,6 +1,8 @@
 <?php
     namespace Enobrev\ORM;
 
+    use InvalidArgumentException;
+
     class DateFunction {
         /** @var string */
         private $sType;
@@ -17,7 +19,7 @@
          */
         private function __construct(string $sType) {
             if (!self::isSupportedType($sType)) {
-                throw new \InvalidArgumentException('Connection status type ' . $sType . ' not supported.');
+                throw new InvalidArgumentException('Connection status type ' . $sType . ' not supported.');
             }
 
             $this->sType = $sType;

@@ -1,6 +1,8 @@
 <?php
     namespace Enobrev\ORM;
     
+    use stdClass;
+
     class FieldException extends DbException {}
     class FieldInvalidTypeException extends FieldException {}
     class FieldInvalidValueException extends FieldException {}
@@ -287,7 +289,7 @@
         
         /**
          *
-         * @param \stdClass $oData
+         * @param stdClass $oData
          */
         public function setValueFromData($oData): void {
             if (isset($oData->{$this->sColumn})) {

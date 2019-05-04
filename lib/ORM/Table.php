@@ -1,7 +1,9 @@
 <?php
     namespace Enobrev\ORM;
 
+    use DateTime;
     use Enobrev\SQLBuilder;
+    use Exception;
     use stdClass;
     use PDOStatement;
 
@@ -17,6 +19,10 @@
         /** @var string  */
         public $sKey = __CLASS__;
 
+        /**
+         * @return Db
+         * @throws DbException
+         */
         protected static function Db() {
             return Db::getInstance();
         }
@@ -51,7 +57,7 @@
         }
 
         /**
-         * @return Tables
+         * @return void
          * @throws TableException
          */
         public static function getTables() {
@@ -123,7 +129,11 @@
 
         /**
          * @param array $aData
+         *
          * @return static
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws TableException
          */
         public static function createAndUpdate(Array $aData) {
             /** @var Table $oTable */
@@ -643,8 +653,11 @@
         }
 
         /**
-         * @return \DateTime
-         * */
+         * @return DateTime
+         *
+         * @throws Exception
+         * @throws DbException
+         */
         public function now() {
             return static::Db()->getDate();
         }

@@ -35,7 +35,12 @@
 
         /**
          * @param Condition[]|Conditions|string[] $aConditions
+         *
          * @return Conditions
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
          * @throws ConditionsNonConditionException
          * @psalm-suppress RawObjectIteration
          * @psalm-suppress MismatchingDocblockParamType
@@ -66,7 +71,13 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return Conditions
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         * @throws ConditionsNonConditionException
          */
         public static function also(...$aArguments) {
             return self::create(self::TYPE_AND, ...$aArguments);
@@ -74,7 +85,13 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return Conditions
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         * @throws ConditionsNonConditionException
          */
         public static function either(...$aArguments) {
             return self::create(self::TYPE_OR, ...$aArguments);
@@ -87,6 +104,11 @@
 
         /**
          * @param Condition|Conditions|Field|Condition[]|Field[]|Conditions[]|string $oCondition
+         *
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
          * @throws ConditionsNonConditionException
          */
         public function add($oCondition):void {

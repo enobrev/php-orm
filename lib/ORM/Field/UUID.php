@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use Enobrev\ORM\DbException;
     use \Exception;
     use Enobrev\ORM\Db;
     use Enobrev\ORM\Table;
@@ -19,6 +20,9 @@
             return $this;
         }
 
+        /**
+         * @throws DbException
+         */
         public function generateValue(): void {
             $this->setValue(Db::getInstance()->getUUID());
         }

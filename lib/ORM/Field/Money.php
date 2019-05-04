@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use Enobrev\ORM\DbException;
     use Enobrev\ORM\Table;
     use PDO;
     use stdClass;
@@ -80,6 +81,8 @@
         /**
          *
          * @param stdClass $oData
+         *
+         * @throws FieldInvalidValueException
          */
         public function setValueFromData($oData): void {
             if (isset($oData->{$this->sColumn})) {
@@ -94,6 +97,8 @@
         /**
          *
          * @param array $aData
+         *
+         * @throws FieldInvalidValueException
          */
         public function setValueFromArray($aData): void {
             if (isset($aData[$this->sColumn]) || array_key_exists($this->sColumn, $aData)) {
@@ -107,6 +112,7 @@
 
         /**
          * @return string
+         * @throws DbException
          */
         public function toSQL():string {
             if ($this->isNull()) {
@@ -123,7 +129,10 @@
         /**
          *
          * @param mixed $sValue
+         *
          * @return $this
+         * @throws FieldInvalidValueException
+         * @throws FieldInvalidValueException
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -180,7 +189,10 @@
 
         /**
          * @param mixed $mValue
+         *
          * @return bool
+         * @throws FieldInvalidValueException
+         * @throws FieldInvalidValueException
          */
         public function is($mValue): bool {
             if ($mValue instanceof Table) {

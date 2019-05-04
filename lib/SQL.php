@@ -1,9 +1,10 @@
 <?php
     namespace Enobrev;
 
+    use Exception;
     use stdClass;
 
-    class SQLException extends \Exception {}
+    class SQLException extends Exception {}
     class SQLMissingTableOrFieldsException extends SQLException {}
     class SQLMissingConditionException extends SQLException {}
     class SQLPrimaryValuesNotSetException extends SQLException {}
@@ -28,7 +29,13 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Conditions
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
+         * @throws ORM\ConditionsNonConditionException
          */
         public static function either(...$aArguments) {
             return ORM\Conditions::either(...$aArguments);
@@ -43,7 +50,13 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Conditions
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
+         * @throws ORM\ConditionsNonConditionException
          */
         public static function also(...$aArguments) {
             return ORM\Conditions::also(...$aArguments);
@@ -51,7 +64,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function eq(...$aArguments) {
             return ORM\Condition::eq(...$aArguments);
@@ -59,7 +77,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function neq(...$aArguments) {
             return ORM\Condition::neq(...$aArguments);
@@ -67,7 +90,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function lt(...$aArguments) {
             return ORM\Condition::lt(...$aArguments);
@@ -75,7 +103,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function gt(...$aArguments) {
             return ORM\Condition::gt(...$aArguments);
@@ -83,7 +116,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function lte(...$aArguments) {
             return ORM\Condition::lte(...$aArguments);
@@ -91,7 +129,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function gte(...$aArguments) {
             return ORM\Condition::gte(...$aArguments);
@@ -99,7 +142,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function like(...$aArguments) {
             return ORM\Condition::like(...$aArguments);
@@ -107,7 +155,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function nlike(...$aArguments) {
             return ORM\Condition::nlike(...$aArguments);
@@ -115,7 +168,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function nul(...$aArguments) {
             return ORM\Condition::nul(...$aArguments);
@@ -123,7 +181,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function nnul(...$aArguments) {
             return ORM\Condition::nnul(...$aArguments);
@@ -131,7 +194,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function in(...$aArguments) {
             return ORM\Condition::in(...$aArguments);
@@ -139,7 +207,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function nin(...$aArguments) {
             return ORM\Condition::nin(...$aArguments);
@@ -147,17 +220,27 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return ORM\Condition
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          */
         public static function between(...$aArguments) {
             return ORM\Condition::between(...$aArguments);
         }
 
         /**
-         * @param ORM\Field $oFrom
-         * @param ORM\Field $oTo
+         * @param ORM\Field                         $oFrom
+         * @param ORM\Field                         $oTo
          * @param ORM\Condition|ORM\Conditions|null $oConditions
+         *
          * @return ORM\Join
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          * @throws ORM\ConditionsNonConditionException
          */
         public static function join(ORM\Field $oFrom, ORM\Field $oTo, $oConditions = null) {
@@ -210,7 +293,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return SQL
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          * @throws ORM\ConditionsNonConditionException
          * @throws SQLMissingTableOrFieldsException
          * @deprecated Use SQLBuilder::select instead
@@ -376,7 +464,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return SQL
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          * @throws ORM\ConditionsNonConditionException
          * @deprecated Use SQLBuilder::count instead
          */
@@ -530,7 +623,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return SQL
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          * @throws ORM\ConditionsNonConditionException
          * @throws SQLMissingConditionException
          * @throws SQLMissingTableOrFieldsException
@@ -614,9 +712,11 @@
         }
 
         /**
+         * @param array $aArguments
+         *
          * @return SQL
-         * @throws SQLPrimaryValuesNotSetException
          * @throws SQLMissingTableOrFieldsException
+         * @throws SQLPrimaryValuesNotSetException
          * @deprecated Use SQLBuilder::upsert instead
          */
         public static function upsert(...$aArguments) {
@@ -695,7 +795,12 @@
 
         /**
          * @param array ...$aArguments
+         *
          * @return SQL
+         * @throws ORM\ConditionInvalidTypeException
+         * @throws ORM\ConditionMissingBetweenValueException
+         * @throws ORM\ConditionMissingFieldException
+         * @throws ORM\ConditionMissingInValueException
          * @throws ORM\ConditionsNonConditionException
          * @throws SQLMissingTableOrFieldsException
          * @deprecated Use SQLBuilder::delete instead

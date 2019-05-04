@@ -36,11 +36,11 @@
                 $sValue = $sValue->getValue();
             }
 
-            if (strtolower($sValue) === "null") {
+            if (strtolower($sValue) === 'null') {
                 $sValue = null;
             }
 
-            if (strlen(trim($sValue)) === 0) {
+            if (trim($sValue) === '') {
                 $sValue = null;
             }
 

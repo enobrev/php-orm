@@ -11,7 +11,7 @@
          * @return string
          */
         public function __toString():string {
-            return $this->sValue != 0 ? (string) $this->sValue : '0';
+            return $this->sValue !== 0 ? (string) $this->sValue : '0';
         }
 
         /**

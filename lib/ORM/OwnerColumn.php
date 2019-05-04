@@ -5,21 +5,21 @@
         /**
          * @return Table
          */
-        public function getOwnerTable();
+        public function getOwnerTable(): TAble;
 
         /**
          * @return Field
          */
-        public function getOwnerField();
+        public function getOwnerField(): Field;
 
         /**
          * @return Table
          */
-        public function getOwner();
+        public function getOwner(): Table;
 
         /**
          * @param Table $oOwner
          * @return bool
          */
-        public function hasOwner(Table $oOwner);
+        public function hasOwner(Table $oOwner): bool;
     }

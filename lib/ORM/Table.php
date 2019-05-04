@@ -11,10 +11,10 @@
 
     class Table {
         /** @var null|string  */
-        protected $sTitle = null;
+        protected $sTitle;
 
         /** @var null|stdClass  */
-        public $oResult = null;
+        public $oResult;
 
         /** @var string  */
         public $sKey = __CLASS__;
@@ -23,7 +23,7 @@
          * @return Db
          * @throws DbException
          */
-        protected static function Db() {
+        protected static function Db(): Db {
             return Db::getInstance();
         }
 
@@ -42,7 +42,7 @@
          * @return Field
          * @throws TableFieldNotFoundException
          */
-        public static function Field($sField, $sAlias = null) {
+        public static function Field($sField, $sAlias = null): Field {
             $oTable = new static;
 
             if ($oTable->$sField instanceof Field) {
@@ -57,7 +57,6 @@
         }
 
         /**
-         * @return void
          * @throws TableException
          */
         public static function getTables() {
@@ -110,7 +109,7 @@
 
             if ($sPrimaryField) {
                 if ($oTable->$sPrimaryField->hasValue()) {
-                    $oExisting = $oTable->getBy($oTable->$sPrimaryField);
+                    $oExisting = static::getBy($oTable->$sPrimaryField);
                 }
             } else if ($oTable->primaryHasValue()) {
                 $oExisting = $oTable->getByPrimary();
@@ -183,7 +182,7 @@
                 $this->bFromPDO = $bFromPDO;
                 $this->oResult  = new stdClass();
 
-                if (strlen($sTitle)) {
+                if ($sTitle !== '') {
                     $this->sTitle = $sTitle;
                 }
 
@@ -201,10 +200,8 @@
         public function applyDefaults(): void {
             /** @var Field $oField */
             foreach ($this->getFields() as $oField) {
-                if ($oField->hasDefault()) {
-                    if (!$oField->hasValue()) {
-                        $oField->applyDefault();
-                    }
+                if ($oField->hasDefault() && !$oField->hasValue()) {
+                    $oField->applyDefault();
                 }
             }
         }
@@ -271,7 +268,7 @@
         /**
          * @return Field[]
          */
-        public function getFields() {
+        public function getFields(): array {
             $aFields = [];
             $aProperties = get_object_vars($this);
             foreach(array_keys($aProperties) as $sProperty) {
@@ -286,7 +283,7 @@
         /**
          * @return Field[]
          */
-        public function getColumnsWithFields() {
+        public function getColumnsWithFields(): array {
             $aFields = [];
             $aProperties = get_object_vars($this);
             foreach(array_keys($aProperties) as $sProperty) {
@@ -301,14 +298,12 @@
         /**
          * @return Field[]
          */
-        public function getPrimary() {
+        public function getPrimary(): array {
             $aPrimary = [];
             $aProperties = get_object_vars($this);
             foreach(array_keys($aProperties) as $sProperty) {
-                if ($this->$sProperty instanceof Field) {
-                    if ($this->$sProperty->isPrimary()) {
-                        $aPrimary[] =& $this->$sProperty;
-                    }
+                if (($this->$sProperty instanceof Field) && $this->$sProperty->isPrimary()) {
+                    $aPrimary[] =& $this->$sProperty;
                 }
             }
 
@@ -328,16 +323,14 @@
          * @param Table $oTable
          * @return null|Field
          */
-        public function getFieldThatReferencesTable(Table $oTable) {
+        public function getFieldThatReferencesTable(Table $oTable): ?Field {
             $aProperties = get_object_vars($this);
             foreach(array_keys($aProperties) as $sProperty) {
-                if ($this->$sProperty instanceof Field) {
-                    if ($this->$sProperty->hasReference()) {
-                        if ($this->$sProperty->referencesTable($oTable)) {
-                            return $this->$sProperty;
-                        }
+                if (($this->$sProperty instanceof Field) &&
+                    $this->$sProperty->hasReference() &&
+                    $this->$sProperty->referencesTable($oTable)) {
+                        return $this->$sProperty;
                     }
-                }
             }
 
             return null;
@@ -380,7 +373,7 @@
         public function mapArrayToFields(Array $aData, Array $aMap, Array $aOverride = []): void {
             $aMappedData = array();
             foreach($aMap as $sDataField => $mField) {
-                if (isset($aData[$sDataField]) || array_key_exists($sDataField, $aData)) {
+                if (array_key_exists($sDataField, $aData)) {
                     if ($mField instanceof Field) {
                         $mField = $mField->sColumn;
                     }
@@ -390,7 +383,7 @@
             }
 
             foreach($aOverride as $sField => $mData) {
-                if ($mData instanceof Table) {
+                if ($mData instanceof self) {
                     $mData = $mData->$sField;
                 }
 
@@ -412,7 +405,7 @@
          */
         public function setPrimaryFromArray(Array $aData): void {
             foreach ($this->getPrimary() as $oPrimary) {
-                if (isset($aData[$oPrimary->sColumn]) || array_key_exists($oPrimary->sColumn, $aData)) {
+                if (array_key_exists($oPrimary->sColumn, $aData)) {
                     $this->{$oPrimary->sColumn}->setValue($aData[$oPrimary->sColumn]);
                 }
             }
@@ -425,7 +418,7 @@
          * @throws TableException
          */
         public function getByPrimary() {
-            return $this->getBy(...$this->getPrimary());
+            return self::getBy(...$this->getPrimary());
         }
 
         /**
@@ -440,7 +433,7 @@
             $oTable = new static;
             $oSQL   = SQLBuilder::select($oTable)->also($aFields);
 
-            if ($oSQL->hasConditions() == false) {
+            if ($oSQL->hasConditions() === false) {
                 throw new TableException('No Conditions Given');
             }
 
@@ -464,7 +457,7 @@
          * @param Field $oField
          * @return void
          */
-        public function addField(Field $oField) {
+        public function addField(Field $oField): void {
             $oField->sTable      = $this->sTitle;
             $oField->sTableClass = get_class($this);
 
@@ -605,7 +598,7 @@
          */
         private function updatePrimary(int $iLastInsertId): void {
             $aPrimary = $this->getPrimary();
-            if (count($aPrimary) == 1) {
+            if (count($aPrimary) === 1) {
                 /** @var Field\Id $oField */
                 $oField =& $aPrimary[0];
                 if ( $oField instanceof Field\Id ) {
@@ -639,7 +632,7 @@
          * @throws DbDuplicateException
          * @throws DbException
          */
-        public function upsert() {
+        public function upsert(): int {
             $this->preUpsert();
             static::Db()->namedQuery(get_class($this) . '.upsert',
                 SQLBuilder::upsert($this)
@@ -658,14 +651,14 @@
          * @throws Exception
          * @throws DbException
          */
-        public function now() {
+        public function now(): DateTime {
             return static::Db()->getDate();
         }
 
         /**
          * @return array
          */
-        public function toArray() {
+        public function toArray(): array {
             $aArray = array();
 
             foreach ($this->getFields() as $oField) {
@@ -683,7 +676,7 @@
          *
          * @return String[]
          */
-        public function toSQLArray() {
+        public function toSQLArray(): array {
             $aArray = array();
 
             /** @var Field $oField */
@@ -699,7 +692,7 @@
         /**
          * @return array[]
          */
-        public function toInfoArray() {
+        public function toInfoArray(): array {
             $aFields = array();
 
             /** @var Field $oField */
@@ -713,7 +706,7 @@
         /**
          * @return bool
          */
-        public function isPublic() {
+        public function isPublic(): bool {
             return true;
         }
 

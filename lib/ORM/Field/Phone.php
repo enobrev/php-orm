@@ -27,8 +27,8 @@
                 $sValue = $sValue->getValue();
             }
 
-            if ($sValue instanceof Phone === false) {
-                $sValue = new Phone($sValue);
+            if ($sValue instanceof self === false) {
+                $sValue = new self($sValue);
             }
 
             $this->sValue = $sValue;

@@ -11,14 +11,14 @@
          *
          * @return string|NULL
          */
-        public function getValue() {
+        public function getValue(): ?string {
             $sValue = $this->sValue;
 
-            if (strlen(trim($sValue)) == 0) {
+            if (trim($sValue) === '') {
                 $sValue = NULL;
             }
 
-            if (strtolower($sValue) == 'null') {
+            if (strtolower($sValue) === 'null') {
                 $sValue = NULL;
             }
 
@@ -39,11 +39,11 @@
                 $sValue = $sValue->getValue();
             }
 
-            if (strlen(trim($sValue)) == 0) {
+            if (trim($sValue) === '') {
                 $sValue = NULL;
             }
 
-            if (strtolower($sValue) == 'null') {
+            if (strtolower($sValue) === 'null') {
                 $sValue = NULL;
             }
 
@@ -60,8 +60,8 @@
         public function toSQL():string {
             if ($this->isNull()) {
                 return 'NULL';
-            } else {
-                return parent::toSQL();
             }
+
+            return parent::toSQL();
         }
     }

@@ -5,8 +5,8 @@
     class ConditionsNonConditionException extends ConditionsException {}
 
     class Conditions {
-        const TYPE_AND = 'AND';
-        const TYPE_OR  = 'OR';
+        protected const TYPE_AND = 'AND';
+        protected const TYPE_OR  = 'OR';
 
         /** @var array  */
         private static $aTypes = [
@@ -17,8 +17,8 @@
          * @param mixed $sElement
          * @return bool
          */
-        private static function isType($sElement) {
-            return in_array($sElement, self::$aTypes);
+        private static function isType($sElement): bool {
+            return in_array($sElement, self::$aTypes, true);
         }
 
         /** @var string  */
@@ -45,7 +45,7 @@
          * @psalm-suppress RawObjectIteration
          * @psalm-suppress MismatchingDocblockParamType
          */
-        private static function create(...$aConditions) {
+        private static function create(...$aConditions): Conditions {
             $oConditions = new self();
             foreach($aConditions as $mCondition) {
                 switch(true) {
@@ -79,7 +79,7 @@
          * @throws ConditionMissingInValueException
          * @throws ConditionsNonConditionException
          */
-        public static function also(...$aArguments) {
+        public static function also(...$aArguments): Conditions {
             return self::create(self::TYPE_AND, ...$aArguments);
         }
 
@@ -93,7 +93,7 @@
          * @throws ConditionMissingInValueException
          * @throws ConditionsNonConditionException
          */
-        public static function either(...$aArguments) {
+        public static function either(...$aArguments): Conditions {
             return self::create(self::TYPE_OR, ...$aArguments);
         }
 
@@ -148,11 +148,11 @@
         /**
          * @return string
          */
-        public function toSQL() {
+        public function toSQL(): string {
             $aOutput = array();
 
             // get rid of double-parentheses
-            if ($this->count() == 1
+            if ($this->count() === 1
             &&  $this->aConditions[0] instanceof self) {
                 return $this->aConditions[0]->toSQL();
             }
@@ -171,11 +171,11 @@
         /**
          * @return string
          */
-        public function toSQLLog() {
+        public function toSQLLog(): string {
             $aOutput = array();
 
             // get rid of double-parentheses
-            if ($this->count() == 1
+            if ($this->count() === 1
             &&  $this->aConditions[0] instanceof self) {
                 return $this->aConditions[0]->toSQLLog();
             }

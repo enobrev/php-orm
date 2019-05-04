@@ -4,20 +4,20 @@
     class OrderException extends DbException {}
 
     class Order {
-        const TYPE_DESC  = 'DESC';
-        const TYPE_ASC   = 'ASC';
-        const TYPE_FIELD = 'BYFIELD';
+        protected const TYPE_DESC  = 'DESC';
+        protected const TYPE_ASC   = 'ASC';
+        protected const TYPE_FIELD = 'BYFIELD';
 
         /**
          * @var Field
          */
-        private $oField = null;
+        private $oField;
 
         /** @var string */
-        private $sType = null;
+        private $sType;
 
         /** @var array */
-        private $aValues = null;
+        private $aValues;
 
         /**
          * @param Field       $oField
@@ -66,18 +66,19 @@
         }
 
         public function toSQL(): string {
-            if ($this->sType == self::TYPE_FIELD) {
+            if ($this->sType === self::TYPE_FIELD) {
                 $aValues = $this->aValues;
                 foreach($aValues as &$sValue) {
                     $this->oField->setValue($sValue);
                     $sValue = $this->oField->toSQL();
                 }
+                unset($sValue);
 
                 array_unshift($aValues, $this->oField->toSQLColumn());
 
                 return 'FIELD(' . implode(', ', $aValues) . ')';
-            } else {
-                return $this->oField->toSQLColumn() . ' ' . $this->sType;
             }
+
+            return $this->oField->toSQLColumn() . ' ' . $this->sType;
         }
     }

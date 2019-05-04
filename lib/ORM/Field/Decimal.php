@@ -6,8 +6,6 @@
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
 
-    use PDO;
-
     class Decimal extends Number {
         /**
          *
@@ -23,7 +21,7 @@
                 $sValue = $sValue->getValue();
             }
 
-            if (strtolower($sValue) === "null") {
+            if (strtolower($sValue) === 'null') {
                 $sValue = null;
             }
 
@@ -46,6 +44,6 @@
                 return 'NULL';
             }
 
-            return Escape::string($this->__toString(), PDO::PARAM_STR);
+            return Escape::string($this->__toString());
         }
     }

@@ -12,8 +12,8 @@
 
     class DateTime extends Date {
 
-        const DEFAULT_FORMAT = PHP_DateTime::RFC3339;
-        const NULL_VALUE     = '0000-00-00 00:00:00';
+        protected const DEFAULT_FORMAT = PHP_DateTime::RFC3339;
+        protected const NULL_VALUE     = '0000-00-00 00:00:00';
 
         /**
          * @var PHP_DateTime|null
@@ -57,7 +57,7 @@
         public function isNull():bool {
             $sValue = $this->sValue instanceof PHP_DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
-            if (substr($sValue, 0, 1) == '-') {
+            if (strpos($sValue, '-') === 0) {
                 return true;
             }
 
@@ -68,7 +68,7 @@
          * @return bool
          */
         public function hasValue(): bool {
-            return parent::hasValue() && (string) $this != self::NULL_VALUE;
+            return parent::hasValue() && (string) $this !== self::NULL_VALUE;
         }
 
 
@@ -81,7 +81,7 @@
                 $sValue = (new PHP_DateTime())->format(self::DEFAULT_FORMAT);
             }
 
-            if (substr($sValue, 0, 1) == '-') {
+            if (strpos($sValue, '-') === 0) {
                 $sValue = 'NULL';
             }
 
@@ -100,11 +100,13 @@
 
             if ($this->sValue instanceof DateFunction) {
                 return $this->sValue->getName();
-            } else if ($this->sValue instanceof PHP_DateTime) {
-                return Escape::string($this->sValue->format('Y-m-d H:i:s'));
-            } else {
-                return 'NULL';
             }
+
+            if ($this->sValue instanceof PHP_DateTime) {
+                return Escape::string($this->sValue->format('Y-m-d H:i:s'));
+            }
+
+            return 'NULL';
         }
 
         /**
@@ -126,18 +128,19 @@
                 $mValue = $mValue->format(self::DEFAULT_FORMAT);
             }
 
-            if ($mValue instanceof stdClass) {
-                if (property_exists($mValue, 'date')) { // coming from json
-                    $mValue = $mValue->date;
-                }
+            if (($mValue instanceof stdClass) && property_exists($mValue, 'date')) { // coming from json
+                $mValue = $mValue->date;
             }
 
             if ($mValue === null) {
                 return $this->isNull(); // Both Null
-            } else if ($this->isNull()) {
+            }
+
+            if ($this->isNull()) {
                 return false;           // My Value is null but comparator is not
             }
 
+            /** @noinspection TypeUnsafeComparisonInspection */
             return (string) $this == (string) (new self($this->sTable))->setValue($mValue);
         }
     }

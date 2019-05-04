@@ -9,8 +9,8 @@
 
     class Time extends DateTime {
 
-        const DEFAULT_FORMAT = 'H:i:s';
-        const NULL_VALUE     = '00:00:00';
+        protected const DEFAULT_FORMAT = 'H:i:s';
+        protected const NULL_VALUE     = '00:00:00';
 
         /**
          * @var PHP_DateTime|null
@@ -50,7 +50,7 @@
         public function isNull():bool {
             $sValue = $this->sValue instanceof PHP_DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
-            if (substr($sValue, 0, 1) == '-') {
+            if (strpos($sValue, '-') === 0) {
                 return true;
             }
 
@@ -61,7 +61,7 @@
          * @return bool
          */
         public function hasValue(): bool {
-            return parent::hasValue() && (string) $this != self::NULL_VALUE;
+            return parent::hasValue() && (string) $this !== self::NULL_VALUE;
         }
 
         /**
@@ -71,7 +71,7 @@
         public function __toString():string {
             $sValue = $this->sValue instanceof PHP_DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
-            if (substr($sValue, 0, 1) == '-') {
+            if (strpos($sValue, '-') === 0) {
                 $sValue = 'NULL';
             }
 
@@ -86,9 +86,9 @@
         public function toSQL():string {
             if ($this->isNull()) {
                 return 'NULL';
-            } else {
-                return parent::toSQL();
             }
+
+            return parent::toSQL();
         }
 
         /**

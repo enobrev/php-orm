@@ -9,6 +9,9 @@
 
     class Text extends Field {
 
+        /** @var string  */
+        public $sValue;
+
         /**
          *
          * @return mixed
@@ -34,16 +37,16 @@
         public function toSQL():string {
             if ($this->isNull()) {
                 return '""';
-            } else {
-                return Escape::string((string) $this);
             }
+
+            return Escape::string((string) $this);
         }
 
         /**
          * @return bool
          */
         public function hasValue():bool {
-            return parent::hasValue() && strlen((string) $this) > 0;
+            return parent::hasValue() && (string)$this !== '';
         }
         
         /**

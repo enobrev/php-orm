@@ -4,19 +4,19 @@
     class JoinException extends DbException {}
 
     class Join {
-        const LEFT_OUTER = 'LEFT OUTER';
+        protected const LEFT_OUTER = 'LEFT OUTER';
 
         /** @var string  */
         private $sType;
         
         /** @var  Field */
-        private $oFrom = null;
+        private $oFrom;
 
         /** @var  Field */
-        private $oTo = null;
+        private $oTo;
 
         /** @var  Condition|Conditions */
-        private $oConditions = null;
+        private $oConditions;
 
         /**
          * @param $oFrom
@@ -30,7 +30,7 @@
          * @throws ConditionMissingInValueException
          * @throws ConditionsNonConditionException
          */
-        public static function create($oFrom, $oTo, $oConditions = null) {
+        public static function create($oFrom, $oTo, $oConditions = null): Join {
             $oJoin = new self;
             $oJoin->oFrom       = $oFrom;
             $oJoin->oTo         = $oTo;

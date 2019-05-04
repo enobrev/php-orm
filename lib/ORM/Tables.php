@@ -22,13 +22,13 @@
     class Tables extends ArrayIterator {
 
         /** @var string */
-        private static $sNamespaceTable = null;
+        private static $sNamespaceTable;
 
         /**
          * @return Db
          * @throws DbException
          */
-        protected static function Db() {
+        protected static function Db(): Db {
             return Db::getInstance();
         }
         /**
@@ -101,10 +101,10 @@
             if (preg_match('/^(AND|OR)/', $sSearch, $aMatches)) {
                 $aResponse['type'] = $aMatches[1];
                 $sSearch = trim(preg_replace('/^(AND|OR)/', '', $sSearch));
-            };
+            }
 
-            $sSearch = preg_replace('/\s+/', ' ', $sSearch);
-            $sSearch = preg_replace('/(\w+)([%:><!]+)"(\w+)/', '"${1}${2}${3}', $sSearch); // Make things like field:"Some Value" into "field: Some Value"
+            $sSearch = (string) preg_replace('/\s+/', ' ', $sSearch);
+            $sSearch = (string) preg_replace('/(\w+)([%:><!]+)"(\w+)/', '"${1}${2}${3}', $sSearch); // Make things like field:"Some Value" into "field: Some Value"
             $aSearch = str_getcsv($sSearch, ' ');
 
             foreach($aSearch as $sSearchTerm) {
@@ -164,10 +164,10 @@
             $sGetSort  = preg_replace('/,\s+/', ',', $sSort);
             $aSort     = explode(',', $sGetSort);
 
-            foreach($aSort as $sSort) {
-                if (strpos($sSort, '.')) {
-                    $aSplit = explode('.', $sSort);
-                    if (count($aSplit) == 2) {
+            foreach($aSort as $sSortField) {
+                if (strpos($sSortField, '.')) {
+                    $aSplit = explode('.', $sSortField);
+                    if (count($aSplit) === 2) {
                         $aResponse[] = [
                             'table' => $aSplit[0],
                             'field' => $aSplit[1]
@@ -175,7 +175,7 @@
                     }
                 } else {
                     $aResponse[] = [
-                        'field' => $sSort
+                        'field' => $sSortField
                     ];
                 }
             }
@@ -241,7 +241,7 @@
          * @throws TablesInvalidReferenceException
          * @throws TablesInvalidTableException
          */
-        protected static function getQueryForCMS(?array $aSearch = null, ?int $iPage = null, ?int $iPer = null, ?array $aSort = null, ?string $sSyncDate = null, ?array $aFields = []) {
+        protected static function getQueryForCMS(?array $aSearch = null, ?int $iPage = null, ?int $iPer = null, ?array $aSort = null, ?string $sSyncDate = null, ?array $aFields = []): SQLBuilder {
             $oTable      = static::getTable();
             $oQuery      = SQLBuilder::select($oTable);
 
@@ -307,7 +307,7 @@
                             break;
 
                         case ':':
-                            if ($sSearchValue == 'null') {
+                            if ($sSearchValue === 'null') {
                                 $aSQLConditions[] = SQL::nul($oSearchField);
                             } else if ($oSearchField instanceof Field\Date) {
                                 try {
@@ -335,7 +335,7 @@
                             break;
 
                         case '!':
-                            if ($sSearchValue == 'null') {
+                            if ($sSearchValue === 'null') {
                                 $aSQLConditions[] = SQL::nnul($oSearchField);
                             } else if ($oSearchField instanceof Field\Date) {
                                 $aSQLConditions[] = SQL::neq($oSearchField, $sSearchValue);
@@ -372,7 +372,7 @@
                 }
 
                 if (count($aSQLConditions)) {
-                    if ($aSearch['type'] == 'AND') {
+                    if ($aSearch['type'] === 'AND') {
                         $oQuery->also(...$aSQLConditions);
                     } else {
                         $oQuery->either(...$aSQLConditions);
@@ -391,7 +391,7 @@
                         /** @var Table $oSortTable */
                         $oSortTable = new $sSortTableClass();
                         if (!$oSortTable instanceof Table) {
-                            throw new TablesInvalidTableException($sSortTableClass . " is not a valid Table");
+                            throw new TablesInvalidTableException($sSortTableClass . ' is not a valid Table');
                         }
 
                         $oSortReference = $oSortTable->getFieldThatReferencesTable($oTable);
@@ -442,12 +442,10 @@
                 }
             }
 
-            if ($sSyncDate) {
-                if ($oTable instanceof ModifiedDateColumn) {
-                    $oQuery->also(
-                        SQL::gte($oTable->getModifiedDateField(), $sSyncDate)
-                    );
-                }
+            if ($sSyncDate && $oTable instanceof ModifiedDateColumn) {
+                $oQuery->also(
+                    SQL::gte($oTable->getModifiedDateField(), $sSyncDate)
+                );
             }
 
             return $oQuery;
@@ -457,7 +455,7 @@
          * @return int
          * @throws DbException
          */
-        public static function total() {
+        public static function total(): int {
             $oTable   = static::getTable();
             $oResults = static::Db()->namedQuery(__METHOD__, SQLBuilder::count($oTable));
             $iTotal   = $oResults->fetchColumn();
@@ -533,11 +531,11 @@
                 }
 
                 return $oOutput;
-            } else {
-                /** @psalm-suppress InvalidArgument */
-                $sPrefixedTable = get_class($aTables[0]);
-                return new static($oResults->fetchAll(PDO::FETCH_CLASS, $sPrefixedTable, ['', true]));
             }
+
+            /** @psalm-suppress InvalidArgument */
+            $sPrefixedTable = get_class($aTables[0]);
+            return new static($oResults->fetchAll(PDO::FETCH_CLASS, $sPrefixedTable, ['', true]));
 
         }
 
@@ -585,25 +583,25 @@
                 }
 
                 return $aReturn;
-            } else {
-                $aFields = [];
-                /** @var Field $oField */
-                foreach($mFields as $oField) {
-                    $aFields[] = $oField->sColumn;
-                }
-
-                $aReturn = [];
-                foreach ($this as $oTable) {
-                    $aRow = [];
-                    foreach ($aFields as $sField) {
-                        $aRow[$sField] = $oTable->$sField->getValue();
-                    }
-
-                    $aReturn[] = $aRow;
-                }
-
-                return $aReturn;
             }
+
+            $aFields = [];
+            /** @var Field $oField */
+            foreach($mFields as $oField) {
+                $aFields[] = $oField->sColumn;
+            }
+
+            $aReturn = [];
+            foreach ($this as $oTable) {
+                $aRow = [];
+                foreach ($aFields as $sField) {
+                    $aRow[$sField] = $oTable->$sField->getValue();
+                }
+
+                $aReturn[] = $aRow;
+            }
+
+            return $aReturn;
         }
 
         /**
@@ -650,7 +648,7 @@
             }
 
             if (array_values((array) $this)[0]->$sField instanceof Field === false) {
-                throw new TablesInvalidFieldException("Invalid Field Requested");
+                throw new TablesInvalidFieldException('Invalid Field Requested');
             }
 
             foreach ($this as $oTable) {
@@ -665,7 +663,7 @@
          * @throws TablesInvalidFieldException
          * @throws TablesMultiplePrimaryException
          */
-        public function toPrimaryFieldArray() {
+        public function toPrimaryFieldArray(): array {
             $aReturn = [];
 
             if (!$this->count()) {
@@ -680,7 +678,7 @@
          * @throws TablesInvalidFieldException
          * @throws TablesMultiplePrimaryException
          */
-        public function toPrimaryArray() {
+        public function toPrimaryArray(): array {
             $aReturn = [];
 
             if (!$this->count()) {
@@ -694,11 +692,11 @@
          * @return Field
          * @throws TablesMultiplePrimaryException
          */
-        private function getOnlyPrimary() {
+        private function getOnlyPrimary(): Field {
             /** @var Field[] $aPrimary */
             $aPrimary = static::getTable()->getPrimary();
             if (count($aPrimary) > 1) {
-                throw new TablesMultiplePrimaryException("Can Only get Primary Array of Tables with Single Primary Keys");
+                throw new TablesMultiplePrimaryException('Can Only get Primary Array of Tables with Single Primary Keys');
             }
 
             return $aPrimary[0];
@@ -708,7 +706,7 @@
          * @param string $sKey
          * @return array
          */
-        public function toArray($sKey = '') {
+        public function toArray($sKey = ''): array {
             $aReturn = [];
             if ($sKey) {
                 foreach ($this as $oTable) {
@@ -727,7 +725,7 @@
          * @return Table[]
          * @throws TablesMultiplePrimaryException
          */
-        public function toPrimaryKeyedArray() {
+        public function toPrimaryKeyedArray(): array {
             $sPrimary = $this->getOnlyPrimary()->sColumn;
             $aReturn  = [];
             foreach ($this as $oTable) {
@@ -736,7 +734,7 @@
             return $aReturn;
         }
 
-        protected function getCSVFields() {
+        protected function getCSVFields(): array {
             /** @var Table $oRecord */
             /** @psalm-suppress InvalidScalarArgument */
             $oRecord = $this->offsetGet(0);
@@ -748,7 +746,7 @@
             return $aFields;
         }
 
-        protected function getCSVHeaders() {
+        protected function getCSVHeaders(): array {
             /** @var Table $oRecord */
             /** @psalm-suppress InvalidScalarArgument */
             $oRecord = $this->offsetGet(0);
@@ -764,20 +762,20 @@
          * @param array $aExclude
          * @return string
          */
-        public function toCSV(array $aExclude = []) {
+        public function toCSV(array $aExclude = []): string {
             /** @var Table $oRecord */
             /** @psalm-suppress InvalidScalarArgument */
             $oRecord = $this->offsetGet(0);
             $aHeaders = [];
             foreach($oRecord->getFields() as $oField) {
-                if (in_array($oField->sColumn, $aExclude)) {
+                if (in_array($oField->sColumn, $aExclude, true)) {
                     continue;
                 }
 
                 $aHeaders[] = $oField->toSQLColumnForFields(false);
             }
 
-            $oOutput = fopen("php://temp", "w");
+            $oOutput = fopen('php://temp', 'wb');
 
             if (!$oOutput) {
                 return '';
@@ -790,7 +788,7 @@
                 $aFiltered = [];
 
                 foreach($aValues as $sKey => $sValue) {
-                    if (in_array($sKey, $aExclude)) {
+                    if (in_array($sKey, $aExclude, true)) {
                         continue;
                     }
 

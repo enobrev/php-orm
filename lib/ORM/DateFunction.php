@@ -7,7 +7,7 @@
         /** @var string */
         private $sType;
 
-        const FUNC_NOW = 'NOW()';
+        public const FUNC_NOW = 'NOW()';
 
         /** @var array */
         private static $aSupported = [
@@ -52,7 +52,7 @@
          * @return bool
          */
         public static function isSupportedType(string $sType = null): bool {
-            return in_array($sType, self::$aSupported);
+            return in_array($sType, self::$aSupported, true);
         }
 
         /**

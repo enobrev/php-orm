@@ -4,3 +4,4 @@ vendor
 /tests/Mock/Table/
 mysql2sqlite.sh
 /.phan/
+.phpunit.result.cache

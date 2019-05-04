@@ -10,22 +10,22 @@
     class SQLPrimaryValuesNotSetException extends SQLException {}
 
     class SQL {
-        const TYPE_SELECT = 'SELECT';
-        const TYPE_INSERT = 'INSERT';
-        const TYPE_UPDATE = 'UPDATE';
-        const TYPE_DELETE = 'DELETE';
+        protected const TYPE_SELECT = 'SELECT';
+        protected const TYPE_INSERT = 'INSERT';
+        protected const TYPE_UPDATE = 'UPDATE';
+        protected const TYPE_DELETE = 'DELETE';
 
         /** @var string  */
-        public $sSQL      = NULL;
+        public $sSQL;
 
         /** @var string  */
-        public $sSQLGroup = NULL;
+        public $sSQLGroup;
 
         /** @var string  */
-        public $sSQLTable = NULL;
+        public $sSQLTable;
 
         /** @var string  */
-        public $sSQLType  = NULL;
+        public $sSQLType;
 
         /**
          * @param array ...$aArguments
@@ -37,14 +37,14 @@
          * @throws ORM\ConditionMissingInValueException
          * @throws ORM\ConditionsNonConditionException
          */
-        public static function either(...$aArguments) {
+        public static function either(...$aArguments): ORM\Conditions {
             return ORM\Conditions::either(...$aArguments);
         }
 
         /**
          * @return string
          */
-        public static function NOW() {
+        public static function NOW(): string {
             return ORM\DateFunction::FUNC_NOW;
         }
 
@@ -58,7 +58,7 @@
          * @throws ORM\ConditionMissingInValueException
          * @throws ORM\ConditionsNonConditionException
          */
-        public static function also(...$aArguments) {
+        public static function also(...$aArguments): ORM\Conditions {
             return ORM\Conditions::also(...$aArguments);
         }
 
@@ -71,7 +71,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function eq(...$aArguments) {
+        public static function eq(...$aArguments): ORM\Condition {
             return ORM\Condition::eq(...$aArguments);
         }
 
@@ -84,7 +84,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function neq(...$aArguments) {
+        public static function neq(...$aArguments): ORM\Condition {
             return ORM\Condition::neq(...$aArguments);
         }
 
@@ -97,7 +97,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function lt(...$aArguments) {
+        public static function lt(...$aArguments): ORM\Condition {
             return ORM\Condition::lt(...$aArguments);
         }
 
@@ -110,7 +110,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function gt(...$aArguments) {
+        public static function gt(...$aArguments): ORM\Condition {
             return ORM\Condition::gt(...$aArguments);
         }
 
@@ -123,7 +123,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function lte(...$aArguments) {
+        public static function lte(...$aArguments): ORM\Condition {
             return ORM\Condition::lte(...$aArguments);
         }
 
@@ -136,7 +136,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function gte(...$aArguments) {
+        public static function gte(...$aArguments): ORM\Condition {
             return ORM\Condition::gte(...$aArguments);
         }
 
@@ -149,7 +149,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function like(...$aArguments) {
+        public static function like(...$aArguments): ORM\Condition {
             return ORM\Condition::like(...$aArguments);
         }
 
@@ -162,7 +162,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function nlike(...$aArguments) {
+        public static function nlike(...$aArguments): ORM\Condition {
             return ORM\Condition::nlike(...$aArguments);
         }
 
@@ -175,7 +175,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function nul(...$aArguments) {
+        public static function nul(...$aArguments): ORM\Condition {
             return ORM\Condition::nul(...$aArguments);
         }
 
@@ -188,7 +188,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function nnul(...$aArguments) {
+        public static function nnul(...$aArguments): ORM\Condition {
             return ORM\Condition::nnul(...$aArguments);
         }
 
@@ -201,7 +201,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function in(...$aArguments) {
+        public static function in(...$aArguments): ORM\Condition {
             return ORM\Condition::in(...$aArguments);
         }
 
@@ -214,7 +214,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function nin(...$aArguments) {
+        public static function nin(...$aArguments): ORM\Condition {
             return ORM\Condition::nin(...$aArguments);
         }
 
@@ -227,7 +227,7 @@
          * @throws ORM\ConditionMissingFieldException
          * @throws ORM\ConditionMissingInValueException
          */
-        public static function between(...$aArguments) {
+        public static function between(...$aArguments): ORM\Condition {
             return ORM\Condition::between(...$aArguments);
         }
 
@@ -243,7 +243,7 @@
          * @throws ORM\ConditionMissingInValueException
          * @throws ORM\ConditionsNonConditionException
          */
-        public static function join(ORM\Field $oFrom, ORM\Field $oTo, $oConditions = null) {
+        public static function join(ORM\Field $oFrom, ORM\Field $oTo, $oConditions = null): ORM\Join {
             return ORM\Join::create($oFrom, $oTo, $oConditions);
         }
 
@@ -252,7 +252,7 @@
          * @param int|null $iOffset
          * @return ORM\Limit
          */
-        public static function limit($iStart = null, $iOffset = null) {
+        public static function limit($iStart = null, $iOffset = null): ORM\Limit {
             return ORM\Limit::create($iStart, $iOffset);
         }
 
@@ -260,7 +260,7 @@
          * @param ORM\Field[]  ...$aFields
          * @return ORM\Group
          */
-        public static function group(...$aFields) {
+        public static function group(...$aFields): ORM\Group {
             return ORM\Group::create(...$aFields);
         }
 
@@ -269,7 +269,7 @@
          * @param array $aValues
          * @return ORM\Order
          */
-        public static function desc(ORM\Field $oField, Array $aValues = array()) {
+        public static function desc(ORM\Field $oField, Array $aValues = array()): ORM\Order {
             return ORM\Order::desc($oField, $aValues);
         }
 
@@ -278,7 +278,7 @@
          * @param array $aValues
          * @return ORM\Order
          */
-        public static function asc(ORM\Field $oField, Array $aValues = array()) {
+        public static function asc(ORM\Field $oField, Array $aValues = array()): ORM\Order {
             return ORM\Order::asc($oField, $aValues);
         }
 
@@ -287,7 +287,7 @@
          * @param array $aValues
          * @return ORM\Order
          */
-        public static function byfield(ORM\Field $oField, Array $aValues = array()) {
+        public static function byfield(ORM\Field $oField, Array $aValues = array()): ORM\Order {
             return ORM\Order::byfield($oField, $aValues);
         }
 
@@ -303,7 +303,7 @@
          * @throws SQLMissingTableOrFieldsException
          * @deprecated Use SQLBuilder::select instead
          */
-        public static function select(...$aArguments) {
+        public static function select(...$aArguments): SQL {
             $bStar       = false;
 
             /** @var ORM\Field[] $aFields */
@@ -473,7 +473,7 @@
          * @throws ORM\ConditionsNonConditionException
          * @deprecated Use SQLBuilder::count instead
          */
-        public static function count(...$aArguments) {
+        public static function count(...$aArguments): SQL {
             /** @var ORM\Table[] $aTables */
             $aTables     = array();
 
@@ -518,7 +518,7 @@
 
             $aPrimary = $oTable->getPrimary();
 
-            if (count($aPrimary) == 1) {
+            if (count($aPrimary) === 1) {
                 $aSQL[] = 'COUNT(' . self::toSQLColumnsForCount($aPrimary) . ') AS row_count';
             } else {
                 $aSQL[] = 'COUNT(*) AS row_count';
@@ -566,7 +566,7 @@
          * @throws SQLMissingTableOrFieldsException
          * @deprecated Use SQLBuilder::insert instead
          */
-        public static function insert(...$aArguments) {
+        public static function insert(...$aArguments): SQL {
             $aFields     = [];
             $sTable      = NULL;
 
@@ -583,7 +583,7 @@
                 }
             }
 
-            if (count($aFields) == 0) {
+            if (count($aFields) === 0) {
                 throw new SQLMissingTableOrFieldsException;
             }
 
@@ -634,7 +634,7 @@
          * @throws SQLMissingTableOrFieldsException
          * @deprecated Use SQLBuilder::update instead
          */
-        public static function update(...$aArguments) {
+        public static function update(...$aArguments): SQL {
             $aFields     = [];
             $oTable      = NULL;
             $oConditions = new ORM\Conditions;
@@ -663,7 +663,7 @@
                 }
             }
 
-            if (count($aFields) == 0) {
+            if (count($aFields) === 0) {
                 if ($oTable instanceof ORM\Table) {
                     $aFields = $oTable->getFields();
                 } else {
@@ -671,7 +671,7 @@
                 }
             }
 
-            if ($oConditions->count() == 0) {
+            if ($oConditions->count() === 0) {
                 throw new SQLMissingConditionException;
             }
 
@@ -719,7 +719,7 @@
          * @throws SQLPrimaryValuesNotSetException
          * @deprecated Use SQLBuilder::upsert instead
          */
-        public static function upsert(...$aArguments) {
+        public static function upsert(...$aArguments): SQL {
             $aFields     = [];
             $sTable      = null;
             $oTable      = null;
@@ -744,7 +744,7 @@
                 }
             }
 
-            if (count($aFields) == 0) {
+            if (count($aFields) === 0) {
                 throw new SQLMissingTableOrFieldsException;
             }
 
@@ -805,7 +805,7 @@
          * @throws SQLMissingTableOrFieldsException
          * @deprecated Use SQLBuilder::delete instead
          */
-        public static function delete(...$aArguments) {
+        public static function delete(...$aArguments): SQL {
             $aFields     = [];
             $sTable      = NULL;
             $oConditions = new ORM\Conditions;
@@ -835,11 +835,11 @@
                 }
             }
 
-            if (count($aFields) == 0) {
+            if (count($aFields) === 0) {
                 throw new SQLMissingTableOrFieldsException;
             }
 
-            if ($oConditions->count() == 0) {
+            if ($oConditions->count() === 0) {
                 /** @var ORM\Field[] $aFields */
                 /** @psalm-suppress InvalidArgument */
                 $oConditions->add($aFields);
@@ -879,7 +879,7 @@
          * @param bool $bWithTable
          * @return string
          */
-        private static function toSQLColumnsForSelect($aFields, $bWithTable = true) {
+        private static function toSQLColumnsForSelect($aFields, $bWithTable = true): string {
             $aColumns = array();
 
             /** @var ORM\Field $oField */
@@ -895,7 +895,7 @@
          * @param bool $bWithTable
          * @return string
          */
-        private static function toSQLColumnsForCount($aFields, $bWithTable = true) {
+        private static function toSQLColumnsForCount($aFields, $bWithTable = true): string {
             $aColumns = array();
 
             /** @var ORM\Field $oField */
@@ -910,7 +910,7 @@
          * @param ORM\Field[] $aFields
          * @return string
          */
-        private static function toSQLColumnsForInsert($aFields) {
+        private static function toSQLColumnsForInsert($aFields): string {
             $aColumns = array();
 
             /** @var ORM\Field $oField */
@@ -925,7 +925,7 @@
          * @param ORM\Field[] $aFields
          * @return string
          */
-        private static function toSQL($aFields) {
+        private static function toSQL($aFields): string {
             $aColumns = array();
 
             /** @var ORM\Field $oField */
@@ -940,7 +940,7 @@
          * @param ORM\Field[] $aFields
          * @return string
          */
-        private static function toSQLLog($aFields) {
+        private static function toSQLLog($aFields): string {
             $aColumns = array();
             foreach($aFields as $oField) {
                 $aColumns[] = get_class($oField);
@@ -954,17 +954,15 @@
          * @param stdClass|null $oResult
          * @return string
          */
-        public static function toSQLUpdate(Array $aFields, stdClass $oResult = NULL) {
+        public static function toSQLUpdate(Array $aFields, stdClass $oResult = NULL): string {
             $aColumns = array();
 
             foreach($aFields as $oField) {
-                if ($oResult !== NULL) {
-                    if (property_exists($oResult, $oField->sColumn)) {
-                        if ($oField->is($oResult->{$oField->sColumn})) {
-                            continue;
-                        }
+                if (($oResult !== null) &&
+                    property_exists($oResult, $oField->sColumn) &&
+                    $oField->is($oResult->{$oField->sColumn})) {
+                        continue;
                     }
-                }
 
                 $aColumns[] = $oField->toSQLColumn(false) . ' = ' . $oField->toSQL();
             }
@@ -977,18 +975,16 @@
          * @param stdClass|null $oResult
          * @return string
          */
-        public static function toSQLUpdateLog(Array $aFields, stdClass $oResult = NULL) {
+        public static function toSQLUpdateLog(Array $aFields, stdClass $oResult = NULL): string {
             $aColumns = array();
 
             /** @var ORM\Field $oField */
             foreach($aFields as $oField) {
-                if ($oResult !== NULL) {
-                    if (property_exists($oResult, $oField->sColumn)) {
-                        if ($oField->is($oResult->{$oField->sColumn})) {
-                            continue;
-                        }
+                if (($oResult !== null) &&
+                    property_exists($oResult, $oField->sColumn) &&
+                    $oField->is($oResult->{$oField->sColumn})) {
+                        continue;
                     }
-                }
 
                 /** @var ORM\Field $oField */
                 $aColumns[] = $oField->toSQLColumn(false) . ' = ' . get_class($oField);

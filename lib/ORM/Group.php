@@ -14,7 +14,7 @@
          * @return Group
          * @psalm-suppress InvalidPropertyAssignmentValue
          */
-        public static function create(...$aFields) {
+        public static function create(...$aFields): Group {
             $oGroup   = new self;
             $oGroup->aFields = $aFields;
 
@@ -28,7 +28,7 @@
         public function toSQL(): string {
             $aFields = array();
             foreach($this->aFields as $oField) {
-                $aFields[] = $oField->toSQLColumnForFields(true);
+                $aFields[] = $oField->toSQLColumnForFields();
             }
 
             return implode(', ', $aFields);

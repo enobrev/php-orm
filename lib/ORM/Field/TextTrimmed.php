@@ -10,7 +10,7 @@
          *
          * @return string
          */
-        public function getValue() {
+        public function getValue(): string {
             return trim($this->sValue);
         }
 

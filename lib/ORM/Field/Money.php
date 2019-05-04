@@ -16,7 +16,7 @@
     use Enobrev\ORM\FieldInvalidValueException;
 
     class Money extends Number {
-        const DEFAULT_CURRENCY = 'USD';
+        protected const DEFAULT_CURRENCY = 'USD';
 
         /** @var MoneyPHP|null */
         public $sValue;
@@ -28,27 +28,20 @@
         protected $sCurrencyField;
 
         /**
-         * @return MoneyPHP|null
-         */
-        public function getValue() {
-            return $this->sValue;
-        }
-
-        /**
          * @param string $sCurrency
          */
-        public function setCurrency(string $sCurrency) {
+        public function setCurrency(string $sCurrency): void {
             $this->oCurrency = new Currency($sCurrency);
         }
 
-        public function setCurrencyField($sField) {
+        public function setCurrencyField($sField): void {
             $this->sCurrencyField = $sField instanceof Field ? $sField->sColumn : $sField;
         }
 
         /**
          * @return Currency
          */
-        public function getCurrency() {
+        public function getCurrency(): Currency {
             if (!$this->oCurrency) {
                 $this->setCurrency(self::DEFAULT_CURRENCY);
             }
@@ -67,13 +60,13 @@
                 $sValue = $this->sValue->getAmount();
             }
 
-            return $sValue != 0 ? (string) $sValue : '0';
+            return $sValue !== 0 ? (string) $sValue : '0';
         }
 
         /**
          * @param $sValue
          */
-        public function setValueFromDecimal($sValue) {
+        public function setValueFromDecimal($sValue): void {
             $oParser = new DecimalMoneyParser(new Currencies\ISOCurrencies());
             $this->sValue = $oParser->parse($sValue, $this->getCurrency());
         }
@@ -101,8 +94,8 @@
          * @throws FieldInvalidValueException
          */
         public function setValueFromArray($aData): void {
-            if (isset($aData[$this->sColumn]) || array_key_exists($this->sColumn, $aData)) {
-                if (isset($aData[$this->sCurrencyField]) || array_key_exists($this->sCurrencyField, $aData)) {
+            if (array_key_exists($this->sColumn, $aData)) {
+                if (array_key_exists($this->sCurrencyField, $aData)) {
                     $this->setCurrency($aData[$this->sCurrencyField]);
                 }
 
@@ -121,9 +114,9 @@
 
             if ($this->sValue instanceof MoneyPHP) {
                 return Escape::string($this->__toString(), PDO::PARAM_INT);
-            } else {
-                return 'NULL';
             }
+
+            return 'NULL';
         }
 
         /**
@@ -217,7 +210,9 @@
 
             if ($mValue === null) {
                 return $this->isNull(); // Both Null
-            } else if ($this->isNull()) {
+            }
+
+            if ($this->isNull()) {
                 return false;           // My Value is null but comparator is not
             }
 

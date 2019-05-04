@@ -12,10 +12,10 @@
 
     class Db {
         /** @var Db|null */
-        private static $oInstance = null;
+        private static $oInstance;
 
         /** @var Db|null */
-        private static $oInstance2 = null;
+        private static $oInstance2;
 
         /** @var bool */
         private static $bConnected = false;
@@ -27,10 +27,10 @@
         public static $bUpsertUpdated  = false;
 
         /** @var mixed */
-        private $sLastInsertId = null;
+        private $sLastInsertId;
 
         /** @var int */
-        private $iLastRowsAffected = null;
+        private $iLastRowsAffected;
 
         /** @var PDO $oPDO */
         private $oPDO;
@@ -40,7 +40,7 @@
          * @return Db
          * @throws DbException
          */
-        public static function getInstance(PDO $oPDO = null) {
+        public static function getInstance(PDO $oPDO = null): Db {
             if (!self::$oInstance instanceof self) {
                 if ($oPDO === null) {
                     throw new DbException('Db Has Not been Initialized Properly');
@@ -58,7 +58,7 @@
          * @return Db
          * @throws DbException
          */
-        public static function getInstance2(PDO $oPDO = null) {
+        public static function getInstance2(PDO $oPDO = null): Db {
             if (!self::$oInstance2 instanceof self) {
                 if ($oPDO === null) {
                     throw new DbException('Db Has Not been Initialized Properly');
@@ -73,7 +73,7 @@
         /**
          * @return PDO
          */
-        public function getPDO() {
+        public function getPDO(): PDO {
             return $this->oPDO;
         }
 
@@ -83,7 +83,7 @@
          * @return Db
          * @throws DbException
          */
-        public static function replaceInstance(PDO $oPDO) {
+        public static function replaceInstance(PDO $oPDO): Db {
             if (self::$oInstance instanceof self && self::$bConnected) {
                 self::$oInstance->close();
             }
@@ -100,18 +100,18 @@
          * @return PDO
          * @psalm-suppress PossiblyNullArgument
          */
-        public static function defaultMySQLPDO(string $sHost, string $sUsername = null, string $sPassword = null, string $sDatabase = null, array $aOptions = []) {
+        public static function defaultMySQLPDO(string $sHost, string $sUsername = null, string $sPassword = null, string $sDatabase = null, array $aOptions = []): PDO {
             $sDSN = "mysql:host=$sHost";
             if ($sDatabase) {
                 $sDSN .= ";dbname=$sDatabase";
             }
-            $sDSN .= ";charset=utf8mb4";
+            $sDSN .= ';charset=utf8mb4';
 
             $oPDO = new PDO($sDSN, $sUsername, $sPassword, $aOptions);
             $oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
             $oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $oPDO->setAttribute(PDO::MYSQL_ATTR_FOUND_ROWS,   true);
-            $oPDO->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
+            $oPDO->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci');
 
             return $oPDO;
         }
@@ -125,7 +125,7 @@
          * @return PDO
          * @psalm-suppress PossiblyNullArgument
          */
-        public static function defaultPostgresPDO(string $sHost, string $sUsername = null, string $sPassword = null, string $sDatabase = null, array $aOptions = []) {
+        public static function defaultPostgresPDO(string $sHost, string $sUsername = null, string $sPassword = null, string $sDatabase = null, array $aOptions = []): PDO {
             $sDSN = "pgsql:host=$sHost";
             if ($sDatabase) {
                 $sDSN .= ";dbname=$sDatabase";
@@ -141,7 +141,7 @@
         /**
          * @return PDO
          */
-        public static function defaultSQLiteMemory() {
+        public static function defaultSQLiteMemory(): PDO {
             $oPDO = new PDO('sqlite::memory:');
             $oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
             $oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -153,7 +153,7 @@
          * @param string $sFile
          * @return PDO
          */
-        public static function defaultSQLiteFile(string $sFile) {
+        public static function defaultSQLiteFile(string $sFile): PDO {
             $oPDO = new PDO("sqlite:$sFile");
             $oPDO->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
             $oPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -184,7 +184,7 @@
          *
          * @return boolean
          */
-        public static function isConnected() {
+        public static function isConnected(): bool {
             return self::$bConnected;
         }
 
@@ -192,7 +192,7 @@
          *
          * Keep the connection alive on a long-lived process
          */
-        public function ping() {
+        public function ping(): void {
             $this->rawQuery('SELECT 1');
         }
 
@@ -200,7 +200,7 @@
          *
          * @return boolean
          */
-        public static function wasUpsertInserted() {
+        public static function wasUpsertInserted(): bool {
             return self::$bUpsertInserted;
         }
 
@@ -208,7 +208,7 @@
          *
          * @return boolean
          */
-        public static function wasUpsertUpdated() {
+        public static function wasUpsertUpdated(): bool {
             return self::$bUpsertUpdated;
         }
 
@@ -231,12 +231,12 @@
          * @throws DbDuplicateException
          * @throws DbException
          */
-        public function namedQuery($sName, $sQuery) {
+        public function namedQuery($sName, $sQuery): PDOStatement {
             if (is_array($sName)) {
                 $sName = implode('.', $sName);
             }
 
-            $sName = str_replace('\\', '.', str_replace('/', '.', $sName));
+            $sName = str_replace(['/', '\\'], '.', $sName);
             return $this->query($sQuery, $sName);
         }
 
@@ -247,7 +247,7 @@
          * @return PDOStatement
          * @throws DbDuplicateException|DbException
          */
-        public function query($sQuery, $sName = '') {
+        public function query($sQuery, $sName = ''): PDOStatement {
             $sTimerName = 'ORM.Db.query.' . $sName;
             Log::startTimer($sTimerName);
 
@@ -336,7 +336,7 @@
             } catch(PDOException $e) {
                 $iCode = (int) $e->getCode();
 
-                if ($iCode == 1062 || $iCode == 23000) {
+                if ($iCode === 1062 || $iCode === 23000) {
                     $oException = new DbDuplicateException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
                 } else {
                     $oException = new DbException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
@@ -360,7 +360,7 @@
 
                     case 'sqlite':
                         $this->sLastInsertId     = $this->oPDO->lastInsertId();
-                        if (!preg_match('/^select/i', $sSQL)) {
+                        if (0 !== stripos($sSQL, 'select')) {
                             $this->iLastRowsAffected = $mResult->rowCount();
                         } else {
                             // FIXME: Yes, this is slow and relatively stupid.  But since SQLite is currently just used for testing, we'll just deal
@@ -378,7 +378,7 @@
                 }
             }
 
-            if (stristr($sSQL, 'ON DUPLICATE KEY UPDATE') !== false) {
+            if (false !== stripos($sSQL, 'ON DUPLICATE KEY UPDATE')) {
                 switch($this->iLastRowsAffected) {
                     case 1: self::$bUpsertInserted = true; break;
                     case 2: self::$bUpsertUpdated  = true; break;
@@ -397,7 +397,7 @@
          * @param string $sQuery
          * @return PDOStatement
          */
-        public function rawQuery($sQuery) {
+        public function rawQuery($sQuery): PDOStatement {
             return $this->oPDO->query($sQuery);
         }
 
@@ -405,7 +405,7 @@
          * @param string $sStatement
          * @return PDOStatement
          */
-        public function prepare(string $sStatement) {
+        public function prepare(string $sStatement): PDOStatement {
             return $this->oPDO->prepare($sStatement);
         }
 
@@ -414,7 +414,7 @@
          * @param int $sPDOType
          * @return string
          */
-        public function quote($sString, $sPDOType = PDO::PARAM_STR) {
+        public function quote($sString, $sPDOType = PDO::PARAM_STR): string {
             return $this->oPDO->quote($sString, $sPDOType);
         }
 
@@ -447,7 +447,7 @@
          */
         public function getDate(): DateTime {
             $sDriver = $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME);
-            if ($sDriver == 'sqlite') {
+            if ($sDriver === 'sqlite') {
                 return new DateTime('now');
             }
 
@@ -460,7 +460,7 @@
          * @return DateTime
          * @throws Exception
          */
-        public function getModifiedDate($sModification) {
+        public function getModifiedDate($sModification): DateTime {
             $oDate = $this->getDate();
             $oDate->modify($sModification);
             return $oDate;
@@ -469,9 +469,10 @@
         /**
          * http://stackoverflow.com/a/15875555/14651
          * @return string
+         * @throws Exception
          */
-        public function getUUID() {
-            $data = openssl_random_pseudo_bytes(16);
+        public function getUUID(): string {
+            $data = random_bytes(16);
 
             $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
             $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10

@@ -8,10 +8,10 @@
         /**
          * @return Field\DateTime
          */
-        public function getModifiedDateField();
+        public function getModifiedDateField(): Field\DateTime;
 
         /**
          * @return DateTime
          */
-        public function getLastModified();
+        public function getLastModified(): DateTime;
     }

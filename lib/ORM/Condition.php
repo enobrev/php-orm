@@ -8,22 +8,23 @@
     class ConditionMissingFieldException extends ConditionException {}
 
     class Condition {
-        const FIELD_TO_FIELD = '_FIELD_TO_FIELD_';
-        const JOIN           = '_FIELD_TO_FIELD_';
+        public const JOIN            = '_FIELD_TO_FIELD_';
 
-        const LT           = '<';
-        const LTE          = '<=';
-        const GT           = '>';
-        const GTE          = '>=';
-        const EQUAL        = '=';
-        const NEQ          = '<>';
-        const IN           = 'IN';
-        const NIN          = 'NOT IN';
-        const LIKE         = 'LIKE';
-        const NLIKE        = 'NOT LIKE';
-        const ISNULL       = 'IS NULL';
-        const NOTNULL      = 'IS NOT NULL';
-        const BETWEEN      = 'BETWEEN';
+        protected const FIELD_TO_FIELD = '_FIELD_TO_FIELD_';
+
+        protected const LT           = '<';
+        protected const LTE          = '<=';
+        protected const GT           = '>';
+        protected const GTE          = '>=';
+        protected const EQUAL        = '=';
+        protected const NEQ          = '<>';
+        protected const IN           = 'IN';
+        protected const NIN          = 'NOT IN';
+        protected const LIKE         = 'LIKE';
+        protected const NLIKE        = 'NOT LIKE';
+        protected const ISNULL       = 'IS NULL';
+        protected const NOTNULL      = 'IS NOT NULL';
+        protected const BETWEEN      = 'BETWEEN';
 
         /** @var string  */
         protected $sSign;
@@ -53,8 +54,8 @@
          * @param mixed $sElement
          * @return bool
          */
-        protected static function isSign($sElement) {
-            return in_array($sElement, self::$aSigns);
+        protected static function isSign($sElement): bool {
+            return in_array($sElement, self::$aSigns, true);
         }
 
         /**
@@ -66,7 +67,7 @@
          * @throws ConditionMissingFieldException
          * @throws ConditionMissingInValueException
          */
-        protected static function create(string $sSign, ...$aElements) {
+        protected static function create(string $sSign, ...$aElements): Condition {
             if (!self::isSign($sSign)) {
                 throw new ConditionInvalidTypeException();
             }
@@ -95,12 +96,12 @@
                 }
             }
 
-            if ($oCondition->sSign == self::BETWEEN) {
+            if ($oCondition->sSign === self::BETWEEN) {
                 if (count($oCondition->aElements) < 2) {
                     throw new ConditionMissingBetweenValueException;
                 }
-            } else if ($oCondition->sSign == self::IN
-                   ||  $oCondition->sSign == self::NIN) {
+            } else if ($oCondition->sSign === self::IN
+                   ||  $oCondition->sSign === self::NIN) {
 
                 if (count($oCondition->aElements) < 1) {
                     throw new ConditionMissingFieldException;
@@ -109,10 +110,8 @@
                 if (!is_array($oCondition->aElements[1])) {
                     throw new ConditionMissingInValueException;
                 }
-            } else {
-                if (count($oCondition->aElements) < 1) {
-                    throw new ConditionMissingFieldException;
-                }
+            } else if (count($oCondition->aElements) < 1) {
+                throw new ConditionMissingFieldException;
             }
 
             return $oCondition;
@@ -295,7 +294,7 @@
         /**
          * @return string
          */
-        public function toSQL() {
+        public function toSQL(): ?string {
             if (!count($this->aElements)) {
                 return '';
             }
@@ -314,28 +313,32 @@
                         $oField1->toSQLColumn()
                     )
                 );
-            } else if (count($this->aElements) == 1) {
-                if ($this->sSign == self::ISNULL
-                ||  $this->sSign == self::NOTNULL) {
+            }
+
+            if (count($this->aElements) === 1) {
+                if ($this->sSign === self::ISNULL
+                ||  $this->sSign === self::NOTNULL) {
                     return implode(' ',
                         array(
                             $oField->toSQLColumn(),
                             $this->sSign
                         )
                     );
-                } else {
-                    return implode(' ',
-                        array(
-                            $oField->toSQLColumn(),
-                            $this->sSign,
-                            $oField->toSQL()
-                        )
-                    );
                 }
-            } else if ($this->sSign == self::BETWEEN) {
+
+                return implode(' ',
+                    array(
+                        $oField->toSQLColumn(),
+                        $this->sSign,
+                        $oField->toSQL()
+                    )
+                );
+            }
+
+            if ($this->sSign === self::BETWEEN) {
                 /** @var Field $oField1 */
                 $oField1 = $this->aElements[1];
-                if (count($this->aElements) == 2) {
+                if (count($this->aElements) === 2) {
                     return implode(' ',
                         array(
                             $oField->toSQLColumn(),
@@ -345,21 +348,23 @@
                             $oField1->toSQL()
                         )
                     );
-                } else {
-                    /** @var Field $oField2 */
-                    $oField2 = $this->aElements[2];
-                    return implode(' ',
-                        array(
-                            $oField->toSQLColumn(),
-                            $this->sSign,
-                            $oField1->toSQL(),
-                            'AND',
-                            $oField2->toSQL()
-                        )
-                    );
                 }
-            } else if ($this->sSign == self::IN
-                   ||  $this->sSign == self::NIN) {
+
+                /** @var Field $oField2 */
+                $oField2 = $this->aElements[2];
+                return implode(' ',
+                           array(
+                        $oField->toSQLColumn(),
+                        $this->sSign,
+                        $oField1->toSQL(),
+                        'AND',
+                        $oField2->toSQL()
+                    )
+                );
+            }
+
+            if ($this->sSign === self::IN
+            ||  $this->sSign === self::NIN) {
                 // format values
                 $aValues = $this->aElements[1];
                 foreach ($aValues as &$sValue) {
@@ -376,24 +381,24 @@
                         ')'
                     )
                 );
-            } else {
-                /** @var Field $oField1 */
-                $oField1 = $this->aElements[1];
-
-                return implode(' ',
-                    array(
-                        $oField->toSQLColumn(),
-                        $this->sSign,
-                        $oField1->toSQL()
-                    )
-                );
             }
+
+            /** @var Field $oField1 */
+            $oField1 = $this->aElements[1];
+
+            return implode(' ',
+                       array(
+                    $oField->toSQLColumn(),
+                    $this->sSign,
+                    $oField1->toSQL()
+                )
+            );
         }
 
         /**
          * @return string
          */
-        public function toSQLLog() {
+        public function toSQLLog(): string {
             /** @var Field $oField */
             $oField = $this->aElements[0];
 
@@ -408,27 +413,31 @@
                         $oField1->toSQLColumn()
                     )
                 );
-            } else if (count($this->aElements) == 1) {
-                if ($this->sSign == self::ISNULL) {
+            }
+
+            if (count($this->aElements) === 1) {
+                if ($this->sSign === self::ISNULL) {
                     return implode(' ',
                         array(
                             $oField->toSQLColumn(),
                             $this->sSign
                         )
                     );
-                } else {
-                    return implode(' ',
-                        array(
-                            $oField->toSQLColumn(),
-                            $this->sSign,
-                            $oField->toSQLLog()
-                        )
-                    );
                 }
-            } else if ($this->sSign == self::BETWEEN) {
+
+                return implode(' ',
+                    array(
+                        $oField->toSQLColumn(),
+                        $this->sSign,
+                        $oField->toSQLLog()
+                    )
+                );
+            }
+
+            if ($this->sSign === self::BETWEEN) {
                 /** @var Field $oField1 */
                 $oField1 = $this->aElements[1];
-                if (count($this->aElements) == 2) {
+                if (count($this->aElements) === 2) {
                     return implode(' ',
                         array(
                             $oField->toSQLColumn(),
@@ -438,21 +447,23 @@
                             $oField1->toSQLLog()
                         )
                     );
-                } else {
-                    /** @var Field $oField2 */
-                    $oField2 = $this->aElements[2];
-                    return implode(' ',
-                        array(
-                            $oField->toSQLColumn(),
-                            $this->sSign,
-                            $oField1->toSQLLog(),
-                            'AND',
-                            $oField2->toSQLLog()
-                        )
-                    );
                 }
-            } else if ($this->sSign == self::IN
-                ||  $this->sSign == self::NIN) {
+
+                /** @var Field $oField2 */
+                $oField2 = $this->aElements[2];
+                return implode(' ',
+                           array(
+                        $oField->toSQLColumn(),
+                        $this->sSign,
+                        $oField1->toSQLLog(),
+                        'AND',
+                        $oField2->toSQLLog()
+                    )
+                );
+            }
+
+            if ($this->sSign === self::IN
+            ||  $this->sSign === self::NIN) {
                 // format values
                 $aValues = $this->aElements[1];
                 foreach ($aValues as &$sValue) {
@@ -467,18 +478,18 @@
                         '(Array)'
                     )
                 );
-            } else {
-                /** @var Field $oField1 */
-                $oField1 = $this->aElements[1];
-
-                return implode(' ',
-                    array(
-                        $oField->toSQLColumn(),
-                        $this->sSign,
-                        $oField1->toSQLLog()
-                    )
-                );
             }
+
+            /** @var Field $oField1 */
+            $oField1 = $this->aElements[1];
+
+            return implode(' ',
+                       array(
+                    $oField->toSQLColumn(),
+                    $this->sSign,
+                    $oField1->toSQLLog()
+                )
+            );
         }
 
         public function toKey(): string {

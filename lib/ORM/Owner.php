@@ -9,13 +9,15 @@
         /**
          * @return Table
          */
-        public function getOwner() {
+        public function getOwner(): ?Table {
             /** @var Field $oOwnerField */
             $oOwnerField = $this->getOwnerField();
             if ($oOwnerField->hasValue()) {
                 $sTable = $this->getOwnerTable();
                 return $sTable::getById($oOwnerField->getValue());
             }
+
+            return null;
         }
 
         /**
@@ -23,7 +25,7 @@
          * @return bool
          * @throws Exception
          */
-        public function hasOwner(Table $oOwner = null) {
+        public function hasOwner(Table $oOwner = null): bool {
             /** @var Field $oOwnerField */
             $oOwnerField = $this->getOwnerField();
             $sTable      = $this->getOwnerTable();

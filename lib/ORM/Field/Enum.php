@@ -9,8 +9,11 @@
     use Enobrev\ORM\Table;
 
     class Enum extends Field {
-        /** @var array  */
+        /** @var string[]  */
         public $aValues = [];
+
+        /** @var string  */
+        public $sValue;
 
         /**
          * @param string $sTable
@@ -21,18 +24,17 @@
             $this->sColumn = '';
 
             if (is_array($sColumn)) {
-                $aValues = $sColumn;
-                $sColumn = $sTable;
-                $sTable  = null;
-
-                parent::__construct($sColumn);
+                parent::__construct($sTable);
+                if (count($sColumn)) {
+                    $this->aValues = $sColumn;
+                }
             } else {
                 parent::__construct($sTable, $sColumn);
+                if (count($aValues)) {
+                    $this->aValues = $aValues;
+                }
             }
-            
-            if (count($aValues)) {
-                $this->aValues = $aValues;
-            }
+
         }
         
         /**
@@ -78,7 +80,7 @@
          * @return bool
          */
         public function hasValue(): bool {
-            return parent::hasValue() && strlen((string) $this) > 0;
+            return parent::hasValue() && (string)$this !== '';
         }
 
         /**
@@ -86,7 +88,7 @@
          * @return bool
          */
         public function isValue($sValue):bool {
-            return in_array($sValue, $this->aValues);
+            return in_array($sValue, $this->aValues, true);
         }
 
         /**

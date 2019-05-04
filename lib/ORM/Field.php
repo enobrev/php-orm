@@ -30,10 +30,10 @@
         private $bPrimary;
 
         /** @var string|null */
-        private $sReferenceTable = null;
+        private $sReferenceTable;
 
         /** @var string|null */
-        private $sReferenceField = null;
+        private $sReferenceField;
 
         /**
          *
@@ -42,16 +42,18 @@
          */
         public function __construct(string $sTable, string $sColumn = null) {
             if ($sColumn === null) {
-                $sColumn = $sTable;
-                $sTable  = null;
+                $this->sTable   = null;
+                $this->sColumn  = $sTable;
+            } else {
+                $this->sTable   = $sTable;
+                $this->sColumn  = $sColumn;
+
             }
 
-            $this->sTable           = $sTable;
-            $this->sColumn          = $sColumn;
-            $this->bPrimary         = false;
-            $this->sDefault         = null;
-            $this->sValue           = null;
-            $this->sAlias           = null;
+            $this->bPrimary    = false;
+            $this->sDefault    = null;
+            $this->sValue      = null;
+            $this->sAlias      = null;
         }
 
         /**
@@ -80,9 +82,11 @@
          */
         public function toSQLColumn(bool $bWithTable=true): string {
             if ($bWithTable) {
-                if ($this->sAlias && strlen($this->sAlias)) {
+                if ($this->sAlias && $this->sAlias !== '') {
                     return implode('.', array($this->sAlias, $this->sColumn));
-                } else if ($this->sTable && strlen($this->sTable)) {
+                }
+
+                if ($this->sTable && $this->sTable !== '') {
                     return implode('.', array($this->sTable, $this->sColumn));
                 }
             }
@@ -96,9 +100,12 @@
          */
         public function toSQLColumnForFields(bool $bWithTable = true): string {
             if ($bWithTable) {
-                if ($this->sAlias && strlen($this->sAlias)) {
-                    return implode(' ', array(implode('.', [$this->sAlias, $this->sColumn]), "AS", implode('_', [$this->sAlias, $this->sColumn])));
-                } else if ($this->sTable && strlen($this->sTable)) {
+                if ($this->sAlias && $this->sAlias !== '') {
+                    return implode(' ', array(implode('.', [$this->sAlias, $this->sColumn]),
+                                             'AS', implode('_', [$this->sAlias, $this->sColumn])));
+                }
+
+                if ($this->sTable && $this->sTable !== '') {
                     return implode('.', [$this->sTable, $this->sColumn]);
                 }
             }
@@ -154,7 +161,7 @@
                 $sValue = $sValue->{$this->sColumn};
             }
 
-            if ($sValue instanceof Field) {
+            if ($sValue instanceof self) {
                 $sValue = $sValue->getValue();
             }
 
@@ -185,7 +192,7 @@
          * @return bool
          */
         public function isDefault(): bool {
-            return $this->getValue() == $this->sDefault;
+            return $this->getValue() === $this->sDefault;
         }
 
         /**
@@ -247,11 +254,13 @@
 
             if ($mValue === null) {
                 return $this->isNull(); // Both Null
-            } else if ($this->isNull()) {
+            }
+
+            if ($this->isNull()) {
                 return false;           // My Value is null but comparator is not
             }
 
-            return (string) $this == (string) $mValue;
+            return (string) $this === (string) $mValue;
         }
 
         /**
@@ -302,7 +311,7 @@
          * @param array $aData
          */
         public function setValueFromArray($aData): void {
-            if (isset($aData[$this->sColumn]) || array_key_exists($this->sColumn, $aData)) {
+            if (array_key_exists($this->sColumn, $aData)) {
                 $this->setValue($aData[$this->sColumn]);
             }
         }
@@ -332,7 +341,7 @@
          * @return bool
          */
         public function referencesTable(Table $oTable): bool {
-            return $this->sReferenceTable == $oTable->getTitle();
+            return $this->sReferenceTable === $oTable->getTitle();
         }
 
         /**

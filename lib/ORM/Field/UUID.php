@@ -22,6 +22,7 @@
 
         /**
          * @throws DbException
+         * @throws Exception
          */
         public function generateValue(): void {
             $this->setValue(Db::getInstance()->getUUID());
@@ -42,14 +43,17 @@
 
             if ($mValue === null) {
                 return $this->isNull(); // Both Null
-            } else if ($this->isNull()) {
+            }
+
+            if ($this->isNull()) {
                 return false;           // My Value is null but comparator is not
             }
 
             try {
                 $mValue = strtolower(str_replace('-', '', (string)$mValue));
 
-                return (string)$this == (string)$mValue;
+                /** @noinspection TypeUnsafeComparisonInspection */
+                return (string) $this == (string) $mValue;
             } catch (Exception $e) {
                 return false;
             }

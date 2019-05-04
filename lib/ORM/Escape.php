@@ -10,7 +10,7 @@
          * @return string
          * @throws DbException
          */
-        public static function string(string $sString, int $sPDOType = PDO::PARAM_STR) {
+        public static function string(string $sString, int $sPDOType = PDO::PARAM_STR): string {
             if (defined('PHPUNIT_ENOBREV_ORM_TESTSUITE') === true) {
                 $sReturn = strtr($sString, [
                     "\x00"  => '\x00',
@@ -22,8 +22,8 @@
                     "\x1a"  => '\x1a'
                 ]);
 
-                if ($sPDOType != PDO::PARAM_INT
-                &&  $sPDOType != PDO::PARAM_BOOL) {
+                if ($sPDOType !== PDO::PARAM_INT
+                &&  $sPDOType !== PDO::PARAM_BOOL) {
                     $sReturn = '"' . $sReturn .'"';
                 }
 

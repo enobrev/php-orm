@@ -13,10 +13,8 @@
         public function setValue($sValue) {
             parent::setValue($sValue);
 
-            if (!$this->isNull()) {
-                if(preg_match('/[^\x20-\x7f]/', $this->sValue)) {
-                    $this->sValue = bin2hex($this->sValue);
-                }
+            if (!$this->isNull() && preg_match('/[^\x20-\x7f]/', $this->sValue)) {
+                $this->sValue = bin2hex($this->sValue);
             }
 
             return $this;
@@ -30,9 +28,9 @@
         public function toSQL(): string {
             if ($this->isNull()) {
                 return 'NULL';
-            } else {
-                return 'UNHEX(' . parent::toSQL() . ')';
             }
+
+            return 'UNHEX(' . parent::toSQL() . ')';
         }
 
         /**
@@ -42,12 +40,12 @@
         public function toSQLColumnsForInsert($bWithTable = true):string {
             if ($bWithTable) {
                 $aTableColumn = array($this->sTable, $this->sColumn);
-                $sTableColumn = "LOWER(HEX(" . implode('.', $aTableColumn) . "))";
+                $sTableColumn = 'LOWER(HEX(' . implode('.', $aTableColumn) . '))';
 
-                return implode(' ', array($sTableColumn, "AS", $this->sColumn));
+                return implode(' ', array($sTableColumn, 'AS', $this->sColumn));
             }
 
-            return  "LOWER(HEX(" . $this->sColumn . "))";
+            return 'LOWER(HEX(' . $this->sColumn . '))';
         }
 
         /**
@@ -58,19 +56,21 @@
             if ($bWithTable) {
                 $aTableColumn = array($this->sTable, $this->sColumn);
                 $sTableColumn = implode('.', $aTableColumn);
-                $sTableColumn = "LOWER(HEX(" . $sTableColumn . "))";
+                $sTableColumn = 'LOWER(HEX(' . $sTableColumn . '))';
 
-                if ($this->sAlias && strlen($this->sAlias)) {
+                if ($this->sAlias && $this->sAlias !== '') {
                     $aAliasColumn = array($this->sAlias, $this->sColumn);
                     $sAliasColumn = implode('_', $aAliasColumn);
 
-                    return implode(' ', array($sTableColumn, "AS", $sAliasColumn));
-                } else if ($this->sTable && strlen($this->sTable)) {
-                    return implode(' ', array($sTableColumn, "AS", $this->sColumn));
+                    return implode(' ', array($sTableColumn, 'AS', $sAliasColumn));
+                }
+
+                if ($this->sTable && $this->sTable !== '') {
+                    return implode(' ', array($sTableColumn, 'AS', $this->sColumn));
                 }
             }
 
-            return "LOWER(HEX(" . $this->sColumn . "))";
+            return 'LOWER(HEX(' . $this->sColumn . '))';
         }
 
         public function getValue() {

@@ -17,19 +17,14 @@
             $oLimit = new self;
 
             if ($iOffset !== null) {
-                $oLimit->iOffset = abs((int) $iOffset);
+                $oLimit->iOffset = abs($iOffset);
             }
 
             if ($iStart !== null) {
-                $oLimit->iStart  = abs((int) $iStart);
+                $oLimit->iStart  = abs($iStart);
             }
 
             return $oLimit;
-        }
-
-        public function __construct() {
-            $this->iStart  = null;
-            $this->iOffset = null;
         }
 
         public function toSQL(): string {

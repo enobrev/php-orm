@@ -400,13 +400,15 @@
         public function rawQuery($sQuery) {
             return $this->oPDO->query($sQuery);
         }
-
+        
         /**
-         * @param string $sStatement
+         * @param string     $sStatement
+         * @param array|null $aDriverOptions
+         *
          * @return false|PDOStatement
          */
-        public function prepare(string $sStatement) {
-            return $this->oPDO->prepare($sStatement);
+        public function prepare(string $sStatement, ?array $aDriverOptions = []) {
+            return $this->oPDO->prepare($sStatement, $aDriverOptions);
         }
 
         /**

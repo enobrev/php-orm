@@ -29,6 +29,8 @@
     "require": {
         "php": ">=7.2",
         "ext-pdo": "*",
+        "ext-json": "*",
+        "ext-readline": "*",
         "adbario/php-dot-notation": "^2.2",
         "enobrev/php-tools": "dev-master",
         "moneyphp/money": "^3.1",

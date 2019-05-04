@@ -1,5 +1,7 @@
 #!/usr/bin/env php
 <?php
+    use Commando\Command;
+
     $sAutoloadFile = current(
         array_filter([
             __DIR__ . '/../../../autoload.php',
@@ -14,16 +16,17 @@
         die(1);
     }
 
+    /** @noinspection PhpIncludeInspection */
     require $sAutoloadFile;
 
-    $oOptions = new \Commando\Command();
+    $oOptions = new Command();
 
     $oOptions->option('j')
         ->require()
         ->expectsFile()
         ->aka('json')
         ->describedAs('The JSON file output from sql_to_json.php')
-        ->must(function($sFile) {
+        ->must(static function($sFile) {
             return file_exists($sFile);
         });
 
@@ -41,10 +44,16 @@
     $sPath        = rtrim($oOptions['output'], '/') . '/';
     $sNamespace   = $oOptions['namespace'];
 
-    $oLoader    = new Twig_Loader_Filesystem(dirname(__FILE__));
-    $oTwig      = new Twig_Environment($oLoader, array('debug' => true));
-    $oTemplate  = $oTwig->loadTemplate('template_table.twig');
-    $oTemplates = $oTwig->loadTemplate('template_tables.twig');
+    $oLoader    = new Twig\Loader\FilesystemLoader(__DIR__);
+    $oTwig      = new Twig\Environment($oLoader, array('debug' => true));
+
+    try {
+        $oTemplate  = $oTwig->load('template_table.twig');
+        $oTemplates = $oTwig->load('template_tables.twig');
+    } catch (Exception $e) {
+        echo $e->getMessage() . "\n";
+        exit(1);
+    }
 
     $aDatabase  = json_decode(file_get_contents($sPathJsonSQL), true);
     $aTableNames = array_keys($aDatabase['tables']);
@@ -62,14 +71,14 @@
     $sChosen = str_replace(' ', '', $sChosen);
 
     // http://stackoverflow.com/a/7698869/14651
-    $aIndices = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
+    $aIndices = preg_replace_callback('/(\d+)-(\d+)/', static function($m) {
         return implode(',', range($m[1], $m[2]));
     }, $sChosen);
 
     $aIndices = array_unique(explode(',', $aIndices));
 
     $aChosenTables = array();
-    if (in_array(0, $aIndices)) {
+    if (in_array(0, $aIndices, false)) {
         $aChosenTables = $aDatabase['tables'];
     } else if (count($aIndices)) {
         $aChosen = array();
@@ -95,8 +104,8 @@
             $aFiles[$aData['table']['plural'] . '.php'] = $oTemplates->render($aData);
         }
 
-        if (!file_exists($sPath)) {
-            mkdir($sPath, 0777, true);
+        if (!file_exists($sPath) && !mkdir($sPath, 0777, true) && !is_dir($sPath)) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $sPath));
         }
 
         foreach($aFiles as $sFile => $sOutput) {

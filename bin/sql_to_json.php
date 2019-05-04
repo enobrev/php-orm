@@ -1,5 +1,5 @@
 #!/usr/bin/env php
-<?php
+/** @noinspection ALL */<?php
     $sAutoloadFile = current(
         array_filter([
             __DIR__ . '/../../../autoload.php',
@@ -14,6 +14,7 @@
         die(1);
     }
 
+    /** @noinspection PhpIncludeInspection */
     require $sAutoloadFile;
 
     use Enobrev\ORM\Db;
@@ -64,13 +65,13 @@
         }
 
         if (!$sUser) {
-            while (strlen($sUser) == 0) {
+            while (strlen($sUser) === 0) {
                 $sUser = readline('User: ');
             }
         }
 
         if ($bPass) {
-            while (strlen($sPass) == 0) {
+            while (strlen($sPass) === 0) {
                 $sPass = readline('Password: ');
             }
         }
@@ -86,14 +87,14 @@
         }
 
         if ($bConnected && !$sName) {
-            $oDatabases = $Db->query("SELECT schema_name FROM information_schema.schemata;");
+            $oDatabases = $Db->query('SELECT schema_name FROM information_schema.schemata;');
             $aDatabases = $oDatabases->fetchAll(PDO::FETCH_COLUMN, 0);
 
             foreach ($aDatabases as $iIndex => $sDatabase) {
                 echo str_pad($iIndex + 1, 3, ' ', STR_PAD_LEFT) . ': ' . $sDatabase . "\n";
             }
 
-            while (strlen($sName) == 0) {
+            while (strlen($sName) === 0) {
                 $iSelected = (int) readline('Database: ');
                 if (isset($aDatabases[$iSelected - 1])) {
                     $sName = $aDatabases[$iSelected - 1];
@@ -152,15 +153,15 @@
     }
 
     function getClassName($sTable) {
-        return depluralize(str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable)))));
+        return depluralize(str_replace(' ', '', ucwords(str_replace('_', ' ', $sTable))));
     }
 
     function getFieldTitle($sField) {
-        return str_replace(' ', '', (ucwords(str_replace('_', ' ', $sField))));
+        return str_replace(' ', '', ucwords(str_replace('_', ' ', $sField)));
     }
 
     function getClassNamePlural($sTable) {
-        return pluralize(depluralize(str_replace(' ', '', (ucwords(str_replace('_', ' ', $sTable))))));
+        return pluralize(depluralize(str_replace(' ', '', ucwords(str_replace('_', ' ', $sTable)))));
     }
 
     $aM2MTables   = [];
@@ -185,7 +186,7 @@
 
         if ($sM2M) {
             // http://stackoverflow.com/a/7698869/14651
-            $aM2MIndices = preg_replace_callback('/(\d+)-(\d+)/', function ($m) {
+            $aM2MIndices = preg_replace_callback('/(\d+)-(\d+)/', static function ($m) {
                 return implode(',', range($m[1], $m[2]));
             }, $sM2M);
 
@@ -213,7 +214,7 @@
         $sClassNamePlural = 'Table\\' . getClassNamePlural($sTable);
         $sNamePlural      = getClassNamePlural($sTable);
 
-        if ($sClassNamePlural == $sClassName) {
+        if ($sClassNamePlural === $sClassName) {
             // TODO: In my experience this only happens with 'beta'.  Probably happens with any "uncountable" from the pluralizer
             $sClassNamePlural .= 's';
             $sNamePlural      .= 's';
@@ -265,15 +266,15 @@
             $sShort = str_replace($aData['table']['singular'] . '_', '', $sField);
             $oTemplateField = array(
                 'short'             => $sShort,
-                'short_title'       => str_replace(' ', '', (ucwords(str_replace('_', ' ', $sShort)))),
+                'short_title'       => str_replace(' ', '', ucwords(str_replace('_', ' ', $sShort))),
                 'name'              => $sField,
                 'title'             => getFieldTitle($sField),
                 'plural'            => pluralize(getFieldTitle($sField)),
                 'primary'           => false,
                 'unique'            => false,
                 'boolean'           => false,
-                'auto_increment'    => strtolower($oField->extra) == 'auto_increment' ? true : false,
-                'nullable'          => strtolower($oField->is_nullable) == 'yes' ? true : false,
+                'auto_increment'    => strtolower($oField->extra) === 'auto_increment',
+                'nullable'          => strtolower($oField->is_nullable) === 'yes',
                 'var'               => getFieldTitle($sField),
                 'var_array'         => 'a' . pluralize(getFieldTitle($sField)),
                 'default'           => strlen($oField->column_default) ? $oField->column_default : null,
@@ -297,7 +298,7 @@
             $iFieldNameShortLength = max($iFieldNameShortLength,    strlen($oTemplateField['short']));
 
             switch(true) {
-                case $oField->column_type == 'tinyint(1) unsigned':
+                case $oField->column_type === 'tinyint(1) unsigned':
                     $aData['count']['boolean']++;
                     $oTemplateField['boolean']  = true;
                     $oTemplateField['type']     = 'Field\\Boolean';
@@ -307,7 +308,7 @@
                     break;
 
                 case strpos($oField->data_type, 'int') !== false:
-                    if ($oField->column_key == 'PRI' && $oField->extra == 'auto_increment') {
+                    if ($oField->column_key === 'PRI' && $oField->extra === 'auto_increment') {
                         $oTemplateField['type'] = 'Field\\Id';
                         $oTemplateField['qltype'] = 'id';
                     } else {
@@ -319,20 +320,20 @@
                     $oTemplateField['var']  = 'i' . $oTemplateField['var'];
                     break;
 
-                case $oField->data_type == 'float':
-                case $oField->data_type == 'decimal':
+                case $oField->data_type === 'float':
+                case $oField->data_type === 'decimal':
                     $oTemplateField['type']     = 'Field\\Decimal';
                     $oTemplateField['qltype']   = 'float';
                     $oTemplateField['php_type'] = 'float';
                     $oTemplateField['var']      = 'f' . $oTemplateField['var'];
                     break;
 
-                case $oField->data_type == 'varchar':
-                case $oField->data_type == 'text':
-                case $oField->data_type == 'mediumtext':
-                case $oField->data_type == 'longtext':
-                case $oField->data_type == 'char':
-                    if (strtolower($oField->column_type) == 'char(32)') {
+                case $oField->data_type === 'varchar':
+                case $oField->data_type === 'text':
+                case $oField->data_type === 'mediumtext':
+                case $oField->data_type === 'longtext':
+                case $oField->data_type === 'char':
+                    if (strtolower($oField->column_type) === 'char(32)') {
                         if ($oTemplateField['nullable']) {
                             $oTemplateField['type'] = 'Field\\UUIDNullable';
                         } else {
@@ -352,7 +353,7 @@
                     }
                     break;
 
-                case $oField->data_type == 'json':
+                case $oField->data_type === 'json':
                     $oTemplateField['type']     = 'Field\\JSONText';
                     $oTemplateField['qltype']   = 'string';
                     $oTemplateField['php_type'] = 'string';
@@ -362,15 +363,15 @@
                     }
                     break;
 
-                case $oField->data_type == 'binary':
-                    if ($oField->column_type == 'binary(20)') {
-                        if ($oField->column_key == 'PRI') {
+                case $oField->data_type === 'binary':
+                    if ($oField->column_type === 'binary(20)') {
+                        if ($oField->column_key === 'PRI') {
                             $oTemplateField['type']     = 'Field\\Hash';
                         } else {
                             $oTemplateField['type'] = 'Field\\HashNullable';
                         }
-                    } else if ($oField->column_type == 'binary(16)') {
-                        if ($oField->column_key == 'PRI') {
+                    } else if ($oField->column_type === 'binary(16)') {
+                        if ($oField->column_key === 'PRI') {
                             $oTemplateField['type'] = 'Field\\UUID';
                         } else {
                             $oTemplateField['type'] = 'Field\\UUIDNullable';
@@ -382,7 +383,7 @@
                     $oTemplateField['var']      = 's' . $oTemplateField['var'];
                     break;
 
-                case $oField->data_type == 'datetime':
+                case $oField->data_type === 'datetime':
                     $oTemplateField['type']     = 'Field\\DateTime';
                     $oTemplateField['qltype']   = 'string';
                     $oTemplateField['php_type'] = 'string';
@@ -407,7 +408,7 @@
                     }
                     break;
 
-                case $oField->data_type == 'date':
+                case $oField->data_type === 'date':
                     $oTemplateField['type']     = 'Field\\Date';
                     $oTemplateField['qltype']   = 'string';
                     $oTemplateField['php_type'] = 'string';
@@ -418,7 +419,7 @@
                     }
                     break;
 
-                case $oField->data_type == 'time':
+                case $oField->data_type === 'time':
                     $oTemplateField['type']     = 'Field\\Time';
                     $oTemplateField['qltype']   = 'string';
                     $oTemplateField['php_type'] = 'string';
@@ -429,7 +430,7 @@
                     }
                     break;
 
-                case $oField->data_type == 'enum':
+                case $oField->data_type === 'enum':
                     $oTemplateField['type']     = 'Field\\Enum';
                     $oTemplateField['qltype']   = 'enum';
                     $oTemplateField['php_type'] = 'string';
@@ -461,7 +462,7 @@
                         }
 
                         foreach($oTemplateField['values'] as $sKey => $aValue) {
-                            $oTemplateField['values'][$sKey]['const_padded'] = str_pad($aValue['const'], $iLongest, ' ', STR_PAD_RIGHT);
+                            $oTemplateField['values'][$sKey]['const_padded'] = str_pad($aValue['const'], $iLongest, ' ');
                         }
                     }
 
@@ -476,16 +477,16 @@
                     break;
             }
 
-            if ($oField->column_key == 'PRI') {
+            if ($oField->column_key === 'PRI') {
                 $oTemplateField['primary'] = true;
 
-                if ($sField == 'user_id') {
+                if ($sField === 'user_id') {
                     $aData['has_owner']    = true;
                     $aData['interfaces'][] = 'OwnerColumn';
                 }
             }
 
-            if ($oField->column_key == 'UNI') {
+            if ($oField->column_key === 'UNI') {
                 $oTemplateField['unique'] = true;
             }
 
@@ -498,14 +499,14 @@
             $aData['fields'][] = $oTemplateField;
 
             $sType = str_replace('Field\\', '', $oTemplateField['type']);
-            if (!in_array($sType, $aData['types'])) {
+            if (!in_array($sType, $aData['types'], true)) {
                 $aData['types'][] = $sType;
             }
         }
 
         foreach($aData['fields'] as &$aField) {
-            $aField['short_pad'] = str_replace($aField['short'], '', str_pad($aField['short'], $iFieldNameShortLength, ' ', STR_PAD_RIGHT));
-            $aField['name_pad']  = str_replace($aField['name'],  '', str_pad($aField['name'],  $iFieldNameLength,      ' ', STR_PAD_RIGHT));
+            $aField['short_pad'] = str_replace($aField['short'], '', str_pad($aField['short'], $iFieldNameShortLength, ' '));
+            $aField['name_pad']  = str_replace($aField['name'],  '', str_pad($aField['name'],  $iFieldNameLength,      ' '));
 
             if ($aField['primary']) {
                 $aData['primary'][] = $aField;
@@ -515,6 +516,7 @@
                 $aData['count']['unique']++;
             }
         }
+        unset($aField);
 
         $aData['interfaces'] = array_values(array_unique($aData['interfaces']));
 
@@ -523,60 +525,54 @@
 
     foreach ($aAllData['tables'] as $sTable => $aData) {
 
-        if (isset($aReferences[$sTable])) {
-            if (count($aReferences[$sTable])) {
-                foreach($aReferences[$sTable] as $sColumn => $aReference) {
-                    $iIndex            = array_search($sColumn, array_column($aAllData['tables'][$sTable]['fields'], 'name'));
-                    $sReferencedTable  = $aReference['table'];
-                    $sReferencedField  = $aReference['field'];
-                    $aReferencedFields = $aAllData['tables'][$sReferencedTable]['fields'];
+        if (isset($aReferences[$sTable]) && count($aReferences[$sTable])) {
+            foreach($aReferences[$sTable] as $sColumn => $aReference) {
+                $iIndex            = array_search($sColumn, array_column($aAllData['tables'][$sTable]['fields'], 'name'), true);
+                $sReferencedTable  = $aReference['table'];
+                $sReferencedField  = $aReference['field'];
+                $aReferencedFields = $aAllData['tables'][$sReferencedTable]['fields'];
 
-                    $aReferencedTable = $aAllData['tables'][$sReferencedTable]['table'];
-                    $aReferencedField = $aReferencedFields[array_search($sReferencedField, array_column($aReferencedFields, 'name'))];
+                $aReferencedTable = $aAllData['tables'][$sReferencedTable]['table'];
+                $aReferencedField = $aReferencedFields[array_search($sReferencedField, array_column($aReferencedFields, 'name'), true)];
 
-                    unset($aReferencedField['reference']);
-                    unset($aReferencedField['inbound_reference']);
+                unset($aReferencedField['reference'], $aReferencedField['inbound_reference']);
 
-                    $aAllData['tables'][$sTable]['fields'][$iIndex]['reference'] = [
-                        'title'         => getClassName(str_replace($sReferencedField, '', $sColumn)) . $aReferencedTable['title'],
-                        'title_plural'  => getClassNamePlural(str_replace($sReferencedField, '', $sColumn) . $aReferencedTable['title']),
-                        'table'         => $aReferencedTable,
-                        'field'         => $aReferencedField
-                    ];
+                $aAllData['tables'][$sTable]['fields'][$iIndex]['reference'] = [
+                    'title'         => getClassName(str_replace($sReferencedField, '', $sColumn)) . $aReferencedTable['title'],
+                    'title_plural'  => getClassNamePlural(str_replace($sReferencedField, '', $sColumn) . $aReferencedTable['title']),
+                    'table'         => $aReferencedTable,
+                    'field'         => $aReferencedField
+                ];
 
-                    $aAllData['tables'][$sTable]['count']['outbound']++;
+                $aAllData['tables'][$sTable]['count']['outbound']++;
 
-                    if ($sColumn == 'user_id') {
-                        $aAllData['tables'][$sTable]['has_owner']    = true;
-                        $aAllData['tables'][$sTable]['interfaces'][] = 'OwnerColumn';
-                    }
+                if ($sColumn === 'user_id') {
+                    $aAllData['tables'][$sTable]['has_owner']    = true;
+                    $aAllData['tables'][$sTable]['interfaces'][] = 'OwnerColumn';
                 }
             }
         }
 
-        if (isset($aReverseReferences[$sTable])) {
-            if (count($aReverseReferences[$sTable])) {
-                foreach ($aReverseReferences[$sTable] as $sColumn => $aReverseReferencesForColumn) {
-                    $iIndex = array_search($sColumn, array_column($aAllData['tables'][$sTable]['fields'], 'name'));
-                    foreach($aReverseReferencesForColumn as $aReverseReference) {
-                        $sReferencedTable  = $aReverseReference['table'];
-                        $sReferencedField  = $aReverseReference['field'];
-                        $aReferencedFields = $aAllData['tables'][$sReferencedTable]['fields'];
+        if (isset($aReverseReferences[$sTable]) && count($aReverseReferences[$sTable])) {
+            foreach ($aReverseReferences[$sTable] as $sColumn => $aReverseReferencesForColumn) {
+                $iIndex = array_search($sColumn, array_column($aAllData['tables'][$sTable]['fields'], 'name'), true);
+                foreach($aReverseReferencesForColumn as $aReverseReference) {
+                    $sReferencedTable  = $aReverseReference['table'];
+                    $sReferencedField  = $aReverseReference['field'];
+                    $aReferencedFields = $aAllData['tables'][$sReferencedTable]['fields'];
 
-                        $aReferencedTable  = $aAllData['tables'][$sReferencedTable]['table'];
-                        $aReferencedField  = $aReferencedFields[array_search($sReferencedField, array_column($aReferencedFields, 'name'))];
+                    $aReferencedTable  = $aAllData['tables'][$sReferencedTable]['table'];
+                    $aReferencedField  = $aReferencedFields[array_search($sReferencedField, array_column($aReferencedFields, 'name'), true)];
 
-                        unset($aReferencedField['reference']);
-                        unset($aReferencedField['inbound_reference']);
+                    unset($aReferencedField['reference'], $aReferencedField['inbound_reference']);
 
-                        $aAllData['tables'][$sTable]['fields'][$iIndex]['inbound_reference'][] = [
-                            'table' => $aReferencedTable,
-                            'field' => $aReferencedField
-                        ];
-                    }
-
-                    $aAllData['tables'][$sTable]['count']['inbound']++;
+                    $aAllData['tables'][$sTable]['fields'][$iIndex]['inbound_reference'][] = [
+                        'table' => $aReferencedTable,
+                        'field' => $aReferencedField
+                    ];
                 }
+
+                $aAllData['tables'][$sTable]['count']['inbound']++;
             }
         }
 
@@ -589,12 +585,14 @@
     foreach($aAllData['tables'] as $sTable => &$aTable) {
         foreach($aTable['fields'] as $iFieldIndex => &$aField) {
             if (isset($aField['inbound_reference'])) {
-                usort($aField['inbound_reference'], function($a, $b) {
+                usort($aField['inbound_reference'], static function($a, $b) {
                     return $a['table']['name'] <=> $b['table']['name'] ?: $a['field']['name'] <=> $b['field']['name'];
                 });
             }
         }
+        unset($aField);
     }
+    unset($aTable);
 
     $sJsonFile = getcwd() . '/sql.json';
     file_put_contents($sJsonFile, json_encode($aAllData, JSON_PRETTY_PRINT));

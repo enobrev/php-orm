@@ -10,12 +10,12 @@
     use Enobrev\ORM\Table;
     use PHPUnit\Framework\TestCase;
  
-    class MySQLConditionsTest extends TestCase {
-        public function setUp() {
+    class ORMConditionsTest extends TestCase {
+        public function setUp():void {
             Db::getInstance(Db::defaultSQLiteMemory());
         }
         
-        public function testOne() {
+        public function testOne(): void {
             $oUsers = new Table('users');
             $oUsers->addFields(
                 new Field\Integer('user_id')
@@ -26,15 +26,15 @@
             $this->assertEquals('users.user_id = 1', $oConditions->toSQL());
         }
 
-        public function testAnd() {
+        public function testAnd(): void {
             $oUsers = new Table('users');
             $oUsers->addFields(
                 new Field\Integer('user_id'),
                 new Field\Text('user_name_first')
             );
             $oUsers->user_id->setValue(1);
-            $oUsers->user_name_first->setValue( 'Mark');;
-            
+            $oUsers->user_name_first->setValue( 'Mark');
+
             $oConditions = Conditions::also(
                 Condition::eq($oUsers->user_id),
                 Condition::eq($oUsers->user_name_first)
@@ -42,14 +42,14 @@
             $this->assertEquals('users.user_id = 1 AND users.user_name_first = "Mark"', $oConditions->toSQL());
         }
 
-        public function testOr() {
+        public function testOr(): void {
             $oUsers = new Table('users');
             $oUsers->addFields(
                 new Field\Integer('user_id'),
                 new Field\Text('user_name_first')
             );
-            $oUsers->user_id->setValue( 1);;
-            $oUsers->user_name_first->setValue( 'Mark');;
+            $oUsers->user_id->setValue( 1);
+            $oUsers->user_name_first->setValue( 'Mark');
 
             $oConditions = Conditions::either(
                 Condition::eq($oUsers->user_id),
@@ -58,7 +58,7 @@
             $this->assertEquals('users.user_id = 1 OR users.user_name_first = "Mark"', $oConditions->toSQL());
         }
 
-        public function testAndGroup() {
+        public function testAndGroup(): void {
             $oUserOne = new Table('users');
             $oUserOne->addFields(
                 new Field\Integer('user_id'),

@@ -7,7 +7,7 @@
     use Enobrev\ORM\Mock\Table\User;
 
     class SelectGtTest extends \PHPUnit\Framework\TestCase {
-        public function setUp() {
+        public function setUp():void {
             Db::getInstance(Db::defaultSQLiteMemory());
         }
 

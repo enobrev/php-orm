@@ -11,40 +11,40 @@
     use Enobrev\ORM\Table;
     use PHPUnit\Framework\TestCase;
  
-    class MySQLConditionTest extends TestCase {
-        public function setUp() {
+    class ORMConditionTest extends TestCase {
+        public function setUp():void {
             Db::getInstance(Db::defaultSQLiteMemory());
         }
         
-        public function testEqual() {
+        public function testEqual(): void {
             $oUsers = new Table('users');
             $oUsers->addFields(
                 new Field\Integer('user_id')
             );
             $oUsers->user_id->setValue(1);
             $oCondition = Condition::eq($oUsers->user_id);
-            $this->assertEquals("users.user_id = 1", $oCondition->toSQL());
+            $this->assertEquals('users.user_id = 1', $oCondition->toSQL());
         }
 
-        public function testInIntHelper() {
+        public function testInIntHelper(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
             );
             $oCondition = Condition::in($oUsers->user_id, array(1, 2, 3));
-            $this->assertEquals("users.user_id IN ( 1, 2, 3 )", $oCondition->toSQL());
+            $this->assertEquals('users.user_id IN ( 1, 2, 3 )', $oCondition->toSQL());
         }
 
-        public function testNotInIntHelper() {
+        public function testNotInIntHelper(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
             );
             $oCondition = Condition::nin($oUsers->user_id, array(1, 2, 3));
-            $this->assertEquals("users.user_id NOT IN ( 1, 2, 3 )", $oCondition->toSQL());
+            $this->assertEquals('users.user_id NOT IN ( 1, 2, 3 )', $oCondition->toSQL());
         }
 
-        public function testInStringHelper() {
+        public function testInStringHelper(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Text('user_name_first')
@@ -53,7 +53,7 @@
             $this->assertEquals('users.user_name_first IN ( "Bill", "Bob", "Biff" )', $oCondition->toSQL());
         }
 
-        public function testInEnumHelper() {
+        public function testInEnumHelper(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Enum('user_gender', ['Male', 'Female'])
@@ -62,37 +62,37 @@
             $this->assertEquals('users.user_gender IN ( "Male", "Female" )', $oCondition->toSQL());
         }
 
-        public function testEqualHelper() {
+        public function testEqualHelper(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
             );
             $oUsers->user_id->setValue(10);
             $oCondition = Condition::eq($oUsers->user_id);
-            $this->assertEquals("users.user_id = 10", $oCondition->toSQL());
+            $this->assertEquals('users.user_id = 10', $oCondition->toSQL());
         }
 
-        public function testNotEqual() {
+        public function testNotEqual(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
             );
             $oUsers->user_id->setValue(10);
             $oCondition = Condition::neq($oUsers->user_id);
-            $this->assertEquals("users.user_id <> 10", $oCondition->toSQL());
+            $this->assertEquals('users.user_id <> 10', $oCondition->toSQL());
         }
 
-        public function testNotEqualHelper() {
+        public function testNotEqualHelper(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
             );
             $oUsers->user_id->setValue(10);
             $oCondition = Condition::neq($oUsers->user_id);
-            $this->assertEquals("users.user_id <> 10", $oCondition->toSQL());
+            $this->assertEquals('users.user_id <> 10', $oCondition->toSQL());
         }
 
-        public function testLike() {
+        public function testLike(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Text('user_name_first')
@@ -102,7 +102,7 @@
             $this->assertEquals('users.user_name_first LIKE "M%"', $oCondition->toSQL());
         }
 
-        public function testLikeValue() {
+        public function testLikeValue(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Text('user_name_first')
@@ -111,26 +111,26 @@
             $this->assertEquals('users.user_name_first LIKE "M%"', $oCondition->toSQL());
         }
 
-        public function testBetweenOneValue() {
+        public function testBetweenOneValue(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
             );
             $oUsers->user_id->setValue(1);
             $oCondition = Condition::between($oUsers->user_id, 10);
-            $this->assertEquals("users.user_id BETWEEN 1 AND 10", $oCondition->toSQL());
+            $this->assertEquals('users.user_id BETWEEN 1 AND 10', $oCondition->toSQL());
         }
 
-        public function testBetweenTwoValues() {
+        public function testBetweenTwoValues(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
             );
             $oCondition = Condition::between($oUsers->user_id, 10, 20);
-            $this->assertEquals("users.user_id BETWEEN 10 AND 20", $oCondition->toSQL());
+            $this->assertEquals('users.user_id BETWEEN 10 AND 20', $oCondition->toSQL());
         }
 
-        public function testBetweenOneField() {
+        public function testBetweenOneField(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
@@ -139,10 +139,10 @@
             $oOtherId = clone $oUsers->user_id;
             $oOtherId->setValue(10);
             $oCondition = Condition::between($oUsers->user_id, $oOtherId);
-            $this->assertEquals("users.user_id BETWEEN 1 AND 10", $oCondition->toSQL());
+            $this->assertEquals('users.user_id BETWEEN 1 AND 10', $oCondition->toSQL());
         }
 
-        public function testBetweenOneFieldOneValue() {
+        public function testBetweenOneFieldOneValue(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
@@ -153,10 +153,10 @@
             $oOtherId->setValue(10);
 
             $oCondition = Condition::between($oUsers->user_id, $oOtherId, 20);
-            $this->assertEquals("users.user_id BETWEEN 10 AND 20", $oCondition->toSQL());
+            $this->assertEquals('users.user_id BETWEEN 10 AND 20', $oCondition->toSQL());
         }
 
-        public function testBetweenTwoFields() {
+        public function testBetweenTwoFields(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
@@ -169,10 +169,10 @@
             $oSecondId->setValue(20);
             
             $oCondition = Condition::between($oUsers->user_id, $oFirstId, $oSecondId);
-            $this->assertEquals("users.user_id BETWEEN 10 AND 20", $oCondition->toSQL());
+            $this->assertEquals('users.user_id BETWEEN 10 AND 20', $oCondition->toSQL());
         }
 
-        public function testGreaterThanNow() {
+        public function testGreaterThanNow(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\DateTime('user_date_added')
@@ -183,7 +183,7 @@
             $this->assertEquals('users.user_date_added > NOW()', $oCondition->toSQL());
         }
 
-        public function testLessThanNow() {
+        public function testLessThanNow(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\DateTime('user_date_added')
@@ -194,7 +194,7 @@
             $this->assertEquals('users.user_date_added < NOW()', $oCondition->toSQL());
         }
 
-        public function testBetweenDateAndNow() {
+        public function testBetweenDateAndNow(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\DateTime('user_date_added')
@@ -205,7 +205,7 @@
             $this->assertEquals('users.user_date_added BETWEEN "2011-11-05 12:02:00" AND NOW()', $oCondition->toSQL());
         }
 
-        public function testBetweenDateValue() {
+        public function testBetweenDateValue(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\DateTime('user_date_added')
@@ -216,7 +216,7 @@
             $this->assertEquals('users.user_date_added BETWEEN "2011-11-05 12:01:00" AND "2011-11-05 12:02:00"', $oCondition->toSQL());
         }
 
-        public function testFieldOrder() {
+        public function testFieldOrder(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
@@ -229,46 +229,46 @@
             $oSecondId->setValue(20);
 
             $oCondition = Condition::between($oUsers->user_id, $oSecondId, $oFirstId);
-            $this->assertEquals("users.user_id BETWEEN 20 AND 10", $oCondition->toSQL());
+            $this->assertEquals('users.user_id BETWEEN 20 AND 10', $oCondition->toSQL());
         }
 
-        public function testLessThan() {
+        public function testLessThan(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
             );
             $oUsers->user_id->setValue(10);
             $oCondition = Condition::lt($oUsers->user_id);
-            $this->assertEquals("users.user_id < 10", $oCondition->toSQL());
+            $this->assertEquals('users.user_id < 10', $oCondition->toSQL());
         }
 
-        public function testLessThanOrEqual() {
+        public function testLessThanOrEqual(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
             );
             $oUsers->user_id->setValue(10);
             $oCondition = Condition::lte($oUsers->user_id);
-            $this->assertEquals("users.user_id <= 10", $oCondition->toSQL());
+            $this->assertEquals('users.user_id <= 10', $oCondition->toSQL());
         }
 
-        public function testGreaterThan() {
+        public function testGreaterThan(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
             );
             $oUsers->user_id->setValue(10);
             $oCondition = Condition::gt($oUsers->user_id);
-            $this->assertEquals("users.user_id > 10", $oCondition->toSQL());
+            $this->assertEquals('users.user_id > 10', $oCondition->toSQL());
         }
 
-        public function testGreaterThanOrEqual() {
+        public function testGreaterThanOrEqual(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')
             );
             $oUsers->user_id->setValue(10);
             $oCondition = Condition::gte($oUsers->user_id);
-            $this->assertEquals("users.user_id >= 10", $oCondition->toSQL());
+            $this->assertEquals('users.user_id >= 10', $oCondition->toSQL());
         }
     }

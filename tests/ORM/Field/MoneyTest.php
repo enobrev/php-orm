@@ -8,43 +8,44 @@
 
     use Money\Money;
     use Money\Currency;
+    use stdClass;
 
     class MoneyTest extends TestCase {
 
-        public function test__toString() {
+        public function test__toString(): void {
             $oMoney = new Field\Money('amount');
             $oMoney->setValue(500);
             $this->assertEquals('500', (string) $oMoney);
         }
 
-        public function testSetValue() {
+        public function testSetValue(): void {
             $oMoney = new Field\Money('amount');
             $oMoney->setValue(500);
-            $this->assertInstanceOf('Money\\Money', $oMoney->sValue);
+            $this->assertInstanceOf(Money::class, $oMoney->sValue);
             $this->assertEquals('500', $oMoney->sValue->getAmount());
             $this->assertEquals('USD', $oMoney->sValue->getCurrency());
         }
 
-        public function testSetValueObject() {
+        public function testSetValueObject(): void {
             $oMoney = new Field\Money('amount');
-            $oObject = new \stdClass();
+            $oObject = new stdClass();
             $oObject->amount = 500;
             $oObject->currency = 'USD';
             $oMoney->setValue($oObject);
-            $this->assertInstanceOf('Money\\Money', $oMoney->sValue);
+            $this->assertInstanceOf(Money::class, $oMoney->sValue);
             $this->assertEquals('500', $oMoney->sValue->getAmount());
             $this->assertEquals('USD', $oMoney->sValue->getCurrency());
         }
 
-        public function testSetValueArray() {
+        public function testSetValueArray(): void {
             $oMoney = new Field\Money('amount');
             $oMoney->setValue(['amount' => 500, 'currency' => 'USD']);
-            $this->assertInstanceOf('Money\\Money', $oMoney->sValue);
+            $this->assertInstanceOf(Money::class, $oMoney->sValue);
             $this->assertEquals('500', $oMoney->sValue->getAmount());
             $this->assertEquals('USD', $oMoney->sValue->getCurrency());
         }
 
-        public function testIs() {
+        public function testIs(): void {
             $oMoney = new Field\Money('amount');
             $oMoney->setValue(500);
             $this->assertTrue($oMoney->is(500));
@@ -52,21 +53,21 @@
             $this->assertTrue($oMoney->is(['amount' => 500, 'currency' => 'USD']));
         }
 
-        public function testToSQL() {
+        public function testToSQL(): void {
             $oMoney = new Field\Money('amount');
             $oMoney->setValue(500);
             $this->assertEquals('500', $oMoney->toSQL());
         }
 
-        public function testGetValue() {
+        public function testGetValue(): void {
             $oMoney = new Field\Money('amount');
             $oMoney->setValue(500);
-            $this->assertInstanceOf('Money\\Money', $oMoney->getValue());
+            $this->assertInstanceOf(Money::class, $oMoney->getValue());
             $this->assertEquals('500', $oMoney->getValue()->getAmount());
             $this->assertEquals('USD', $oMoney->getValue()->getCurrency());
         }
 
-        public function testSetValueFromArray() {
+        public function testSetValueFromArray(): void {
             $oCurrency = new Field\Text('currency');
             $oMoney = new Field\Money('my_money');
             $oMoney->setCurrencyField($oCurrency->sColumn);
@@ -75,21 +76,21 @@
                 'currency'  => 'USD',
                 'my_money'  => 500
             ]);
-            $this->assertInstanceOf('Money\\Money', $oMoney->getValue());
+            $this->assertInstanceOf(Money::class, $oMoney->getValue());
             $this->assertEquals('500', $oMoney->getValue()->getAmount());
             $this->assertEquals('USD', $oMoney->getValue()->getCurrency());
         }
 
-        public function testSetValueFromObject() {
+        public function testSetValueFromObject(): void {
             $oCurrency = new Field\Text('currency');
             $oMoney = new Field\Money('my_money');
             $oMoney->setCurrencyField($oCurrency->sColumn);
-            $oRecord = new \stdClass();
+            $oRecord = new stdClass();
             $oRecord->id = 1;
             $oRecord->my_money = 500;
             $oRecord->currency = 'USD';
             $oMoney->setValueFromData($oRecord);
-            $this->assertInstanceOf('Money\\Money', $oMoney->getValue());
+            $this->assertInstanceOf(Money::class, $oMoney->getValue());
             $this->assertEquals('500', $oMoney->getValue()->getAmount());
             $this->assertEquals('USD', $oMoney->getValue()->getCurrency());
         }

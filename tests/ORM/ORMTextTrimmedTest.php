@@ -10,11 +10,8 @@
     use Enobrev\ORM\Table;
     use PHPUnit\Framework\TestCase;
  
-    class MySQLStringTrimmedTest extends TestCase {
-        public function setUp() {
-        }
-        
-        public function testLefTOuterJoin() {
+    class ORMTextTrimmedTest extends TestCase {
+        public function testLefTOuterJoin(): void {
             $oUsers = new Table('tags');
             $oUsers->addFields(
                 new Field\Id('tag_id'),

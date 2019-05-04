@@ -5,10 +5,9 @@
 
     use Enobrev\ORM\Mock\Table;
     use Enobrev\ORM\Db;
-    use Enobrev\Log;
     use PDO;
 
-    class OwnerTest extends TestCase {
+    class ORMOwnerTest extends TestCase {
 
         /** @var PDO */
         private $oPDO;
@@ -19,7 +18,7 @@
         /** @var  Table\Address[] */
         private $aAddresses;
 
-        public function setUp() {
+        public function setUp():void {
             Log::setPurpose('OwnerTest');
 
             $sDatabase = file_get_contents(__DIR__ . '/../Mock/sqlite.sql');
@@ -27,8 +26,8 @@
             $aDatabase = array_filter($aDatabase);
 
             $this->oPDO = Db::defaultSQLiteMemory();
-            $this->oPDO->exec("DROP TABLE IF EXISTS users");
-            $this->oPDO->exec("DROP TABLE IF EXISTS addresses");
+            $this->oPDO->exec('DROP TABLE IF EXISTS users');
+            $this->oPDO->exec('DROP TABLE IF EXISTS addresses');
             Db::getInstance($this->oPDO);
 
             foreach($aDatabase as $sCreate) {
@@ -50,6 +49,7 @@
             foreach($this->aUsers as &$oUser) {
                 $oUser->insert();
             }
+            unset($oUser);
 
             $this->aAddresses[] = Table\Address::createFromArray([
                 'user_id'               => $this->aUsers[0]->user_id,
@@ -68,12 +68,12 @@
             }
         }
 
-        public function tearDown() {
-            Db::getInstance()->query("DROP TABLE IF EXISTS users");
-            Db::getInstance()->query("DROP TABLE IF EXISTS addresses");
+        public function tearDown():void {
+            Db::getInstance()->query('DROP TABLE IF EXISTS users');
+            Db::getInstance()->query('DROP TABLE IF EXISTS addresses');
         }
 
-        public function testOwner() {
+        public function testOwner(): void {
             $this->assertFalse($this->aAddresses[0]->hasOwner($this->aUsers[1]));
             $this->assertTrue($this->aAddresses[0]->hasOwner($this->aUsers[0]));
             $this->assertFalse($this->aAddresses[1]->hasOwner($this->aUsers[0]));

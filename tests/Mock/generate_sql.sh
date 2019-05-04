@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-HOST=localhost
+HOST=192.168.1.2
 
 # generate sql.json
 ../../bin/sql_to_json.php -h ${HOST} -u dev -p -n dev_orm_mock

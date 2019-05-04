@@ -10,11 +10,8 @@
     use Enobrev\ORM\Table;
     use PHPUnit\Framework\TestCase;
  
-    class MySQLJoinTest extends TestCase {
-        public function setUp() {
-        }
-        
-        public function testLefTOuterJoin() {
+    class ORMJoinTest extends TestCase {
+        public function testLefTOuterJoin(): void {
             $oUsers = new Table('users');
             $oUsers->addField(
                 new Field\Integer('user_id')

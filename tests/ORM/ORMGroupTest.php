@@ -9,11 +9,9 @@
     use Enobrev\ORM\Table;
     use PHPUnit\Framework\TestCase;
  
-    class MySQLGroupTest extends TestCase {
-        public function setUp() {
-        }
+    class ORMGroupTest extends TestCase {
         
-        public function testGroupOneField() {
+        public function testGroupOneField(): void {
             $oPosts = new Table('posts');
             $oPosts->addFields(
                 new Field\Integer('post_id'),
@@ -24,7 +22,7 @@
             $this->assertEquals('posts.post_id', $oGroup->toSQL());
         }
 
-        public function testGroupTwoFields() {
+        public function testGroupTwoFields(): void {
             $oPosts = new Table('posts');
             $oPosts->addFields(
                 new Field\Integer('post_id'),

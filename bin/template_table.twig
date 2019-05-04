@@ -1,8 +1,16 @@
 <?php
     namespace {{ namespace }};
 
-    use Enobrev\ORM\Table;
+{% if date_added or date_updated %}
+    use DateTime;
+    use Exception;
+
+{% endif %}
+    use Enobrev\ORM\DbDuplicateException;
+    use Enobrev\ORM\DbException;
     use Enobrev\ORM\Field;
+    use Enobrev\ORM\Table;
+    use Enobrev\ORM\TableException;
 {% if has_date %}
     use Enobrev\ORM\ModifiedDateColumn;
     use Enobrev\ORM\ModifiedDate;
@@ -33,7 +41,11 @@
 {% endif %}
 {% endfor %}
 {% for field in fields %}
-        /** @var {{field.type}} {{field.name}} **/
+{% if field.reference %}
+        /** @var {{field.reference.field.type}} {{field.name}} */
+{% else %}
+        /** @var {{field.type}} {{field.name}} */
+{% endif %}
         public ${{ field.name }};
 
 {% endfor %}
@@ -77,18 +89,21 @@
         /**
          * @return {{table.plural}}
          */
-        public static function getTables() {
+        public static function getTables(): {{table.plural}} {
             return new {{table.plural}};
         }
 
 {% if primary %}
         /**
 {% for field in primary %}
-         * @param {{ field.php_type }} ${{field.var}}
+         * @param {{ field.php_type }}|{{ field.type }}|{{table.title}} ${{field.var}}
 {% endfor %}
          * @return {{table.title}}
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws TableException
          */
-        public static function getById({% for field in primary %}${{field.var}}{% if not loop.last %}, {% endif %}{% endfor %}) {
+        public static function getById({% for field in primary %}${{field.var}}{% if not loop.last %}, {% endif %}{% endfor %}): ?{{table.title}} {
             $oTable = new self;
             return self::getBy(
 {% for field in primary %}
@@ -105,8 +120,11 @@
 {% for field in unique %}
 
         /**
-         * @param {{ field.php_type }} ${{field.var}}
+         * @param {{ field.php_type }}|{{ field.type }}|{{table.title}} ${{field.var}}
          * @return {{table.title}}
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws TableException
          */
         public static function getBy{{field.short_title}}(${{field.var}}) {
             $oTable = new self;
@@ -123,7 +141,7 @@
         /**
          * @return bool
          */
-        public function is{{ field.short_title }}() {
+        public function is{{ field.short_title }}(): bool {
             return $this->{{ field.name }}->isTrue();
         }
 {% endif %}
@@ -137,14 +155,33 @@
          * @return {{ table.title }}
          */
         public function getOwnerTable() {
-            return $this;
+            return self::class;
         }
 
         /**
          * @return Field
          */
-        public function getOwnerField() {
+        public function getOwnerField(): Field {
             return $this->user_id;
+        }
+
+        /**
+         * @param Table $oOwner
+         *
+         * @return bool
+         */
+        public function hasOwner(Table $oOwner): bool {
+            return $this->user_id->is($oOwner);
+        }
+
+        /**
+         * @return Table
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws TableException
+         */
+        public function getOwner(): Table {
+            return self::getById($this->user_id);
         }
 {% endif %}
 {% endfor %}
@@ -164,8 +201,28 @@
         /**
          * @return Field
          */
-        public function getOwnerField() {
+        public function getOwnerField(): Field {
             return $this->user_id;
+        }
+
+
+        /**
+         * @param Table $oOwner
+         *
+         * @return bool
+         */
+        public function hasOwner(Table $oOwner): bool {
+            return $this->user_id->is($oOwner);
+        }
+
+        /**
+         * @return User
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws TableException
+         */
+        public function getOwner(): User {
+            return User::getById($this->user_id);
         }
 {% else %}
 
@@ -192,6 +249,10 @@
 {% endif %}
 {% if date_added or date_updated %}
 
+        /**
+         * @throws DbException
+         * @throws Exception
+         */
         public function preInsert():void {
 {% if primary %}
 {% for field in primary %}
@@ -210,6 +271,10 @@
 {% endif %}
         }
 
+        /**
+         * @throws DbException
+         * @throws Exception
+         */
         public function preUpsert():void {
 {% if primary %}
 {% for field in primary %}
@@ -229,6 +294,10 @@
         }
 {% if date_updated %}
 
+        /**
+         * @throws DbException
+         * @throws Exception
+         */
         public function preUpdate():void {
 {% if date_updated %}
             $this->{{date_updated.name}}->setValue($this->now());
@@ -238,13 +307,23 @@
 {% endif %}
 {% if date_updated %}
 
-        public function getModifiedDateField() {
+        public function getModifiedDateField(): Field\DateTime {
             return $this->{{date_updated.name}};
         }
 {% elseif date_added %}
 
-        public function getModifiedDateField() {
+        public function getModifiedDateField(): Field\DateTime {
             return $this->{{date_added.name}};
+        }
+{% endif %}
+{% if date_added or date_updated %}
+
+        /**
+         * @return DateTime
+         * @throws Exception
+         */
+        public function getLastModified(): DateTime {
+            return $this->getModifiedDateField()->getValue();
         }
 {% endif %}
     }

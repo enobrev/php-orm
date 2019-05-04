@@ -244,10 +244,10 @@
          * @param string|SQLBuilder|SQL $sQuery
          * @param string $sName
          *
-         * @return PDOStatement
+         * @return false|PDOStatement
          * @throws DbDuplicateException|DbException
          */
-        public function query($sQuery, $sName = ''): PDOStatement {
+        public function query($sQuery, $sName = '') {
             $sTimerName = 'ORM.Db.query.' . $sName;
             Log::startTimer($sTimerName);
 
@@ -395,17 +395,17 @@
         /**
          * Do not use Log class here as it will cause an infinite loop
          * @param string $sQuery
-         * @return PDOStatement
+         * @return false|PDOStatement
          */
-        public function rawQuery($sQuery): PDOStatement {
+        public function rawQuery($sQuery) {
             return $this->oPDO->query($sQuery);
         }
 
         /**
          * @param string $sStatement
-         * @return PDOStatement
+         * @return false|PDOStatement
          */
-        public function prepare(string $sStatement): PDOStatement {
+        public function prepare(string $sStatement) {
             return $this->oPDO->prepare($sStatement);
         }
 

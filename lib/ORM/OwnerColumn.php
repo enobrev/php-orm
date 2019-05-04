@@ -5,7 +5,7 @@
         /**
          * @return Table
          */
-        public function getOwnerTable(): TAble;
+        public function getOwnerTable();
 
         /**
          * @return Field
@@ -15,7 +15,7 @@
         /**
          * @return Table
          */
-        public function getOwner(): Table;
+        public function getOwner();
 
         /**
          * @param Table $oOwner

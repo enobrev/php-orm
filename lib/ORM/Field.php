@@ -240,7 +240,7 @@
         }
 
         /**
-         * @param mixed $mValue
+         * @param Table|Field|mixed $mValue
          * @return bool
          */
         public function is($mValue): bool {

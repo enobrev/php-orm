@@ -1,8 +1,6 @@
 <?php
     namespace Enobrev\ORM;
     
-    use function Enobrev\dbg;
-
     class ConditionException extends DbException {}
     class ConditionInvalidTypeException extends ConditionException {}
     class ConditionMissingBetweenValueException extends ConditionException {}
@@ -120,6 +118,15 @@
             return $oCondition;
         }
 
+        /**
+         * @param mixed ...$aArguments
+         *
+         * @return Condition
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         */
         public static function eq(...$aArguments): Condition {
             return self::create(self::EQUAL, ...$aArguments);
         }

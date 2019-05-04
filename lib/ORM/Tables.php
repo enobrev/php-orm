@@ -250,6 +250,7 @@
                 foreach($aSearch['conditions'] as $aCondition) {
                     $sSearchValue = $aCondition['value'];
                     $sSearchField = $aCondition['field'] ?? null;
+                    $oSearchField = null;
 
                     Log::d('Tables.getForCMS', [
                         'table'     => $oTable->getTitle(),

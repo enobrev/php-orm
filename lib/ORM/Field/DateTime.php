@@ -2,7 +2,6 @@
     namespace Enobrev\ORM\Field;
 
     use DateTime as PHP_DateTime;
-    use function Enobrev\dbg;
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;

@@ -58,6 +58,7 @@
         /**
          *
          * @return string
+         * @throws \Enobrev\ORM\DbException
          */
         public function toSQL():string {
             if (!$this->hasValue()) {

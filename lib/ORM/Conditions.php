@@ -1,8 +1,6 @@
 <?php
     namespace Enobrev\ORM;
     
-    use function Enobrev\dbg;
-
     class ConditionsException extends DbException {}
     class ConditionsNonConditionException extends ConditionsException {}
 

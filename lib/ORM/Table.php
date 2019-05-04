@@ -1,7 +1,6 @@
 <?php
     namespace Enobrev\ORM;
 
-    use function Enobrev\dbg;
     use Enobrev\SQLBuilder;
     use stdClass;
     use PDOStatement;

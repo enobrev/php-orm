@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
+    use Enobrev\ORM\Table;
     use PDO;
     use stdClass;
 
@@ -12,8 +13,6 @@
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\FieldInvalidValueException;
-
-    use function Enobrev\dbg;
 
     class Money extends Number {
         const DEFAULT_CURRENCY = 'USD';

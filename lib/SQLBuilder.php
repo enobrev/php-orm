@@ -871,6 +871,10 @@
             return implode(', ', $aColumns);
         }
 
+        /**
+         * @return string
+         * @throws SQLBuilderException
+         */
         public function toString():string {
             if ($this->sSQL === null) {
                 /*

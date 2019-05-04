@@ -1,7 +1,6 @@
 <?php
     namespace Enobrev;
 
-    use Enobrev\ORM\Table;
     use stdClass;
 
     class SQLException extends \Exception {}

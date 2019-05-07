@@ -35,8 +35,9 @@
 {% for field in fields %}
 {% if field.type == 'Field\\Enum' %}
 {% for value in field.values %}
-        const {{value.const_padded}}= '{{value.name}}';
+        public const {{value.const_padded}}= '{{value.name}}';
 {% endfor %}
+        public const {{field.enum_const}} = [{% for value in field.values %}self::{{value.const_padded}}{% if not loop.last %}, {% endif %}{% endfor %};
 
 {% endif %}
 {% endfor %}

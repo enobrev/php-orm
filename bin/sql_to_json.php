@@ -443,6 +443,10 @@
                     $aEnumType = explode('_', $sField);
                     $sEnumType = end($aEnumType);
                     $sEnumType = strtoupper($sEnumType);
+
+                    $oTemplateField['enum_type']  = $sEnumType;
+                    $oTemplateField['enum_const'] = strtoupper(pluralize($sEnumType));
+
                     if (preg_match_all("/'([^']+)'/", $sType, $aMatches)) {
                         $aEnums = array();
                         foreach($aMatches[1] as $sEnum) {

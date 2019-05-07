@@ -62,7 +62,7 @@
 {% for field in fields %}
 {% if field.primary == false %}
 {% if field.type == 'Field\\Enum' %}
-                new {{field.type}}('{{field.name}}', {{field.enum_const}}){% if not loop.last %},{% endif %}
+                new {{field.type}}('{{field.name}}', self::{{field.enum_const}}){% if not loop.last %},{% endif %}
 
 {% else %}
                 new {{field.type}}('{{field.name}}'){% if not loop.last %},{% endif %}

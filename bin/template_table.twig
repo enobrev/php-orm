@@ -232,10 +232,10 @@
          * @throws DbException
          * @throws TableException
          */
-        public function get{{field.reference.title}}() {
-            if ($this->{{field.name}}->hasValue()) {
-                return {{field.reference.table.title}}::getById($this->{{field.name}}->getValue());
-            }
+        public function get{{field.reference.title}}(): ?{{field.reference.table.title}} {
+            return $this->{{field.name}}->hasValue()
+                 ? {{field.reference.table.title}}::getById($this->{{field.name}}->getValue())
+                 : null;
         }
 
         /**

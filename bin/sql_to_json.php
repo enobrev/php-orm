@@ -1,5 +1,6 @@
 #!/usr/bin/env php
-/** @noinspection ALL */<?php
+<?php
+    /** @noinspection ALL */
     $sAutoloadFile = current(
         array_filter([
             __DIR__ . '/../../../autoload.php',

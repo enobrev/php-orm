@@ -543,9 +543,13 @@
 
                 unset($aReferencedField['reference'], $aReferencedField['inbound_reference']);
 
+                $sPreparedReferenceField = str_replace($sReferencedField, '', $sColumn);
+                $sReferenceTitle         = $sPreparedReferenceField !== $aReferencedTable['title'] ? getClassName($sPreparedReferenceField) . $aReferencedTable['title'] : $aReferencedTable['title'];
+                $sReferenceTitlePlural   = $sPreparedReferenceField !== $aReferencedTable['title'] ? getClassNamePlural($sPreparedReferenceField . $aReferencedTable['title']) : getClassNamePlural($aReferencedTable['title']);
+
                 $aAllData['tables'][$sTable]['fields'][$iIndex]['reference'] = [
-                    'title'         => getClassName(str_replace($sReferencedField, '', $sColumn)) . $aReferencedTable['title'],
-                    'title_plural'  => getClassNamePlural(str_replace($sReferencedField, '', $sColumn) . $aReferencedTable['title']),
+                    'title'         => $sReferenceTitle,
+                    'title_plural'  => $sReferenceTitlePlural,
                     'table'         => $aReferencedTable,
                     'field'         => $aReferencedField
                 ];

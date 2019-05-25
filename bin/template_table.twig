@@ -127,7 +127,7 @@
          * @throws DbException
          * @throws TableException
          */
-        public static function getBy{{field.short_title}}(${{field.var}}) {
+        public static function getBy{{field.short_title}}(${{field.var}}): ?{{table.title}} {
             $oTable = new self;
             return self::getBy(
                 $oTable->{{field.name}}->setValue(${{field.var}})

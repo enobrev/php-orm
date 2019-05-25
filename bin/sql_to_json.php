@@ -544,8 +544,10 @@
                 unset($aReferencedField['reference'], $aReferencedField['inbound_reference']);
 
                 $sPreparedReferenceField = str_replace($sReferencedField, '', $sColumn);
-                $sReferenceTitle         = $sPreparedReferenceField !== $aReferencedTable['title'] ? getClassName($sPreparedReferenceField) . $aReferencedTable['title'] : $aReferencedTable['title'];
-                $sReferenceTitlePlural   = $sPreparedReferenceField !== $aReferencedTable['title'] ? getClassNamePlural($sPreparedReferenceField . $aReferencedTable['title']) : getClassNamePlural($aReferencedTable['title']);
+                $bIsJustPrefix           = $sPreparedReferenceField === $aReferencedTable['name'] . '_';
+
+                $sReferenceTitle         = !$bIsJustPrefix ? getClassName($sPreparedReferenceField) . $aReferencedTable['title'] : $aReferencedTable['title'];
+                $sReferenceTitlePlural   = !$bIsJustPrefix ? getClassNamePlural($sPreparedReferenceField . $aReferencedTable['title']) : getClassNamePlural($aReferencedTable['title']);
 
                 $aAllData['tables'][$sTable]['fields'][$iIndex]['reference'] = [
                     'title'         => $sReferenceTitle,

@@ -3,7 +3,6 @@
 
     use Enobrev\ORM\Field;
     use Exception;
-    use ReflectionClass;
     use stdClass;
 
     class SQLBuilderException extends Exception {}
@@ -817,7 +816,7 @@
                     ') VALUES (',
                         self::toSQL($this->aFields),
                     ') ON DUPLICATE KEY UPDATE',
-                        self::toSQLUpsert($this->aFields)
+                        self::toSQLUpdate($this->aFields)
                 ]
             );
 
@@ -930,7 +929,7 @@
         private static function toSQLLog($aFields): string {
             $aColumns = array();
             foreach($aFields as $oField) {
-                $aColumns[] = (new ReflectionClass($oField))->getShortName();
+                $aColumns[] = get_class($oField);
             }
 
             return implode(', ', $aColumns);
@@ -959,28 +958,6 @@
         }
 
         /**
-         * @param ORM\Field[] $aFields
-         * @param stdClass|null $oResult
-         * @return string
-         */
-        public static function toSQLUpsert(Array $aFields, stdClass $oResult = NULL): string {
-            $aColumns = array();
-
-            foreach($aFields as $oField) {
-                if ($oResult !== NULL) {
-                    $sColumn = $oField->sColumn;
-                    if (property_exists($oResult, $sColumn) && $oField->is($oResult->$sColumn)) {
-                        continue;
-                    }
-                }
-
-                $aColumns[] = $oField->toSQLColumn(false) . ' = VALUES(' . $oField->toSQLColumn(false) . ')';
-            }
-
-            return implode(', ', $aColumns);
-        }
-
-        /**
          * @param ORM\Field[] array $aFields
          * @param stdClass|null $oResult
          * @return string
@@ -997,7 +974,7 @@
                     }
 
                 /** @var ORM\Field $oField */
-                $aColumns[] = $oField->toSQLColumn(false) . ' = ' . (new ReflectionClass($oTable))->getShortName($oField);
+                $aColumns[] = $oField->toSQLColumn(false) . ' = ' . get_class($oField);
             }
 
             return implode(', ', $aColumns);
@@ -1017,7 +994,16 @@
          */
         public function toString():string {
             if ($this->sSQL === null) {
-                $this->build();
+                /*
+                try {
+                */
+                    $this->build();
+                /*
+                } catch (\Exception $e) {
+                    dbg($e);
+                    throw $e;
+                }
+                */
             }
 
             if ($this->sSQL === null) {
@@ -1035,7 +1021,7 @@
                 return $this->toString();
             } catch (Exception $e) {
                 Log::e('ORM.SQLBuilder.__toString.error', [
-                    '--error' => [
+                    'error' => [
                         'type'    => get_class($e),
                         'code'    => $e->getCode(),
                         'message' => $e->getMessage(),

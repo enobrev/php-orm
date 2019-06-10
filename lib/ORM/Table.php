@@ -4,7 +4,6 @@
     use DateTime;
     use Enobrev\SQLBuilder;
     use Exception;
-    use ReflectionClass;
     use stdClass;
     use PDOStatement;
 
@@ -443,7 +442,9 @@
                 $aQueryName[] = $oField->sColumn;
             }
 
-            $sQueryName = (new ReflectionClass($oTable))->getShortName() . '.getBy.' . implode('_', $aQueryName);
+            $sClass     = get_class($oTable);
+            $aClass     = explode('\\', $sClass);
+            $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 
             if ($oResult = static::Db()->namedQuery($sQueryName, $oSQL)) {
                 return $oTable->createFromPDOStatement($oResult);

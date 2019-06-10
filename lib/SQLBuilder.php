@@ -3,6 +3,7 @@
 
     use Enobrev\ORM\Field;
     use Exception;
+    use ReflectionClass;
     use stdClass;
 
     class SQLBuilderException extends Exception {}
@@ -929,7 +930,7 @@
         private static function toSQLLog($aFields): string {
             $aColumns = array();
             foreach($aFields as $oField) {
-                $aColumns[] = get_class($oField);
+                $aColumns[] = (new ReflectionClass($oField))->getShortName();
             }
 
             return implode(', ', $aColumns);
@@ -974,7 +975,7 @@
                     }
 
                 /** @var ORM\Field $oField */
-                $aColumns[] = $oField->toSQLColumn(false) . ' = ' . get_class($oField);
+                $aColumns[] = $oField->toSQLColumn(false) . ' = ' . (new ReflectionClass($oTable))->getShortName($oField);
             }
 
             return implode(', ', $aColumns);
@@ -994,16 +995,7 @@
          */
         public function toString():string {
             if ($this->sSQL === null) {
-                /*
-                try {
-                */
-                    $this->build();
-                /*
-                } catch (\Exception $e) {
-                    dbg($e);
-                    throw $e;
-                }
-                */
+                $this->build();
             }
 
             if ($this->sSQL === null) {
@@ -1021,7 +1013,7 @@
                 return $this->toString();
             } catch (Exception $e) {
                 Log::e('ORM.SQLBuilder.__toString.error', [
-                    'error' => [
+                    '--error' => [
                         'type'    => get_class($e),
                         'code'    => $e->getCode(),
                         'message' => $e->getMessage(),

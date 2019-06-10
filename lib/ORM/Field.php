@@ -1,6 +1,7 @@
 <?php
     namespace Enobrev\ORM;
     
+    use ReflectionClass;
     use stdClass;
 
     class FieldException extends DbException {}
@@ -73,7 +74,7 @@
          * @return string
          */
         public function toSQLLog(): string {
-            return str_replace('Field_', '', get_class($this));
+            return (new ReflectionClass($this))->getShortName();
         }
 
         /**
@@ -147,7 +148,7 @@
         public function toInfoArray():array {
             return [
                 'name'  => $this->sColumn,
-                'type'  => get_class($this)
+                'type'  => (new ReflectionClass($this))->getShortName()
             ];
         }
 

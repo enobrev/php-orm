@@ -817,7 +817,7 @@
                     ') VALUES (',
                         self::toSQL($this->aFields),
                     ') ON DUPLICATE KEY UPDATE',
-                        self::toSQLUpdate($this->aFields)
+                        self::toSQLUpsert($this->aFields)
                 ]
             );
 
@@ -953,6 +953,28 @@
                 }
 
                 $aColumns[] = $oField->toSQLColumn(false) . ' = ' . $oField->toSQL();
+            }
+
+            return implode(', ', $aColumns);
+        }
+
+        /**
+         * @param ORM\Field[] $aFields
+         * @param stdClass|null $oResult
+         * @return string
+         */
+        public static function toSQLUpsert(Array $aFields, stdClass $oResult = NULL): string {
+            $aColumns = array();
+
+            foreach($aFields as $oField) {
+                if ($oResult !== NULL) {
+                    $sColumn = $oField->sColumn;
+                    if (property_exists($oResult, $sColumn) && $oField->is($oResult->$sColumn)) {
+                        continue;
+                    }
+                }
+
+                $aColumns[] = $oField->toSQLColumn(false) . ' = VALUES(' . $oField->toSQLColumn(false) . ')';
             }
 
             return implode(', ', $aColumns);

@@ -403,7 +403,7 @@
                                 $oQuery->fields($oTable); // Setting Primary Table fields to ensure joined fields aren't the only ones returned
                                 $oQuery->join($oTable->$sReferenceField, $oSortReference);
                             } catch (ConditionsNonConditionException $e) {
-                                Log::e('Tables.getForCMS.Sort.Foreign.JoinConditionError', ['error' => $e]);
+                                Log::ex('Tables.getForCMS.Sort.Foreign.JoinConditionError', $e);
                             }
                         } else {
                             $oSortReference = $oTable->getFieldThatReferencesTable($oSortTable);
@@ -428,7 +428,7 @@
                                 $oQuery->fields($oTable); // Setting Primary Table fields to ensure joined fields aren't the only ones returned
                                 $oQuery->join($oSortReference, $oSortTable->$sReferenceField);
                             } catch (ConditionsNonConditionException $e) {
-                                Log::e('Tables.getForCMS.Sort.Foreign.JoinConditionError', ['error' => $e]);
+                                Log::ex('Tables.getForCMS.Sort.Foreign.JoinConditionError', $e);
                             }
                         }
 

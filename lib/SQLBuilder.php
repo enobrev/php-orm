@@ -1020,14 +1020,7 @@
             try {
                 return $this->toString();
             } catch (Exception $e) {
-                Log::e('ORM.SQLBuilder.__toString.error', [
-                    'error' => [
-                        'type'    => get_class($e),
-                        'code'    => $e->getCode(),
-                        'message' => $e->getMessage(),
-                        'trace'   => json_encode($e->getTrace())
-                    ]
-                ]);
+                Log::ex('ORM.SQLBuilder.__toString.error', $e);
 
                 return '';
             }

@@ -2,7 +2,6 @@
     namespace Enobrev\ORM;
 
     use ArrayIterator;
-    use Enobrev\SQLBuilderException;
     use Exception;
     use PDO;
     use PDOStatement;
@@ -12,6 +11,7 @@
     use Enobrev\Log;
     use Enobrev\SQL;
     use Enobrev\SQLBuilder;
+    use Enobrev\SQLBuilderException;
 
     class TablesException extends DbException {}
     class TablesMultiplePrimaryException  extends TablesException {}
@@ -108,15 +108,7 @@
             $aSearch = str_getcsv($sSearch, ' ');
 
             foreach($aSearch as $sSearchTerm) {
-                if (strpos($sSearchTerm, ':') !== false) {
-                    $aCondition = [];
-                    $aSearchTerm  = explode(':', $sSearchTerm);
-                    $aCondition['operator'] = ':';
-                    $aCondition['field']    = array_shift($aSearchTerm);
-                    $aCondition['value']    = implode(':', $aSearchTerm);
-                    $aResponse['conditions'][] = $aCondition;
-
-                } else if (strpos($sSearchTerm, '>') !== false) {
+                if (strpos($sSearchTerm, '>') !== false) {
                     // FIXME: Obviously ridiculous.  we should be parsing this properly instead of repeating
                     $aCondition = [];
                     $aSearchTerm  = explode('>', $sSearchTerm);
@@ -139,6 +131,13 @@
                     $aCondition['operator'] = '!';
                     $aCondition['field']    = array_shift($aSearchTerm);
                     $aCondition['value']    = implode('!', $aSearchTerm);
+                    $aResponse['conditions'][] = $aCondition;
+                } else if (strpos($sSearchTerm, ':') !== false) { // This used to be first, but because dates have colons in them and are likely to by > or <, it's best to make this last
+                    $aCondition = [];
+                    $aSearchTerm  = explode(':', $sSearchTerm);
+                    $aCondition['operator'] = ':';
+                    $aCondition['field']    = array_shift($aSearchTerm);
+                    $aCondition['value']    = implode(':', $aSearchTerm);
                     $aResponse['conditions'][] = $aCondition;
                 } else {
                     $aCondition['operator'] = '::';

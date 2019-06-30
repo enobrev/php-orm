@@ -228,8 +228,17 @@
          * @param string|SQLBuilder|SQL $sQuery
          *
          * @return PDOStatement
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         * @throws ConditionsNonConditionException
          * @throws DbDuplicateException
          * @throws DbException
+         * @throws \Enobrev\SQLBuilderException
+         * @throws \Enobrev\SQLBuilderMissingConditionException
+         * @throws \Enobrev\SQLBuilderMissingTableOrFieldsException
+         * @throws \Enobrev\SQLBuilderPrimaryValuesNotSetException
          */
         public function namedQuery($sName, $sQuery): PDOStatement {
             if (is_array($sName)) {
@@ -242,10 +251,20 @@
 
         /**
          * @param string|SQLBuilder|SQL $sQuery
-         * @param string $sName
+         * @param string                $sName
          *
          * @return false|PDOStatement
-         * @throws DbDuplicateException|DbException
+         * @throws ConditionInvalidTypeException
+         * @throws ConditionMissingBetweenValueException
+         * @throws ConditionMissingFieldException
+         * @throws ConditionMissingInValueException
+         * @throws ConditionsNonConditionException
+         * @throws DbDuplicateException
+         * @throws DbException
+         * @throws \Enobrev\SQLBuilderException
+         * @throws \Enobrev\SQLBuilderMissingConditionException
+         * @throws \Enobrev\SQLBuilderMissingTableOrFieldsException
+         * @throws \Enobrev\SQLBuilderPrimaryValuesNotSetException
          */
         public function query($sQuery, $sName = '') {
             $sTimerName = 'ORM.Db.query.' . $sName;
@@ -257,7 +276,15 @@
 
             $sSQL = $sQuery;
             if ($sSQL instanceof SQL || $sSQL instanceof SQLBuilder) {
-                $sSQL = (string) $sQuery;
+                if ($sSQL instanceof SQL) {
+                    $sSQL = (string) $sSQL;
+                } else {
+                    try {
+                        $sSQL = $sSQL->toString();
+                    } catch(Exception $e) {
+                        Log::ex('ORM.Db.query.builder', $e, $aLogOutput);
+                    }
+                }
 
                 /** @psalm-suppress PossiblyInvalidPropertyFetch */
                 $aLogOutput['sql'] = [
@@ -329,6 +356,12 @@
                             break;
                     }
                 }
+            }
+
+            if (!trim($sSQL)) {
+                $oException = new DbException('Empty Query');
+                Log::ex('ORM.Db.query', $oException, $aLogOutput);
+                throw $oException;
             }
 
             try {

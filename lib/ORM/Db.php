@@ -397,6 +397,7 @@
          * @return false|PDOStatement
          */
         public function rawQuery($sQuery) {
+            Log::d('ORM.Db.rawQuery', ['query' => $sQuery]);
             return $this->oPDO->query($sQuery);
         }
 

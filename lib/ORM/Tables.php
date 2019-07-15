@@ -20,6 +20,7 @@
     class TablesInvalidReferenceException extends TablesException {}
 
     class Tables extends ArrayIterator {
+        const WILDCARD = '*';
 
         /** @var string */
         private static $sNamespaceTable;
@@ -104,7 +105,7 @@
             }
 
             $sSearch = (string) preg_replace('/\s+/', ' ', $sSearch);
-            $sSearch = (string) preg_replace('/(\w+)([%:><!]+)"(\w+)/', '"${1}${2}${3}', $sSearch); // Make things like field:"Some Value" into "field: Some Value"
+            $sSearch = (string) preg_replace('/(\w+)([*:><!]+)"(\w+)/', '"${1}${2}${3}', $sSearch); // Make things like field:"Some Value" into "field: Some Value"
             $aSearch = str_getcsv($sSearch, ' ');
 
             foreach($aSearch as $sSearchTerm) {
@@ -297,8 +298,8 @@
                                     if ($oField->isValue($sSearchValue)) {
                                         $aSQLConditions[] = SQL::eq($oField, $sSearchValue);
                                     }
-                                } else if ($oField instanceof Field\Text && strpos($sSearchValue, '%') !== false) {
-                                    $aSQLConditions[] = SQL::like($oField, $sSearchValue);
+                                } else if ($oField instanceof Field\Text && strpos($sSearchValue, self::WILDCARD) !== false) {
+                                    $aSQLConditions[] = SQL::like($oField, str_replace(self::WILDCARD, '%', $sSearchValue));
                                 } else {
                                     $aSQLConditions[] = SQL::eq($oField, $sSearchValue);
                                 }
@@ -324,8 +325,8 @@
                                 } else {
                                     $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
                                 }
-                            } else if (strpos($sSearchValue, '%') !== false) {
-                                $aSQLConditions[] = SQL::like($oSearchField, $sSearchValue);
+                            } else if (strpos($sSearchValue, self::WILDCARD) !== false) {
+                                $aSQLConditions[] = SQL::like($oSearchField, str_replace(self::WILDCARD, '%', $sSearchValue));
                             } else if (strpos($sSearchValue, ',') !== false) {
                                 $aSQLConditions[] = SQL::in($oSearchField, explode(',', $sSearchValue));
                             } else {
@@ -345,8 +346,8 @@
                                 } else {
                                     $aSQLConditions[] = SQL::neq($oSearchField, $sSearchValue);
                                 }
-                            } else if (strpos($sSearchValue, '%') !== false) {
-                                $aSQLConditions[] = SQL::nlike($oSearchField, $sSearchValue);
+                            } else if (strpos($sSearchValue, self::WILDCARD) !== false) {
+                                $aSQLConditions[] = SQL::nlike($oSearchField, str_replace(self::WILDCARD, '%', $sSearchValue));
                             } else if (strpos($sSearchValue, ',') !== false) {
                                 $aSQLConditions[] = SQL::nin($oSearchField, explode(',', $sSearchValue));
                             } else {

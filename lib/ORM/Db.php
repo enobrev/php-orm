@@ -336,13 +336,13 @@
                     switch($sType) {
                         case SQLBuilder::TYPE_INSERT:
                         case SQLBuilder::TYPE_UPSERT:
-                            if (preg_match('/into\s+(\S+)/', $sSQLLower, $aMatches)) {
+                            if (preg_match('/into\s+(\w+)/', $sSQLLower, $aMatches)) {
                                 $aLogOutput['sql']['table'] = $aMatches[1];
                             }
                             break;
 
                         case SQLBuilder::TYPE_UPDATE:
-                            if (preg_match('/update\s+(\S+)/', $sSQLLower, $aMatches)) {
+                            if (preg_match('/update\s+(\w+)/', $sSQLLower, $aMatches)) {
                                 $aLogOutput['sql']['table'] = $aMatches[1];
                             }
                             break;
@@ -350,7 +350,7 @@
                         case SQLBuilder::TYPE_DELETE:
                         case SQLBuilder::TYPE_SELECT:
                         case SQLBuilder::TYPE_COUNT:
-                            if (preg_match('/from\s+(\S+)/', $sSQLLower, $aMatches)) {
+                            if (preg_match('/from\s+(\w+)/', $sSQLLower, $aMatches)) {
                                 $aLogOutput['sql']['table'] = $aMatches[1];
                             }
                             break;

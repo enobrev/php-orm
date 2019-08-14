@@ -22,7 +22,7 @@
             Log::setPurpose('OwnerTest');
 
             $sDatabase = file_get_contents(__DIR__ . '/../Mock/sqlite.sql');
-            $aDatabase = explode(';', $sDatabase);
+            $aDatabase = explode(';', trim($sDatabase));
             $aDatabase = array_filter($aDatabase);
 
             $this->oPDO = Db::defaultSQLiteMemory();

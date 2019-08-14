@@ -24,16 +24,16 @@
             Log::setService('ModifiedDateTest');
 
             $sDatabase = file_get_contents(__DIR__ . '/../Mock/sqlite.sql');
-            $aDatabase = explode(';', $sDatabase);
+            $aDatabase = explode(';', trim($sDatabase));
             $aDatabase = array_filter($aDatabase);
 
             $this->oPDO = Db::defaultSQLiteMemory();
             $this->oPDO->exec('DROP TABLE IF EXISTS users');
             $this->oPDO->exec('DROP TABLE IF EXISTS addresses');
-            Db::getInstance($this->oPDO);
+            $oDb = Db::getInstance($this->oPDO);
 
             foreach($aDatabase as $sCreate) {
-                Db::getInstance()->query($sCreate);
+                $oDb->query($sCreate);
             }
 
             $this->aUsers[] = Table\User::createFromArray([

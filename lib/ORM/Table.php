@@ -6,6 +6,7 @@
     use Exception;
     use stdClass;
     use PDOStatement;
+    use function Enobrev\dbg;
 
     class TableFieldNotFoundException extends TableException {}
 
@@ -172,12 +173,22 @@
             return null;
         }
 
+        private static function setOriginalProperties($oThis) {
+            if (self::$aOriginalProperties === null) {
+                self::$aOriginalProperties = array_keys(get_object_vars($oThis));
+            }
+        }
+
+        private static $aOriginalProperties = null;
+
         /**
          *
          * @param string $sTitle
          * @param bool   $bFromPDO
          */
         public function __construct($sTitle = '', $bFromPDO = false) {
+            self::setOriginalProperties($this);
+
             if ($this->bConstructed === false) {
                 $this->bFromPDO = $bFromPDO;
                 $this->oResult  = new stdClass();
@@ -207,19 +218,14 @@
         }
 
         private function applyResult(): void {
-            $aProperties = get_object_vars($this);
-            foreach(array_keys($aProperties) as $sProperty) {
-                if (preg_match('/^[a-z][A-Z]/', $sProperty)) {
-                    // Skip Vars - we just want properties from Queries - FIXME: This is definitely imperfect and relies upon convention
-                    continue;
-                }
-
+            $aProperties      = get_object_vars($this);
+            $aExtraResultKeys = array_diff(array_keys($aProperties), self::$aOriginalProperties);
+            foreach($aExtraResultKeys as $sProperty) {
                 if ($this->$sProperty instanceof Field === false) {
                     $this->oResult->$sProperty = $this->$sProperty;
                 }
             }
         }
-
 
         /**
          * @return null|string

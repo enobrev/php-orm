@@ -14,6 +14,9 @@
         /** @var null|string  */
         protected $sTitle;
 
+        /** @var Field[] */
+        private $aFields = [];
+
         /** @var null|stdClass  */
         public $oResult;
 
@@ -275,15 +278,7 @@
          * @return Field[]
          */
         public function getFields(): array {
-            $aFields = [];
-            $aProperties = get_object_vars($this);
-            foreach(array_keys($aProperties) as $sProperty) {
-                if ($this->$sProperty instanceof Field) {
-                    $aFields[] =& $this->$sProperty;
-                }
-            }
-
-            return $aFields;
+            return $this->aFields;
         }
 
         /**
@@ -481,6 +476,7 @@
             }
 
             $this->$sField =& $oField;
+            $this->aFields[$sField] =& $this->$sField;
         }
 
         /**

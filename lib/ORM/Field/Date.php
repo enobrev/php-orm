@@ -100,6 +100,8 @@
             }
             
             switch(true) {
+                case $sValue === 'null':
+                case $sValue === 'NULL':
                 case $sValue === self::NULL_VALUE:
                     $this->sValue = null;
                     break;

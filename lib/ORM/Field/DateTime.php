@@ -21,37 +21,6 @@
         public $sValue;
 
         /**
-         *
-         * @param mixed $sValue
-         *
-         * @return $this
-         * @throws Exception
-         */
-        public function setValue($sValue) {
-            if ($sValue instanceof Table) {
-                $sValue = $sValue->{$this->sColumn};
-            }
-
-            if ($sValue instanceof Field) {
-                $sValue = $sValue->getValue();
-            }
-
-            if ($sValue instanceof PHP_DateTime) {
-                $sValue = $sValue->format(self::DEFAULT_FORMAT);
-            }
-
-            if ($sValue === 'NULL'
-            ||  $sValue === NULL) {
-                $this->sValue = NULL;
-            } else {
-                parent::setValue($sValue);
-            }
-
-            return $this;
-        }
-
-
-        /**
          * @return bool
          */
         public function isNull():bool {

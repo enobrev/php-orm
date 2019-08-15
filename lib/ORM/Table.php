@@ -220,6 +220,7 @@
             }
         }
 
+        // Applies non-table properties from results to oResult
         private function applyResult(): void {
             $aProperties      = get_object_vars($this);
             $aExtraResultKeys = array_diff(array_keys($aProperties), self::$aOriginalProperties);
@@ -358,9 +359,10 @@
          * @return static
          */
         public function setFromArray(Array $aData) {
-            foreach ($this->getFields() as &$oField) {
-                /** @var Field $oField */
-                $oField->setValueFromArray($aData);
+            $aFields     = $this->getFields();
+            $aFieldData  = array_intersect_key($aData, $aFields);
+            foreach($aFieldData as $sField => $mValue) {
+                $this->$sField->setValue($mValue);
             }
 
             return $this;
@@ -476,7 +478,7 @@
             }
 
             $this->$sField =& $oField;
-            $this->aFields[$sField] =& $this->$sField;
+            $this->aFields[$sField] =& $oField;
         }
 
         /**

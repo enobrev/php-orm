@@ -462,19 +462,15 @@
          */
         public function addField(Field $oField): void {
             $oField->sTable      = $this->sTitle;
-            $oField->sTableClass = get_class($this);
+            $oField->sTableClass = $this->sKey;
+            $sField              = $oField->sColumn;
 
-            $sField = $oField->sColumn;
-            if (property_exists($this, $sField)) {
-                $mExistingValue = $this->$sField;
+            if (isset($this->$sField)) {
+                $oField->setValue($this->$sField);
+            }
 
-                if ($mExistingValue !== null) {
-                    $oField->setValue($mExistingValue);
-                }
-
-                if ($this->bFromPDO) {
-                    $this->oResult->$sField = $mExistingValue;
-                }
+            if ($this->bFromPDO && property_exists($this, $sField)) {
+                $this->oResult->$sField = $this->$sField;
             }
 
             $this->$sField =& $oField;

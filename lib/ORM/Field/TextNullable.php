@@ -39,11 +39,11 @@
                 $sValue = $sValue->getValue();
             }
 
-            if (trim($sValue) === '') {
+            if (empty(trim($sValue))) {
                 $sValue = NULL;
             }
 
-            if (strtolower($sValue) === 'null') {
+            if ($sValue === 'null' || $sValue === 'NULL') {
                 $sValue = NULL;
             }
 

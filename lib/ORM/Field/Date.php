@@ -112,7 +112,7 @@
                     $this->sValue = $sValue;
                     break;
 
-                case DateFunction::isSupportedType($sValue):
+                case $sValue === DateFunction::FUNC_NOW:
                     $this->sValue = DateFunction::createFromString($sValue);
                     break;
 

@@ -545,6 +545,9 @@
             return true;
         }
 
+        protected function preDelete(): void {}
+        protected function postDelete(): void {}
+
         /**
          *
          * @return PDOStatement|bool
@@ -553,10 +556,11 @@
          */
         public function delete() {
             if ($this->primaryHasValue()) {
+                $this->preDelete();
                 $oReturn = static::Db()->namedQuery(get_class($this) . '.delete',
                     SQLBuilder::delete($this)->also($this->getPrimary())
                 );
-
+                $this->postDelete();
                 return $oReturn;
             }
 
@@ -625,6 +629,8 @@
 
         protected function preUpsert(): void {}
         protected function postUpsert(): void {}
+        protected function postUpsertInsert(): void {}
+        protected function postUpsertUpdate(): void {}
 
         /**
          *
@@ -641,6 +647,12 @@
             $iLastInsertId = static::Db()->getLastInsertId();
             $this->updatePrimary($iLastInsertId);
             $this->postUpsert();
+
+            if (Db::wasUpsertInserted()) {
+                $this->postUpsertInsert();
+            } else {
+                $this->postUpsertUpdate();
+            }
 
             return $iLastInsertId;
         }

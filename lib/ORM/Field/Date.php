@@ -124,7 +124,6 @@
                             $sValue = trim(preg_replace('/\d{1,2}:\d{2}$/', '', $sValue));
                             $this->sValue = new PHP_DateTime($sValue);
                         } else {
-                            Log::ex('Date.setValue', $e, ['date' => $sValue]);
                             throw $e;
                         }
                     }

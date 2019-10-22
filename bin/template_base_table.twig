@@ -183,7 +183,7 @@
          * @throws DbException
          * @throws TableException
          */
-        public function getOwner(): Table {
+        public function getOwner(): ?Table {
             return PublicNS\{{ table.title }}::getById($this->user_id);
         }
 {% endif %}
@@ -224,7 +224,7 @@
          * @throws DbException
          * @throws TableException
          */
-        public function getOwner(): PublicNS\User {
+        public function getOwner(): ?PublicNS\User {
             return PublicNS\User::getById($this->user_id);
         }
 {% else %}

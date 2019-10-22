@@ -28,6 +28,10 @@
          * @throws DbException
          */
         public static function getBy{{ primary.0.plural }}(Array ${{ primary.0.var_array }}) {
+            if (count(${{ primary.0.var_array }}) === 0) {
+                return new PublicNS\{{ table.plural }};
+            }
+
             $oTable   = static::getTable();
             $oSQL     = SQLBuilder::select($oTable)->in($oTable->{{ primary.0.name }}, ${{ primary.0.var_array }});
             $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);

@@ -40,16 +40,17 @@
         ->aka('namespace')
         ->describedAs('The namespace for the generated Table classes');
 
-    $sPathJsonSQL = $oOptions['json'];
-    $sPath        = rtrim($oOptions['output'], '/') . '/';
-    $sNamespace   = $oOptions['namespace'];
+    $sPathJsonSQL   = $oOptions['json'];
+    $sPath          = rtrim($oOptions['output'], '/') . '/';
+    $sGeneratedPath = $sPath . '_generated/';
+    $sNamespace     = $oOptions['namespace'];
 
     $oLoader    = new Twig\Loader\FilesystemLoader(__DIR__);
     $oTwig      = new Twig\Environment($oLoader, array('debug' => true));
 
     try {
-        $oTemplate  = $oTwig->load('template_table.twig');
-        $oTemplates = $oTwig->load('template_tables.twig');
+        $oTemplate  = $oTwig->load('template_base_table.twig');
+        $oTemplates = $oTwig->load('template_base_tables.twig');
     } catch (Exception $e) {
         echo $e->getMessage() . "\n";
         exit(1);
@@ -99,18 +100,19 @@
         $aFiles = array();
 
         foreach($aChosenTables as $sTable => $aData) {
-            $aData['namespace']     = $sNamespace;
+            $aData['namespace']     = $sNamespace . "\\_generated";
             $aFiles[$aData['table']['title']  . '.php'] = $oTemplate->render($aData);
             $aFiles[$aData['table']['plural'] . '.php'] = $oTemplates->render($aData);
         }
 
-        if (!file_exists($sPath) && !mkdir($sPath, 0777, true) && !is_dir($sPath)) {
-            throw new RuntimeException(sprintf('Directory "%s" was not created', $sPath));
+        if (!file_exists($sGeneratedPath) && !mkdir($sGeneratedPath, 0777, true) && !is_dir($sGeneratedPath)) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $sGeneratedPath));
         }
 
         foreach($aFiles as $sFile => $sOutput) {
-            file_put_contents($sPath . $sFile, $sOutput);
-            echo 'Created ' . $sPath . $sFile . "\n";
+            $sFullName = $sGeneratedPath . $sFile;
+            file_put_contents($sFullName, $sOutput);
+            echo "Created $sFullName\n";
         }
     } else {
         echo 'No Tables Chosen' . "\n";

@@ -49,8 +49,10 @@
     $oTwig      = new Twig\Environment($oLoader, array('debug' => true));
 
     try {
-        $oTemplate  = $oTwig->load('template_base_table.twig');
-        $oTemplates = $oTwig->load('template_base_tables.twig');
+        $oBaseTemplate  = $oTwig->load('template_base_table.twig');
+        $oBaseTemplates = $oTwig->load('template_base_tables.twig');
+        $oTemplate      = $oTwig->load('template_table.twig');
+        $oTemplates     = $oTwig->load('template_tables.twig');
     } catch (Exception $e) {
         echo $e->getMessage() . "\n";
         exit(1);
@@ -97,22 +99,35 @@
     }
 
     if (count($aChosenTables)) {
-        $aFiles = array();
-
-        foreach($aChosenTables as $sTable => $aData) {
-            $aData['namespace']     = $sNamespace . "\\_generated";
-            $aFiles[$aData['table']['title']  . '.php'] = $oTemplate->render($aData);
-            $aFiles[$aData['table']['plural'] . '.php'] = $oTemplates->render($aData);
-        }
-
         if (!file_exists($sGeneratedPath) && !mkdir($sGeneratedPath, 0777, true) && !is_dir($sGeneratedPath)) {
             throw new RuntimeException(sprintf('Directory "%s" was not created', $sGeneratedPath));
         }
 
-        foreach($aFiles as $sFile => $sOutput) {
+        $aBaseFiles  = [];
+        $aChildFiles = [];
+
+        foreach($aChosenTables as $sTable => $aData) {
+            $aData['namespace']     = $sNamespace . "\\_generated";
+            $aBaseFiles[$aData['table']['title']  . '.php'] = $oBaseTemplate->render($aData);
+            $aBaseFiles[$aData['table']['plural'] . '.php'] = $oBaseTemplates->render($aData);
+
+            $aData['namespace']     = $sNamespace;
+            $aChildFiles[$aData['table']['title']  . '.php'] = $oTemplate->render($aData);
+            $aChildFiles[$aData['table']['plural'] . '.php'] = $oTemplates->render($aData);
+        }
+
+        foreach($aBaseFiles as $sFile => $sOutput) {
             $sFullName = $sGeneratedPath . $sFile;
             file_put_contents($sFullName, $sOutput);
             echo "Created $sFullName\n";
+        }
+
+        foreach($aChildFiles as $sFile => $sOutput) {
+            $sFullName = $sPath . $sFile;
+            if (!file_exists($sFullName)) {
+                file_put_contents($sFullName, $sOutput);
+                echo "Created $sFullName\n";
+            }
         }
     } else {
         echo 'No Tables Chosen' . "\n";

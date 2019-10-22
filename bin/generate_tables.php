@@ -103,26 +103,26 @@
             throw new RuntimeException(sprintf('Directory "%s" was not created', $sGeneratedPath));
         }
 
-        $aBaseFiles  = [];
-        $aChildFiles = [];
+        $aPrivateFiles = [];
+        $aPublicFiles  = [];
 
         foreach($aChosenTables as $sTable => $aData) {
-            $aData['namespace']     = $sNamespace . "\\_generated";
-            $aBaseFiles[$aData['table']['title']  . '.php'] = $oBaseTemplate->render($aData);
-            $aBaseFiles[$aData['table']['plural'] . '.php'] = $oBaseTemplates->render($aData);
+            $aData['private_namespace'] = $sNamespace . "\\_generated";
+            $aData['public_namespace']  = $sNamespace;
 
-            $aData['namespace']     = $sNamespace;
-            $aChildFiles[$aData['table']['title']  . '.php'] = $oTemplate->render($aData);
-            $aChildFiles[$aData['table']['plural'] . '.php'] = $oTemplates->render($aData);
+            $aPrivateFiles[$aData['table']['title'] . '.php']  = $oBaseTemplate->render($aData);
+            $aPrivateFiles[$aData['table']['plural'] . '.php'] = $oBaseTemplates->render($aData);
+            $aPublicFiles[$aData['table']['title'] . '.php']   = $oTemplate->render($aData);
+            $aPublicFiles[$aData['table']['plural'] . '.php']  = $oTemplates->render($aData);
         }
 
-        foreach($aBaseFiles as $sFile => $sOutput) {
+        foreach($aPrivateFiles as $sFile => $sOutput) {
             $sFullName = $sGeneratedPath . $sFile;
             file_put_contents($sFullName, $sOutput);
             echo "Created $sFullName\n";
         }
 
-        foreach($aChildFiles as $sFile => $sOutput) {
+        foreach($aPublicFiles as $sFile => $sOutput) {
             $sFullName = $sPath . $sFile;
             if (!file_exists($sFullName)) {
                 file_put_contents($sFullName, $sOutput);

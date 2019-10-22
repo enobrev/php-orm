@@ -1,5 +1,5 @@
 <?php
-    namespace {{ namespace }};
+    namespace {{ private_namespace }};
 
 {% if date_added or date_updated %}
     use DateTime;
@@ -20,7 +20,9 @@
     use Enobrev\ORM\Owner;
 {% endif %}
 
-    class {{table.title}} extends Table {% if interfaces %}implements {{ interfaces|join(', ') }} {% endif %}{
+    use {{ public_namespace }} as PublicNS;
+
+    abstract class {{table.title}} extends Table {% if interfaces %}implements {{ interfaces|join(', ') }} {% endif %}{
 {% if has_date or has_owner %}
 {% if has_date %}
         use ModifiedDate;
@@ -37,7 +39,7 @@
 {% for value in field.values %}
         public const {{value.const_padded}}= '{{value.name}}';
 {% endfor %}
-        public const {{field.enum_const}} = [{% for value in field.values %}self::{{value.const}}{% if not loop.last %}, {% endif %}{% endfor %}];
+        public const {{field.enum_const}} = [{% for value in field.values %}PublicNS\{{ table.title }}::{{value.const}}{% if not loop.last %}, {% endif %}{% endfor %}];
 
 {% endif %}
 {% endfor %}
@@ -62,7 +64,7 @@
 {% for field in fields %}
 {% if field.primary == false %}
 {% if field.type == 'Field\\Enum' %}
-                new {{field.type}}('{{field.name}}', self::{{field.enum_const}}){% if not loop.last %},{% endif %}
+                new {{field.type}}('{{field.name}}', PublicNS\{{ table.title }}::{{field.enum_const}}){% if not loop.last %},{% endif %}
 
 {% else %}
                 new {{field.type}}('{{field.name}}'){% if not loop.last %},{% endif %}
@@ -74,7 +76,7 @@
 
 {% for field in fields %}
 {% if field.default is not empty %}
-            $this->{{field.name}}->setDefault({{field.default|raw}});
+            $this->{{field.name}}->setDefault({{field.default|replace({'self': ('PublicNS\\' ~ table.title)})|raw}});
 {% endif %}
 {% endfor %}
 {% if count.outbound %}
@@ -88,25 +90,25 @@
         }
 
         /**
-         * @return {{table.plural}}
+         * @return PublicNS\{{table.plural}}
          */
-        public static function getTables(): {{table.plural}} {
-            return new {{table.plural}};
+        public static function getTables(): PublicNS\{{table.plural}} {
+            return new PublicNS\{{table.plural}};
         }
 
 {% if primary %}
         /**
 {% for field in primary %}
-         * @param {{ field.php_type }}|{{ field.type }}|{{table.title}} ${{field.var}}
+         * @param {{ field.php_type }}|{{ field.type }}|PublicNS\{{table.title}} ${{field.var}}
 {% endfor %}
-         * @return {{table.title}}
+         * @return PublicNS\{{table.title}}
          * @throws DbDuplicateException
          * @throws DbException
          * @throws TableException
          */
-        public static function getById({% for field in primary %}${{field.var}}{% if not loop.last %}, {% endif %}{% endfor %}): ?{{table.title}} {
-            $oTable = new self;
-            return self::getBy(
+        public static function getById({% for field in primary %}${{field.var}}{% if not loop.last %}, {% endif %}{% endfor %}): ?PublicNS\{{table.title}} {
+            $oTable = new PublicNS\{{ table.title }};
+            return PublicNS\{{ table.title }}::getBy(
 {% for field in primary %}
 {% if loop.last %}
                 $oTable->{{field.name}}->setValue(${{field.var}})
@@ -121,15 +123,15 @@
 {% for field in unique %}
 
         /**
-         * @param {{ field.php_type }}|{{ field.type }}|{{table.title}} ${{field.var}}
-         * @return {{table.title}}
+         * @param {{ field.php_type }}|{{ field.type }}|PublicNS\{{table.title}} ${{field.var}}
+         * @return PublicNS\{{table.title}}
          * @throws DbDuplicateException
          * @throws DbException
          * @throws TableException
          */
-        public static function getBy{{field.short_title}}(${{field.var}}): ?{{table.title}} {
-            $oTable = new self;
-            return self::getBy(
+        public static function getBy{{field.short_title}}(${{field.var}}): ?PublicNS\{{table.title}} {
+            $oTable = new PublicNS\{{ table.title }};
+            return PublicNS\{{ table.title }}::getBy(
                 $oTable->{{field.name}}->setValue(${{field.var}})
             );
         }
@@ -153,10 +155,10 @@
 {% if field.primary and field.name == 'user_id' %}
 
         /**
-         * @return {{ table.title }}
+         * @return PublicNS\{{ table.title }}
          */
         public function getOwnerTable() {
-            return self::class;
+            return PublicNS\{{ table.title }}::class;
         }
 
         /**
@@ -182,7 +184,7 @@
          * @throws TableException
          */
         public function getOwner(): Table {
-            return self::getById($this->user_id);
+            return PublicNS\{{ table.title }}::getById($this->user_id);
         }
 {% endif %}
 {% endfor %}
@@ -190,13 +192,13 @@
 {% if count.outbound %}
 {% for field in fields %}
 {% if field.reference %}
-{% if field.reference.table.title == 'User' and table.title != 'User' %}
+{% if field.reference.table.title == 'User' and table.title != 'User' and field.name == 'user_id' %}
 
         /**
-         * @return {{ field.reference.title }}
+         * @return PublicNS\{{ field.reference.title }}
          */
         public function getOwnerTable() {
-            return {{ field.reference.title }}::class;
+            return PublicNS\{{ field.reference.title }}::class;
         }
 
         /**
@@ -217,34 +219,34 @@
         }
 
         /**
-         * @return User
+         * @return PublicNS\User
          * @throws DbDuplicateException
          * @throws DbException
          * @throws TableException
          */
-        public function getOwner(): User {
-            return User::getById($this->user_id);
+        public function getOwner(): PublicNS\User {
+            return PublicNS\User::getById($this->user_id);
         }
 {% else %}
 
         /**
-         * @return {{field.reference.table.title}}
+         * @return PublicNS\{{field.reference.table.title}}
          * @throws DbDuplicateException
          * @throws DbException
          * @throws TableException
          */
-        public function get{{field.reference.title}}(): ?{{field.reference.table.title}} {
+        public function get{{field.reference.title}}(): ?PublicNS\{{field.reference.table.title}} {
             return $this->{{field.name}}->hasValue()
-                 ? {{field.reference.table.title}}::getById($this->{{field.name}}->getValue())
+                 ? PublicNS\{{field.reference.table.title}}::getById($this->{{field.name}}->getValue())
                  : null;
         }
 
         /**
-         * @param {{field.reference.table.title}}|null $o{{field.reference.title}}
+         * @param PublicNS\{{field.reference.table.title}}|null $o{{field.reference.title}}
          * @return bool
          */
-        public function has{{field.reference.title}}({{field.reference.table.title}} $o{{field.reference.title}} = null): bool {
-            return $o{{field.reference.title}} instanceof {{field.reference.table.title}}
+        public function has{{field.reference.title}}(?PublicNS\{{field.reference.table.title}} $o{{field.reference.title}} = null): bool {
+            return $o{{field.reference.title}} instanceof PublicNS\{{field.reference.table.title}}
                 && $this->{{field.name}}->is($o{{field.reference.title}});
         }
 {% endif %}

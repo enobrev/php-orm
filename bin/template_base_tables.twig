@@ -1,5 +1,5 @@
 <?php
-    namespace {{ namespace }};
+    namespace {{ private_namespace }};
 {% if date_updated or date_added  %}
 
     use DateTime;
@@ -11,18 +11,20 @@
     use Enobrev\ORM\Tables;
     use Enobrev\SQLBuilder;
 
-    class {{table.plural}} extends Tables {
+    use {{ public_namespace }} as PublicNS;
+
+    abstract class {{table.plural}} extends Tables {
         /**
-         * @return {{table.title}}
+         * @return PublicNS\{{table.title}}
          */
         public static function getTable() {
-            return new {{table.title}};
+            return new PublicNS\{{table.title}};
         }
 {% if count.primary == 1 %}
 
         /**
          * @param {{ primary.0.php_type }}[] {{ primary.0.var_array }}
-         * @return {{ table.title }}[]|{{ table.plural }}
+         * @return PublicNS\{{ table.title }}[]|PublicNS\{{ table.plural }}
          * @throws DbException
          */
         public static function getBy{{ primary.0.plural }}(Array ${{ primary.0.var_array }}) {
@@ -30,7 +32,7 @@
             $oSQL     = SQLBuilder::select($oTable)->in($oTable->{{ primary.0.name }}, ${{ primary.0.var_array }});
             $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
 
-            return self::fromResults($oResults, $oTable);
+            return PublicNS\{{ table.plural }}::fromResults($oResults, $oTable);
         }
 {% endif %}
 {% if count.outbound %}
@@ -38,25 +40,25 @@
 {% if field.reference %}
 
         /**
-         * @param {{ field.reference.field.php_type }}|{{field.reference.table.title}} ${{field.reference.field.var}}
-         * @return {{ table.title }}[]|{{ table.plural }}
+         * @param {{ field.reference.field.php_type }}|PublicNS\{{field.reference.table.title}} ${{field.reference.field.var}}
+         * @return PublicNS\{{ table.title }}[]|PublicNS\{{ table.plural }}
          * @throws DbException
          */
         public static function getBy{{field.reference.title}}(${{ field.reference.field.var }}) {
             if (!${{ field.reference.field.var }}) {
-                return new self();
+                return new PublicNS\{{ table.plural }}();
             }
 
             $oTable = static::getTable();
             $oSQL = SQLBuilder::select($oTable)->eq($oTable->{{field.name}}->setValue(${{ field.reference.field.var }}));
 
             $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
-            return self::fromResults($oResults, $oTable);
+            return PublicNS\{{ table.plural }}::fromResults($oResults, $oTable);
         }
 
         /**
-         * @param {{ field.reference.table.plural }}|{{ field.reference.field.php_type }}[] ${{ field.reference.field.var_array }}
-         * @return {{ table.title }}[]|{{ table.plural }}
+         * @param PublicNS\{{ field.reference.table.plural }}|PublicNS\{{ field.reference.field.php_type }}[] ${{ field.reference.field.var_array }}
+         * @return PublicNS\{{ table.title }}[]|PublicNS\{{ table.plural }}
          * @throws DbException
          */
         public static function getBy{{field.reference.title_plural}}(${{ field.reference.field.var_array }}) {
@@ -65,14 +67,14 @@
             }
 
             if (count(${{ field.reference.field.var_array }}) === 0) {
-                return new self();
+                return new PublicNS\{{ table.plural }}();
             }
 
             $oTable = static::getTable();
             $oSQL = SQLBuilder::select($oTable)->in($oTable->{{field.name}}, ${{ field.reference.field.var_array }});
 
             $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
-            return self::fromResults($oResults, $oTable);
+            return PublicNS\{{ table.plural }}::fromResults($oResults, $oTable);
         }
 {% endif %}
 {% endfor %}

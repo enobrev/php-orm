@@ -440,9 +440,9 @@
                     $aData['count']['enum']++;
 
                     $sType = $oField->column_type;
-                    $aEnumType = explode('_', $sField);
-                    $sEnumType = end($aEnumType);
-                    $sEnumType = strtoupper($sEnumType);
+                    $sEnumField = str_replace($aData['table']['singular'], '', $sField);
+                    $sEnumField = trim($sEnumField, '_');
+                    $sEnumType = strtoupper($sEnumField);
 
                     $oTemplateField['enum_type']  = $sEnumType;
                     $oTemplateField['enum_const'] = strtoupper(pluralize($sEnumType));

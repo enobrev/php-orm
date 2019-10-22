@@ -259,7 +259,7 @@
          * @throws DbException
          * @throws Exception
          */
-        public function preInsert():void {
+        protected function preInsert():void {
 {% if primary %}
 {% for field in primary %}
 {% if field.type == 'Field\\UUID' or field.type == 'Field\\UUIDNullable' %}
@@ -281,7 +281,7 @@
          * @throws DbException
          * @throws Exception
          */
-        public function preUpsert():void {
+        protected function preUpsert():void {
 {% if primary %}
 {% for field in primary %}
 {% if field.type == 'Field\\UUID' or field.type == 'Field\\UUIDNullable' %}
@@ -304,7 +304,7 @@
          * @throws DbException
          * @throws Exception
          */
-        public function preUpdate():void {
+        protected function preUpdate():void {
 {% if date_updated %}
             $this->{{date_updated.name}}->setValue($this->now());
 {% endif %}

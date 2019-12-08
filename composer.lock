@@ -61,12 +61,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/enobrev/php-tools.git",
-                "reference": "3b0f813d940a1ec17b1c2d573eb42f5cedd2e447"
+                "reference": "b566a4f999598285011bc8158249defc0f2a512f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/3b0f813d940a1ec17b1c2d573eb42f5cedd2e447",
-                "reference": "3b0f813d940a1ec17b1c2d573eb42f5cedd2e447",
+                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/b566a4f999598285011bc8158249defc0f2a512f",
+                "reference": "b566a4f999598285011bc8158249defc0f2a512f",
                 "shasum": ""
             },
             "require": {
@@ -108,7 +108,7 @@
                 "source": "https://github.com/enobrev/php-tools/tree/master",
                 "issues": "https://github.com/enobrev/php-tools/issues"
             },
-            "time": "2019-09-05T17:06:37+00:00"
+            "time": "2019-12-08T09:34:15+00:00"
         },
         {
             "name": "kevinlebrun/colors.php",

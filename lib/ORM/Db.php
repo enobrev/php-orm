@@ -1,12 +1,14 @@
 <?php
     namespace Enobrev\ORM;
 
-    use Enobrev\Log;
+    use DateTime;
+    use DateTimeZone;
     use Exception;
     use PDO;
     use PDOException;
     use PDOStatement;
-    use DateTime;
+
+    use Enobrev\Log;
     use Enobrev\SQL;
     use Enobrev\SQLBuilder;
 
@@ -479,13 +481,17 @@
          * @psalm-suppress InvalidReturnType
          * @throws Exception
          */
-        public function getDate(): DateTime {
+        public function getDate(?DateTimeZone $oTimezone = null): DateTime {
+            if (!$oTimezone) {
+                $oTimezone = new DateTimeZone("UTC");
+            }
+
             $sDriver = $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME);
             if ($sDriver === 'sqlite') {
                 return new DateTime('now');
             }
 
-            return new DateTime($this->rawQuery('SELECT SYSDATE(6)')->fetchColumn());
+            return new DateTime($this->rawQuery('SELECT SYSDATE(6)')->fetchColumn(), $oTimezone);
         }
 
         /**

@@ -56,7 +56,11 @@
         protected function init():void {
 {% if primary %}
 {% for field in primary %}
+{% if field.type == 'Field\\Enum' %}
+            $this->addPrimary(new {{field.type}}('{{field.name}}', PublicNS\{{ table.title }}::{{field.enum_const}}));
+{% else %}
             $this->addPrimary(new {{field.type}}('{{field.name}}'));
+{% endif %}
 {% endfor %}
 {% endif %}
 

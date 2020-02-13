@@ -9,16 +9,21 @@
     use PDO;
 
     class Integer extends Number {
-
-        public function increment():void {
+        /**
+         * @param int $iBy
+         */
+        public function increment(int $iBy = 1):void {
             if (!$this->isNull()) {
-                $this->sValue += 1;
+                $this->sValue += $iBy;
             }
         }
 
-        public function decrement(): void {
+        /**
+         * @param int $iBy
+         */
+        public function decrement(int $iBy = 1): void {
             if (!$this->isNull()) {
-                $this->sValue -= 1;
+                $this->sValue -= $iBy;
             }
         }
 

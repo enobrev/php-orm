@@ -15,6 +15,8 @@
         public function increment(int $iBy = 1):void {
             if (!$this->isNull()) {
                 $this->sValue += $iBy;
+            } else {
+                $this->sValue = $iBy;
             }
         }
 

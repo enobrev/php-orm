@@ -2,11 +2,11 @@
     namespace Enobrev\ORM;
 
     use DateTime;
-    use Enobrev\SQLBuilder;
     use Exception;
-    use stdClass;
     use PDOStatement;
-    use function Enobrev\dbg;
+    use stdClass;
+
+    use Enobrev\SQLBuilder;
 
     class TableFieldNotFoundException extends TableException {}
 
@@ -374,15 +374,14 @@
          * @param array $aOverride Data that overrides the map
          */
         public function mapArrayToFields(Array $aData, Array $aMap, Array $aOverride = []): void {
-            $aMappedData = array();
-            foreach($aMap as $sDataField => $mField) {
-                if (array_key_exists($sDataField, $aData)) {
-                    if ($mField instanceof Field) {
-                        $mField = $mField->sColumn;
-                    }
-
-                    $aMappedData[$mField] = $aData[$sDataField];
+            $aMatchedKeys = array_intersect_key($aMap, $aData);
+            $aMappedData  = array();
+            foreach($aMatchedKeys as $sDataField => $mField) {
+                if ($mField instanceof Field) {
+                    $mField = $mField->sColumn;
                 }
+
+                $aMappedData[$mField] = $aData[$sDataField];
             }
 
             foreach($aOverride as $sField => $mData) {

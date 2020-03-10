@@ -21,7 +21,11 @@
                 $sValue = $sValue->getValue();
             }
 
-            if (is_string($sValue) && empty(trim($sValue))) {
+            if (is_array($sValue) || is_object($sValue)) {
+                $sValue = json_encode($sValue);
+            }
+
+            if (empty(trim($sValue))) {
                 $sValue = NULL;
             }
 

@@ -468,7 +468,7 @@
                 $oField->setValue($this->$sField);
             }
 
-            if ($this->bFromPDO && property_exists($this, $sField)) {
+            if ($this->bFromPDO && property_exists($this, $sField) && $this->$sField instanceof Field === false) {
                 $this->oResult->$sField = $this->$sField;
             }
 

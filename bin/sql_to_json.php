@@ -274,6 +274,7 @@
                 'primary'           => false,
                 'unique'            => false,
                 'boolean'           => false,
+                'generated'         => stripos($oField->extra, 'generated') !== false,
                 'auto_increment'    => strtolower($oField->extra) === 'auto_increment',
                 'nullable'          => strtolower($oField->is_nullable) === 'yes',
                 'var'               => getFieldTitle($sField),

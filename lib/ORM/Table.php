@@ -298,6 +298,23 @@
         }
 
         /**
+         *
+         * @param stdClass $oData
+         * @return static
+         */
+        public function getNonGeneratedFields() {
+            $aFields = [];
+            $aProperties = get_object_vars($this);
+            foreach(array_keys($aProperties) as $sProperty) {
+                if (($this->$sProperty instanceof Field) && $this->$sProperty->isGenerated() === false) {
+                    $aFields[] =& $this->$sProperty;
+                }
+            }
+
+            return $aFields;
+        }
+
+        /**
          * @return Field[]
          */
         public function getPrimary(): array {
@@ -504,6 +521,15 @@
             foreach ($aFields as $oField) {
                 $this->addPrimary($oField);
             }
+        }
+
+        /**
+         * @param Field $oField
+         * @return void
+         */
+        public function addGenerated(Field $oField): void {
+            $this->addField($oField);
+            $oField->setGenerated(true);
         }
 
         protected function preUpdate():void {}

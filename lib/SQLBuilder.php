@@ -722,7 +722,7 @@
         private function buildInsert(): self {
             if (count($this->aFields) === 0) {
                 if (count($this->aTables)) {
-                    $this->aFields = $this->aTables[0]->getFields();
+                    $this->aFields = $this->aTables[0]->getNonGeneratedFields();
                 } else {
                     throw new SQLBuilderMissingTableOrFieldsException;
                 }
@@ -761,7 +761,7 @@
         public function buildUpdate(): self {
             if (count($this->aFields) === 0) {
                 if (count($this->aTables)) {
-                    $this->aFields = $this->aTables[0]->getFields();
+                    $this->aFields = $this->aTables[0]->getNonGeneratedFields();
                 } else {
                     throw new SQLBuilderMissingTableOrFieldsException;
                 }
@@ -802,7 +802,7 @@
 
             if (count($this->aFields) === 0) {
                 if (count($this->aTables)) {
-                    $this->aFields = $this->aTables[0]->getFields();
+                    $this->aFields = $this->aTables[0]->getNonGeneratedFields();
                 } else {
                     throw new SQLBuilderMissingTableOrFieldsException;
                 }

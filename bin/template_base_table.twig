@@ -79,6 +79,11 @@
             );
 
 {% for field in fields %}
+{% if field.generated %}
+            $this->{{field.name}}->setGenerated(true);
+{% endif %}
+{% endfor %}
+{% for field in fields %}
 {% if field.default is not empty %}
             $this->{{field.name}}->setDefault({{field.default|replace({'self': ('PublicNS\\' ~ table.title)})|raw}});
 {% endif %}

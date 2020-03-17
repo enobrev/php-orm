@@ -29,6 +29,9 @@
         /** @var boolean  */
         private $bPrimary;
 
+        /** @var boolean  */
+        private $bGenerated;
+
         /** @var string|null */
         private $sReferenceTable;
 
@@ -51,6 +54,7 @@
             }
 
             $this->bPrimary    = false;
+            $this->bGenerated    = false;
             $this->sDefault    = null;
             $this->sValue      = null;
             $this->sAlias      = null;
@@ -210,9 +214,23 @@
         }
 
         /**
+         * @param boolean $bGenerated
+         */
+        public function setGenerated(bool $bGenerated):void {
+            $this->bGenerated = $bGenerated;
+        }
+
+        /**
+         * @return bool
+         */
+        public function isGenerated(): bool {
+            return $this->bGenerated;
+        }
+
+        /**
          * @param boolean $bPrimary
          */
-        public function setPrimary($bPrimary):void {
+        public function setPrimary(bool $bPrimary):void {
             $this->bPrimary = $bPrimary;
         }
 

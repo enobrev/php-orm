@@ -1,6 +1,5 @@
 #!/usr/bin/env php
 <?php
-    /** @noinspection ALL */
     $sAutoloadFile = current(
         array_filter([
             __DIR__ . '/../../../autoload.php',
@@ -18,6 +17,8 @@
     /** @noinspection PhpIncludeInspection */
     require $sAutoloadFile;
 
+    use Garden\Cli\Cli;
+
     use Enobrev\ORM\Db;
     use Enobrev\ORM\DbException;
     use Enobrev\Log;
@@ -28,33 +29,21 @@
     Log::setService('enobrev-php-orm');
     Log::setPurpose('SQL_TO_JSON');
 
-    $oOptions = new Commando\Command();
+    $oCLI = new Cli();
+    $oCLI->description('Generate SQL.json file from existing database')
+         ->opt('host:h',     'The hostname or IP of the mysql server you are trying to connect to')
+         ->opt('user:u',     'The username to log into the database with')
+         ->opt('password:p', 'Prompt for a password', false, 'boolean')
+         ->opt('database:d', 'The name of the database you are connecting to');
 
-    $oOptions->option('h')
-        ->aka('host')
-        ->describedAs('The hostname or IP of the mysql server you are trying to connect to');
-
-    $oOptions->option('u')
-        ->aka('user')
-        ->describedAs('The username to log into the database with');
-
-    $oOptions->option('p')
-        ->boolean()
-        ->aka('password')
-        ->describedAs('Prompt for a password');
-
-    $oOptions->option('d')
-        ->aka('n')
-        ->aka('name')
-        ->aka('database')
-        ->describedAs('The name of the database you are connecting to');
+    $oArgs = $oCLI->parse($argv, true);
 
     $Db    = null;
     $sPass = '';
-    $sHost = $oOptions['host'];
-    $sUser = $oOptions['user'];
-    $sName = $oOptions['name'];
-    $bPass = $oOptions['password'];
+    $sHost = $oArgs->getOpt('host');
+    $sUser = $oArgs->getOpt('user');
+    $sName = $oArgs->getOpt('database');
+    $bPass = $oArgs->getOpt('password');
     $bConnected = false;
 
     while ($bConnected === false) {

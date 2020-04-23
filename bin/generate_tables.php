@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-    use Commando\Command;
+    use Garden\Cli\Cli;
 
     $sAutoloadFile = current(
         array_filter([
@@ -19,31 +19,24 @@
     /** @noinspection PhpIncludeInspection */
     require $sAutoloadFile;
 
-    $oOptions = new Command();
+    $oCLI = new Cli();
 
-    $oOptions->option('j')
-        ->require()
-        ->expectsFile()
-        ->aka('json')
-        ->describedAs('The JSON file output from sql_to_json.php')
-        ->must(static function($sFile) {
-            return file_exists($sFile);
-        });
+    $oCLI->description('Generate ORM Table Classes')
+        ->opt('json:j',      'The JSON file output from sql_to_json.php',       true)
+        ->opt('output:o',    'The output Path for the files to be written to',  true)
+        ->opt('namespace:n', 'The namespace for the generated Table classes',   true);
 
-    $oOptions->option('o')
-        ->require()
-        ->aka('output')
-        ->describedAs('The output Path for the files to be written to');
+    $oArgs = $oCLI->parse($argv, true);
 
-    $oOptions->option('n')
-        ->require()
-        ->aka('namespace')
-        ->describedAs('The namespace for the generated Table classes');
-
-    $sPathJsonSQL   = $oOptions['json'];
-    $sPath          = rtrim($oOptions['output'], '/') . '/';
+    $sPathJsonSQL   = $oArgs->getOpt('json');
+    $sPath          = rtrim($oArgs->getOpt('output'), '/') . '/';
     $sGeneratedPath = $sPath . '_generated/';
-    $sNamespace     = $oOptions['namespace'];
+    $sNamespace     = $oArgs->getOpt('namespace');
+
+    if (!file_exists($sPathJsonSQL)) {
+        echo "Could not find json file at $sPathJsonSQL";
+        exit(1);
+    }
 
     $oLoader    = new Twig\Loader\FilesystemLoader(__DIR__);
     $oTwig      = new Twig\Environment($oLoader, array('debug' => true));

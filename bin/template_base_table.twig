@@ -159,9 +159,11 @@
 {% endif %}
 {% endfor %}
 {% endif %}
+{% set owned = false %}
 {% if count.inbound %}
 {% for field in fields %}
 {% if field.primary and field.name == 'user_id' %}
+{% set owned = true %}
 
         /**
          * @return PublicNS\{{ table.title }}
@@ -202,6 +204,7 @@
 {% for field in fields %}
 {% if field.reference %}
 {% if field.reference.table.title == 'User' and table.title != 'User' and field.name == 'user_id' %}
+{% if owned == false %}
 
         /**
          * @return PublicNS\{{ field.reference.title }}
@@ -236,6 +239,7 @@
         public function getOwner(): ?PublicNS\User {
             return PublicNS\User::getById($this->user_id);
         }
+{% endif %}{# end owned #}
 {% else %}
 
         /**

@@ -619,6 +619,44 @@
         }
 
         /**
+         * @param string $sKey
+         * @param string $sValue
+         * @return array
+         */
+        public function toKeyGroupedValueArray(string $sKey, string $sValue): array {
+            $aReturn = [];
+            foreach($this as $oTable) {
+                $sGroup = $oTable->$sKey->getValue();
+                if (!isseT($aReturn[$sGroup])) {
+                    $aReturn[$sGroup] = [];
+                }
+
+                $aReturn[$sGroup][] = $oTable->$sValue->getValue();
+            }
+
+            return $aReturn;
+        }
+
+        /**
+         * @param string $sKey
+         * @param string $sValue
+         * @return array
+         */
+        public function toKeyGroupedArray(string $sKey): array {
+            $aReturn = [];
+            foreach($this as $oTable) {
+                $sGroup = $oTable->$sKey->getValue();
+                if (!isseT($aReturn[$sGroup])) {
+                    $aReturn[$sGroup] = [];
+                }
+
+                $aReturn[$sGroup][] = $oTable;
+            }
+
+            return $aReturn;
+        }
+
+        /**
          * @param string $sField
          * @return array
          * @throws TablesInvalidFieldException

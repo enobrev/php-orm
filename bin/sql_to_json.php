@@ -299,6 +299,7 @@
                     break;
 
                 case strpos($oField->data_type, 'int') !== false:
+                case $oField->data_type === 'timestamp':
                     if ($oField->column_key === 'PRI' && $oField->extra === 'auto_increment') {
                         $oTemplateField['type'] = 'Field\\Id';
                         $oTemplateField['qltype'] = 'id';
@@ -313,6 +314,7 @@
 
                 case $oField->data_type === 'float':
                 case $oField->data_type === 'decimal':
+                case strpos($oField->data_type, 'timestamp') !== false: // Timestamp with Precision
                     $oTemplateField['type']     = 'Field\\Decimal';
                     $oTemplateField['qltype']   = 'float';
                     $oTemplateField['php_type'] = 'float';

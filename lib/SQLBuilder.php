@@ -2,6 +2,7 @@
     namespace Enobrev;
 
     use Enobrev\ORM\Field;
+    use Enobrev\ORM\Group;
     use Exception;
     use stdClass;
 
@@ -619,7 +620,7 @@
 
                 $aSQL[] = implode(', ', $aSQLFields);
             } else {
-                $aSQL[] = self::toSQLColumnsForSelect($this->aFields);
+                $aSQL[] = self::toSQLColumnsForSelect($this->aFields, $this->oGroup);
 
                 if ($this->sSelectFieldExtra) {
                     $aSQL[] = ', ' . trim($this->sSelectFieldExtra, ',');
@@ -865,12 +866,24 @@
          * @param bool $bWithTable
          * @return string
          */
-        private static function toSQLColumnsForSelect($aFields, $bWithTable = true): string {
+        private static function toSQLColumnsForSelect($aFields, ?Group $oGroup = null): string {
             $aColumns = array();
 
-            /** @var ORM\Field $oField */
-            foreach($aFields as $oField) {
-                $aColumns[] = $oField->toSQLColumnForSelect($bWithTable);
+            if ($oGroup instanceof Group) {
+                /** @var ORM\Field $oField */
+                foreach ($aFields as $oField) {
+                    $sColumn = $oField->toSQLColumnForSelect(true);
+                    if (!$oGroup->hasField($oField)) {
+                        $sColumn = "ANY_VALUE($sColumn) AS " . $oField->sColumn;
+                    }
+
+                    $aColumns[] = $sColumn;
+                }
+            } else {
+                /** @var ORM\Field $oField */
+                foreach ($aFields as $oField) {
+                    $aColumns[] = $oField->toSQLColumnForSelect(true);
+                }
             }
 
             return implode(', ', $aColumns);

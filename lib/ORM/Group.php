@@ -25,6 +25,16 @@
             $this->aFields = [];
         }
 
+        public function hasField(Field $oCheckField): bool {
+            foreach($this->aFields as $oField) {
+                if ($oField === $oCheckField) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public function toSQL(): string {
             $aFields = array();
             foreach($this->aFields as $oField) {

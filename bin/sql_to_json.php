@@ -142,8 +142,21 @@
         }
     }
 
+    function depluralizeTableName($sTable) {
+        $aTableName = explode('_', $sTable);
+
+        if (count($aTableName) === 1) {
+            return depluralize($sTable);
+        }
+
+        $sNameEnd     = array_pop($aTableName);
+        $aTableName[] = depluralize($sNameEnd);
+
+        return implode('_', $aTableName);
+    }
+
     function getClassName($sTable) {
-        return depluralize(str_replace(' ', '', ucwords(str_replace('_', ' ', $sTable))));
+        return str_replace(' ', '', ucwords(str_replace('_', ' ', depluralizeTableName($sTable))));
     }
 
     function getFieldTitle($sField) {
@@ -151,7 +164,7 @@
     }
 
     function getClassNamePlural($sTable) {
-        return pluralize(depluralize(str_replace(' ', '', ucwords(str_replace('_', ' ', $sTable)))));
+        return pluralize(str_replace(' ', '', ucwords(str_replace('_', ' ', depluralizeTableName($sTable)))));
     }
 
     $aM2MTables   = [];
@@ -210,25 +223,15 @@
             $sNamePlural      .= 's';
         }
 
-        $aTableName = explode('_', $sTable);
-        if (count($aTableName) > 1) {
-            $sNameEnd = array_pop($aTableName);
-            $sSingularEnd = depluralize($sNameEnd);
-            $aTableName[] = depluralize($sNameEnd);
-            $sSingular = implode('_', $aTableName);
-        } else {
-            $sSingular = depluralize($sTable);
-        }
-
         $aData = array(
             'table' => array(
                 'name'                  => $sTable,
-                'singular'              => $sSingular,
+                'singular'              => depluralizeTableName($sTable),
                 'title'                 => getClassName($sTable),
                 'plural'                => $sNamePlural,
                 'spaced'                => str_replace('_', ' ', $sTable),
-                'spaced_singular'       => depluralize(str_replace('_', ' ', $sTable)),
-                'spaced_singular_title' => ucwords(depluralize(str_replace('_', ' ', $sTable))),
+                'spaced_singular'       => str_replace('_', ' ', depluralizeTableName($sTable)),
+                'spaced_singular_title' => ucwords(str_replace('_', ' ', depluralizeTableName($sTable))),
                 'spaced_title'          => ucwords(str_replace('_', ' ', $sTable)),
                 'comment'               => $aTable['comment'],
                 'class'                 => $sClassName,

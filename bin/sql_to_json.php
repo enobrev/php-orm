@@ -98,7 +98,7 @@
     $aTableNames = array();
     $aReferences = array();
     $aReverseReferences = array();
-    
+
     while ($oTable = $oTables->fetchObject()) {
         $sTable  = $oTable->table_name;
         $oFields = $Db->query("SELECT table_name, column_name, ordinal_position, is_nullable, data_type, character_maximum_length, numeric_precision, datetime_precision, column_key, column_type, column_default, column_comment, extra FROM information_schema.columns WHERE table_schema = '$sName' AND table_name = '$sTable' ORDER BY ordinal_position ASC");
@@ -210,10 +210,20 @@
             $sNamePlural      .= 's';
         }
 
+        $aTableName = explode('_', $sTable);
+        if (count($aTableName) > 1) {
+            $sNameEnd = array_pop($aTableName);
+            $sSingularEnd = depluralize($sNameEnd);
+            $aTableName[] = depluralize($sNameEnd);
+            $sSingular = implode('_', $aTableName);
+        } else {
+            $sSingular = depluralize($sTable);
+        }
+
         $aData = array(
             'table' => array(
                 'name'                  => $sTable,
-                'singular'              => depluralize($sTable),
+                'singular'              => $sSingular,
                 'title'                 => getClassName($sTable),
                 'plural'                => $sNamePlural,
                 'spaced'                => str_replace('_', ' ', $sTable),

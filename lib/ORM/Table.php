@@ -552,6 +552,7 @@
                     SQLBuilder::update($this)->also($this->getPrimary())
                 );
                 $this->postUpdate();
+                $this->applyResult();
 
                 return $oReturn;
             }
@@ -677,6 +678,7 @@
                 $this->postUpsertInsert();
             } else {
                 $this->postUpsertUpdate();
+                $this->applyResult();
             }
 
             return $iLastInsertId;

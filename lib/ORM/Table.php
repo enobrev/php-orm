@@ -202,7 +202,7 @@
 
                 $this->init();
                 $this->applyDefaults();
-                $this->applyResult();
+                $this->applyPropertiesToResult();
             }
 
             $this->bConstructed = true;
@@ -221,7 +221,7 @@
         }
 
         // Applies non-table properties from results to oResult
-        private function applyResult(): void {
+        private function applyPropertiesToResult(): void {
             $aProperties      = get_object_vars($this);
             $aExtraResultKeys = array_diff(array_keys($aProperties), self::$aOriginalProperties);
             foreach($aExtraResultKeys as $sProperty) {
@@ -383,6 +383,20 @@
             }
 
             return $this;
+        }
+
+        /**
+         * @param static $oTable
+         */
+        public function setFromTable(Table $oTable) {
+            foreach($oTable->getFields() as $oField) {
+                $sField = $oField->sColumn;
+                if ($this->$sField instanceof Field) {
+                    $this->$sField->setValue($oField);
+                }
+            }
+
+            $this->applyPropertiesToResult();
         }
 
         /**
@@ -552,7 +566,6 @@
                     SQLBuilder::update($this)->also($this->getPrimary())
                 );
                 $this->postUpdate();
-                $this->applyResult();
 
                 return $oReturn;
             }
@@ -678,7 +691,6 @@
                 $this->postUpsertInsert();
             } else {
                 $this->postUpsertUpdate();
-                $this->applyResult();
             }
 
             return $iLastInsertId;

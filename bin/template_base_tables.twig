@@ -14,17 +14,39 @@
     use {{ public_namespace }} as PublicNS;
 
     abstract class {{table.plural}} extends Tables {
-        /**
-         * @return PublicNS\{{table.title}}
-         */
-        public static function getTable() {
+        public static function getTable(): PublicNS\{{table.title}} {
             return new PublicNS\{{table.title}};
+        }
+
+        public function current(): PublicNS\{{table.title}} {
+            return parent::current();
+        }
+
+        public function offsetGet($index): PublicNS\{{table.title}} {
+            return parent::offsetGet($index);
+        }
+
+        /**
+         * @param string $index
+         * @param PublicNS\{{table.title}} $newval
+         */
+        public function offsetSet($index, $newval) {
+            parent::offsetSet($index, $newval);
+        }
+
+        /**
+         * @param PublicNS\{{table.title}} $value
+         *
+         * @throws \Enobrev\ORM\TablesException
+         */
+        public function append($value): void {
+            parent::append($value);
         }
 {% if count.primary == 1 %}
 
         /**
          * @param {{ primary.0.php_type }}[] {{ primary.0.var_array }}
-         * @return PublicNS\{{ table.title }}[]|PublicNS\{{ table.plural }}
+         * @return PublicNS\{{ table.plural }}
          * @throws DbException
          */
         public static function getBy{{ primary.0.plural }}(Array ${{ primary.0.var_array }}) {
@@ -45,7 +67,7 @@
 
         /**
          * @param {{ field.reference.field.php_type }}|PublicNS\{{field.reference.table.title}} ${{field.reference.field.var}}
-         * @return PublicNS\{{ table.title }}[]|PublicNS\{{ table.plural }}
+         * @return PublicNS\{{ table.plural }}
          * @throws DbException
          */
         public static function getBy{{field.reference.title}}(${{ field.reference.field.var }}) {
@@ -61,8 +83,8 @@
         }
 
         /**
-         * @param PublicNS\{{ field.reference.table.plural }}|{{ field.reference.field.php_type }}[] ${{ field.reference.field.var_array }}
-         * @return PublicNS\{{ table.title }}[]|PublicNS\{{ table.plural }}
+         * @param PublicNS\{{ field.reference.table.plural }} ${{ field.reference.field.var_array }}
+         * @return PublicNS\{{ table.plural }}
          * @throws DbException
          */
         public static function getBy{{field.reference.title_plural}}(${{ field.reference.field.var_array }}) {

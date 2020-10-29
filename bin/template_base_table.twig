@@ -32,7 +32,7 @@
 {% endif %}
 
 {% endif %}
-        protected $sTitle = '{{table.name}}';
+        protected string $sTitle = '{{table.name}}';
 
 {% for field in fields %}
 {% if field.type == 'Field\\Enum' %}
@@ -45,9 +45,9 @@
 {% endfor %}
 {% for field in fields %}
 {% if field.field.reference.field.type == "Field\Id" %}
-        /** @var {{field.reference.field.type}} {{field.name}} */
+        /** @var {{field.reference.field.type}} */
 {% else %}
-        /** @var {{field.type}} {{field.name}} */
+        /** @var {{field.type}} */
 {% endif %}
         public ${{ field.name }};
 
@@ -98,9 +98,6 @@
 {% endif %}
         }
 
-        /**
-         * @return PublicNS\{{table.plural}}
-         */
         public static function getTables(): PublicNS\{{table.plural}} {
             return new PublicNS\{{table.plural}};
         }
@@ -110,7 +107,6 @@
 {% for field in primary %}
          * @param {{ field.php_type }}|{{ field.type }}|PublicNS\{{table.title}} ${{field.var}}
 {% endfor %}
-         * @return PublicNS\{{table.title}}
          * @throws DbDuplicateException
          * @throws DbException
          * @throws TableException
@@ -133,7 +129,6 @@
 
         /**
          * @param {{ field.php_type }}|{{ field.type }}|PublicNS\{{table.title}} ${{field.var}}
-         * @return PublicNS\{{table.title}}
          * @throws DbDuplicateException
          * @throws DbException
          * @throws TableException
@@ -150,9 +145,6 @@
 {% for field in fields %}
 {% if field.boolean %}
 
-        /**
-         * @return bool
-         */
         public function is{{ field.short_title }}(): bool {
             return $this->{{ field.name }}->isTrue();
         }
@@ -172,24 +164,15 @@
             return PublicNS\{{ table.title }}::class;
         }
 
-        /**
-         * @return Field
-         */
         public function getOwnerField(): Field {
             return $this->user_id;
         }
 
-        /**
-         * @param Table $oOwner
-         *
-         * @return bool
-         */
         public function hasOwner(Table $oOwner): bool {
             return $this->user_id->is($oOwner);
         }
 
         /**
-         * @return Table
          * @throws DbDuplicateException
          * @throws DbException
          * @throws TableException
@@ -213,25 +196,15 @@
             return PublicNS\{{ field.reference.title }}::class;
         }
 
-        /**
-         * @return Field
-         */
         public function getOwnerField(): Field {
             return $this->user_id;
         }
 
-
-        /**
-         * @param Table $oOwner
-         *
-         * @return bool
-         */
         public function hasOwner(Table $oOwner): bool {
             return $this->user_id->is($oOwner);
         }
 
         /**
-         * @return PublicNS\User
          * @throws DbDuplicateException
          * @throws DbException
          * @throws TableException
@@ -243,7 +216,6 @@
 {% else %}
 
         /**
-         * @return PublicNS\{{field.reference.table.title}}
          * @throws DbDuplicateException
          * @throws DbException
          * @throws TableException
@@ -254,10 +226,6 @@
                  : null;
         }
 
-        /**
-         * @param PublicNS\{{field.reference.table.title}}|null $o{{field.reference.title}}
-         * @return bool
-         */
         public function has{{field.reference.title}}(?PublicNS\{{field.reference.table.title}} $o{{field.reference.title}} = null): bool {
             return $o{{field.reference.title}} instanceof PublicNS\{{field.reference.table.title}}
                 && $this->{{field.name}}->is($o{{field.reference.title}});
@@ -338,7 +306,6 @@
 {% if date_added or date_updated %}
 
         /**
-         * @return DateTime
          * @throws Exception
          */
         public function getLastModified(): DateTime {

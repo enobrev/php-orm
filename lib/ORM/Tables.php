@@ -19,11 +19,10 @@
     class TablesInvalidFieldException     extends TablesException {}
     class TablesInvalidReferenceException extends TablesException {}
 
-    class Tables extends ArrayIterator {
+    abstract class Tables extends ArrayIterator {
         const WILDCARD = '*';
 
-        /** @var string */
-        private static $sNamespaceTable;
+        private static string $sNamespaceTable;
 
         /**
          * @return Db
@@ -51,8 +50,7 @@
          * @noinspection PhpDocSignatureInspection
          * @return Table
          */
-        public static function getTable() {
-        }
+        abstract public static function getTable();
 
         /**
          * @return Table[]|static
@@ -68,14 +66,14 @@
         /**
          * @param int $iCount
          *
-         * @return Table[]|Tables
+         * @return static
          * @throws DbDuplicateException
          * @throws DbException
          * @throws SQLBuilderException
          */
         public static function getRandom(int $iCount = 1) {
             if (!$iCount) {
-                return new self();
+                return new static();
             }
 
             $oTable   = static::getTable();
@@ -509,15 +507,14 @@
 
         /**
          * @param PDOStatement $oResults
-         * @param Table[] ...$aTables
-         * @return Table[]|static
+         * @param Table[] $aTables
+         * @return static
          */
         protected static function fromResults(PDOStatement $oResults, ...$aTables) {
             if (count($aTables) > 1) {
                 $oOutput = new static;
                 while ($oResult = $oResults->fetchObject()) {
                     $aRow = array();
-                    /** @var Table $oTable */
                     foreach ($aTables as $oTable) {
                         /** @var Table $sPrefixedTable */
                         /** @psalm-suppress InvalidArgument */
@@ -639,7 +636,6 @@
 
         /**
          * @param string $sKey
-         * @param string $sValue
          * @return array
          */
         public function toKeyGroupedArray(string $sKey): array {
@@ -731,7 +727,6 @@
          * @throws TablesMultiplePrimaryException
          */
         private function getOnlyPrimary(): Field {
-            /** @var Field[] $aPrimary */
             $aPrimary = static::getTable()->getPrimary();
             if (count($aPrimary) > 1) {
                 throw new TablesMultiplePrimaryException('Can Only get Primary Array of Tables with Single Primary Keys');

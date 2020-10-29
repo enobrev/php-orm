@@ -100,18 +100,35 @@
 
         /**
          * @param bool $bWithTable
+         * @param bool $bAnyValue
+         *
          * @return string
          */
-        public function toSQLColumnForFields(bool $bWithTable = true): string {
+        public function toSQLColumnForFields(bool $bWithTable = true, bool $bAnyValue = false): string {
             if ($bWithTable) {
+                $sTableColumn = implode('.', [$this->sTable, $this->sColumn]);
+
                 if ($this->sAlias && $this->sAlias !== '') {
-                    return implode(' ', array(implode('.', [$this->sAlias, $this->sColumn]),
-                                             'AS', implode('_', [$this->sAlias, $this->sColumn])));
+                    $sTableColumn = implode('.', [$this->sAlias, $this->sColumn]);
+                    $sAliasColumn = implode('_', [$this->sAlias, $this->sColumn]);
+                    if ($bAnyValue) {
+                        return implode(' ', ["ANY_VALUE($sTableColumn)", 'AS', $sAliasColumn]);
+                    }
+
+                    return implode(' ', [$sTableColumn, 'AS', $sAliasColumn]);
                 }
 
                 if ($this->sTable && $this->sTable !== '') {
-                    return implode('.', [$this->sTable, $this->sColumn]);
+                    if ($bAnyValue) {
+                        return implode(' ', ["ANY_VALUE($sTableColumn)", 'AS', $this->sColumn]);
+                    }
+
+                    return $sTableColumn;
                 }
+            }
+
+            if ($bAnyValue) {
+                return implode(' ', ["ANY_VALUE(" . $this->sColumn . ")", 'AS', $this->sColumn]);
             }
 
             return $this->sColumn;
@@ -121,8 +138,8 @@
          * @param bool $bWithTable
          * @return string
          */
-        public function toSQLColumnForSelect(bool $bWithTable = true): string {
-            return $this->toSQLColumnForFields($bWithTable);
+        public function toSQLColumnForSelect(bool $bWithTable = true, bool $bAnyValue = false): string {
+            return $this->toSQLColumnForFields($bWithTable, $bAnyValue);
         }
 
         /**

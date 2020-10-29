@@ -872,12 +872,7 @@
             if ($oGroup instanceof Group) {
                 /** @var ORM\Field $oField */
                 foreach ($aFields as $oField) {
-                    $sColumn = $oField->toSQLColumnForSelect(true);
-                    if (!$oGroup->hasField($oField)) {
-                        $sColumn = "ANY_VALUE($sColumn) AS " . $oField->sColumn;
-                    }
-
-                    $aColumns[] = $sColumn;
+                    $aColumns[] = $oField->toSQLColumnForSelect(true, !$oGroup->hasField($oField));
                 }
             } else {
                 /** @var ORM\Field $oField */

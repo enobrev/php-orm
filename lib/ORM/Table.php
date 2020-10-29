@@ -8,20 +8,13 @@
 
     use Enobrev\SQLBuilder;
 
-    class TableFieldNotFoundException extends TableException {}
-
-    class Table {
-        /** @var null|string  */
-        protected $sTitle;
+    abstract class Table {
+        protected string $sTitle = '';
 
         /** @var Field[] */
-        private $aFields = [];
+        private array $aFields = [];
 
-        /** @var null|stdClass  */
-        public $oResult;
-
-        /** @var string  */
-        public $sKey = __CLASS__;
+        public ?stdClass $oResult;
 
         /**
          * @return Db
@@ -31,22 +24,19 @@
             return Db::getInstance();
         }
 
-        /**
-         * @param string $sTableClass
-         * @return Table
-         */
         public static function getInstanceFromName(string $sTableClass): self {
             $sTable = Tables::getNamespacedTableClassName($sTableClass);
             return new $sTable;
         }
 
         /**
-         * @param string $sField
+         * @param string      $sField
          * @param string|null $sAlias
+         *
          * @return Field
          * @throws TableFieldNotFoundException
          */
-        public static function Field($sField, $sAlias = null): Field {
+        public static function Field(string $sField, ?string $sAlias = null): Field {
             $oTable = new static;
 
             if ($oTable->$sField instanceof Field) {
@@ -60,51 +50,36 @@
             throw new TableFieldNotFoundException($sField);
         }
 
-        /**
-         * @throws TableException
-         */
-        public static function getTables() {
-            throw new TableException('This Method Should Have Been Overridden');
-        }
+        abstract public static function getTables();
 
-        /**
-         * @param array $aData
-         * @return static
-         */
-        public static function createFromArray(array $aData) {
-            /** @var Table $oTable */
+        public static function createFromArray(array $aData): self {
             $oTable = new static;
             $oTable->setFromArray($aData);
             return $oTable;
         }
 
-        /**
-         * @param stdClass $oObject
-         * @return null|static
-         */
-        public static function createFromObject(stdClass $oObject = NULL) {
+        public static function createFromObject(?stdClass $oObject = NULL): ?self {
             if ($oObject instanceof stdClass === false) {
                 return NULL;
             }
 
-            /** @var Table $oTable */
             $oTable = new static;
             $oTable->setFromObject($oObject);
             return $oTable;
         }
 
         /**
-         * @param array      $aData
-         * @param array      $aMap
-         * @param array      $aOverride
-         * @param string     $sPrimaryField
+         * @param array       $aData
+         * @param array       $aMap
+         * @param array       $aOverride
+         * @param string|null $sPrimaryField
+         *
          * @return static
          * @throws DbDuplicateException
          * @throws DbException
          * @throws TableException
          */
-        public static function createAndUpdateFromMap(Array $aData, Array $aMap, Array $aOverride = [], string $sPrimaryField = null) {
-            /** @var Table $oTable */
+        public static function createAndUpdateFromMap(array $aData, array $aMap, array $aOverride = [], ?string $sPrimaryField = null): self {
             $oTable = new static;
             $oTable->mapArrayToFields($aData, $aMap, $aOverride);
 
@@ -133,18 +108,16 @@
         /**
          * @param array $aData
          *
-         * @return static
+         * @return Table
          * @throws DbDuplicateException
          * @throws DbException
          * @throws TableException
          */
-        public static function createAndUpdate(Array $aData) {
-            /** @var Table $oTable */
+        public static function createAndUpdate(array $aData): self {
             $oTable = new static;
             $oTable->setFromArray($aData);
 
             if ($oTable->primaryHasValue()) {
-                /** @var Table $oExisting */
                 $oExisting = $oTable->getByPrimary();
                 if ($oExisting instanceof static) {
                     $oExisting->setFromArray($aData);
@@ -157,18 +130,16 @@
             return $oTable;
         }
 
-        /** @var bool  */
-        protected $bConstructed = false;
+        protected bool $bConstructed = false;
 
-        /** @var bool  */
-        protected $bFromPDO     = false;
+        protected bool $bFromPDO     = false;
 
         /**
          * @param PDOStatement $oResults
          * @return static|null
          */
         public function createFromPDOStatement(PDOStatement $oResults): ?Table {
-            $oResponse = $oResults->fetchObject(get_class($this), [$this->getTitle(), true]);
+            $oResponse = $oResults->fetchObject(static::class, [$this->getTitle(), true]);
             if ($oResponse) {
                 return $oResponse;
             }
@@ -176,13 +147,16 @@
             return null;
         }
 
+        /**
+         * @param static $oThis
+         */
         private static function setOriginalProperties($oThis) {
             if (self::$aOriginalProperties === null) {
                 self::$aOriginalProperties = array_keys(get_object_vars($oThis));
             }
         }
 
-        private static $aOriginalProperties = null;
+        private static ?array $aOriginalProperties = null;
 
         /**
          *
@@ -208,11 +182,9 @@
             $this->bConstructed = true;
         }
 
-        protected function init(): void {
-        }
+        abstract protected function init(): void;
 
         public function applyDefaults(): void {
-            /** @var Field $oField */
             foreach ($this->getFields() as $oField) {
                 if ($oField->hasDefault() && !$oField->hasValue()) {
                     $oField->applyDefault();
@@ -231,17 +203,10 @@
             }
         }
 
-        /**
-         * @return null|string
-         */
         public function getTitle(): ?string {
             return $this->sTitle;
         }
 
-        /**
-         * @param Field $oField
-         * @return bool
-         */
         public function fieldChanged(Field $oField): bool {
             if (!$this->oResult) {
                 return true;
@@ -258,9 +223,6 @@
             return false;
         }
 
-        /**
-         * @return bool
-         */
         public function changed(): bool {
             if (!property_exists($this, 'oResult')) {
                 return true;
@@ -298,11 +260,9 @@
         }
 
         /**
-         *
-         * @param stdClass $oData
-         * @return static
+         * @return Field[]
          */
-        public function getNonGeneratedFields() {
+        public function getNonGeneratedFields(): array {
             $aFields = [];
             $aProperties = get_object_vars($this);
             foreach(array_keys($aProperties) as $sProperty) {
@@ -329,6 +289,9 @@
             return $aPrimary;
         }
 
+        /**
+         * @return string[]
+         */
         public function getPrimaryFieldNames(): array {
             $aNames = [];
             foreach($this->getPrimary() as $oPrimary) {
@@ -338,10 +301,6 @@
             return $aNames;
         }
 
-        /**
-         * @param Table $oTable
-         * @return null|Field
-         */
         public function getFieldThatReferencesTable(Table $oTable): ?Field {
             $aProperties = get_object_vars($this);
             foreach(array_keys($aProperties) as $sProperty) {
@@ -356,14 +315,13 @@
         }
 
         /**
-         *
          * @param stdClass $oData
-         * @return static
+         *
+         * @return $this
          */
-        public function setFromObject(stdClass $oData) {
+        public function setFromObject(stdClass $oData): self {
             $this->oResult = $oData;
-            foreach ($this->getFields() as &$oField) {
-                /** @var Field $oField */
+            foreach ($this->getFields() as $oField) {
                 $oField->setValueFromData($oData);
             }
 
@@ -371,11 +329,11 @@
         }
 
         /**
-         *
          * @param array $aData
-         * @return static
+         *
+         * @return $this
          */
-        public function setFromArray(Array $aData) {
+        public function setFromArray(array $aData): self {
             $aFields     = $this->getFields();
             $aFieldData  = array_intersect_key($aData, $aFields);
             foreach($aFieldData as $sField => $mValue) {
@@ -400,13 +358,13 @@
         }
 
         /**
-         * @param array $aData data_field => value
-         * @param array $aMap  data_field => column
-         * @param array $aOverride Data that overrides the map
+         * @param array $aData      data_field => value
+         * @param array $aMap       data_field => column
+         * @param array $aOverride  Data that overrides the map
          */
-        public function mapArrayToFields(Array $aData, Array $aMap, Array $aOverride = []): void {
+        public function mapArrayToFields(array $aData, array $aMap, array $aOverride = []): void {
             $aMatchedKeys = array_intersect_key($aMap, $aData);
-            $aMappedData  = array();
+            $aMappedData  = [];
             foreach($aMatchedKeys as $sDataField => $mField) {
                 if ($mField instanceof Field) {
                     $mField = $mField->sColumn;
@@ -432,11 +390,7 @@
             }
         }
 
-        /**
-         *
-         * @param array $aData
-         */
-        public function setPrimaryFromArray(Array $aData): void {
+        public function setPrimaryFromArray(array $aData): void {
             foreach ($this->getPrimary() as $oPrimary) {
                 if (array_key_exists($oPrimary->sColumn, $aData)) {
                     $this->{$oPrimary->sColumn}->setValue($aData[$oPrimary->sColumn]);
@@ -456,13 +410,13 @@
 
         /**
          * @param Field[] $aFields
+         *
          * @return static|null
          * @throws DbDuplicateException
          * @throws DbException
          * @throws TableException
          */
         public static function getBy(...$aFields) {
-            /** @var Table $oTable */
             $oTable = new static;
             $oSQL   = SQLBuilder::select($oTable)->also($aFields);
 
@@ -470,7 +424,7 @@
                 throw new TableException('No Conditions Given');
             }
 
-            $aQueryName = array();
+            $aQueryName = [];
             foreach($aFields as $oField) {
                 $aQueryName[] = $oField->sColumn;
             }
@@ -486,13 +440,9 @@
             return NULL;
         }
 
-        /**
-         * @param Field $oField
-         * @return void
-         */
         public function addField(Field $oField): void {
             $oField->sTable      = $this->sTitle;
-            $oField->sTableClass = $this->sKey;
+            $oField->sTableClass = static::class;
             $sField              = $oField->sColumn;
 
             if (isset($this->$sField)) {
@@ -508,8 +458,7 @@
         }
 
         /**
-         * @param Field[] ...$aFields
-         * @return void
+         * @param Field[] $aFields
          * @psalm-suppress InvalidArgument
          */
         public function addFields(...$aFields): void {
@@ -518,10 +467,6 @@
             }
         }
 
-        /**
-         * @param Field $oField
-         * @return void
-         */
         public function addPrimary(Field $oField): void {
             $this->addField($oField);
             $oField->setPrimary(true);
@@ -537,16 +482,12 @@
             }
         }
 
-        /**
-         * @param Field $oField
-         * @return void
-         */
         public function addGenerated(Field $oField): void {
             $this->addField($oField);
             $oField->setGenerated(true);
         }
 
-        protected function preUpdate():void {}
+        protected function preUpdate(): void {}
         protected function postUpdate(): void {}
 
         /**
@@ -636,9 +577,6 @@
             return $iLastInsertId;
         }
 
-        /**
-         * @param int $iLastInsertId
-         */
         private function updatePrimary(int $iLastInsertId): void {
             $aPrimary = $this->getPrimary();
             if (count($aPrimary) === 1) {
@@ -650,9 +588,6 @@
             }
         }
 
-        /**
-         * @return array|mixed
-         */
         private function getPrimaryValue() {
             $aPrimary = $this->getPrimary();
             if (count($aPrimary) > 1) {
@@ -672,7 +607,6 @@
         protected function postUpsertUpdate(): void {}
 
         /**
-         *
          * @return int
          * @throws DbDuplicateException
          * @throws DbException
@@ -697,8 +631,6 @@
         }
 
         /**
-         * @return DateTime
-         *
          * @throws Exception
          * @throws DbException
          */
@@ -710,7 +642,7 @@
          * @return array
          */
         public function toArray(): array {
-            $aArray = array();
+            $aArray = [];
 
             foreach ($this->getFields() as $oField) {
                 $aArray[$oField->sColumn] = (string) $oField;
@@ -725,12 +657,11 @@
 
         /**
          *
-         * @return String[]
+         * @return string[]
          */
         public function toSQLArray(): array {
-            $aArray = array();
+            $aArray = [];
 
-            /** @var Field $oField */
             foreach ($this->getFields() as $oField) {
                 if (!$oField->isNull()) {
                     $aArray[$oField->sColumn] = $oField->toSQL();
@@ -740,13 +671,9 @@
             return $aArray;
         }
 
-        /**
-         * @return array[]
-         */
         public function toInfoArray(): array {
-            $aFields = array();
+            $aFields = [];
 
-            /** @var Field $oField */
             foreach($this->getFields() as $oField) {
                 $aFields[$oField->sColumn] = $oField->toInfoArray();
             }
@@ -754,9 +681,6 @@
             return $aFields;
         }
 
-        /**
-         * @return bool
-         */
         public function isPublic(): bool {
             return true;
         }

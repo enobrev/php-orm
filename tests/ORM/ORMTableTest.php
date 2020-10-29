@@ -43,7 +43,7 @@ SQL
         }
 
         public function testExtraResultFields(): void {
-            $oExtraField = ExtraField::getById(1);
+            $oExtraField = ORMTableTestExtraField::getById(1);
             $this->assertEquals(1, $oExtraField->id->getValue());
             $this->assertEquals(2, $oExtraField->field_1->getValue());
 
@@ -52,14 +52,13 @@ SQL
         }
     }
 
+    class ORMTableTestExtraField extends Table {
+        protected string $sTitle = 'extra_field';
 
-    class ExtraField extends Table {
-        protected $sTitle = 'extra_field';
-
-        /** @var Field\Integer field_1 */
+        /** @var Field\Integer */
         public $id;
 
-        /** @var Field\Integer field_2 */
+        /** @var Field\Integer */
         public $field_1;
 
         protected function init(): void {
@@ -69,10 +68,15 @@ SQL
             );
         }
 
-        public static function getById($iId): ?ExtraField {
+        public static function getById($iId): ?ORMTableTestExtraField {
             $oTable = new self;
             return self::getBy(
                 $oTable->id->setValue($iId)
             );
         }
+
+        public static function getTables() {
+            // TODO: Implement getTables() method.
+        }
     }
+

@@ -9,17 +9,15 @@
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
     use PHPUnit\Framework\TestCase;
- 
+
+
     class ORMConditionsTest extends TestCase {
         public function setUp():void {
             Db::getInstance(Db::defaultSQLiteMemory());
         }
-        
+
         public function testOne(): void {
-            $oUsers = new Table('users');
-            $oUsers->addFields(
-                new Field\Integer('user_id')
-            );
+            $oUsers = new ORMConditionsTestUser();
             $oUsers->user_id->setValue(1);
 
             $oConditions = Conditions::also(Condition::eq($oUsers->user_id));
@@ -27,11 +25,7 @@
         }
 
         public function testAnd(): void {
-            $oUsers = new Table('users');
-            $oUsers->addFields(
-                new Field\Integer('user_id'),
-                new Field\Text('user_name_first')
-            );
+            $oUsers = new ORMConditionsTestUser();
             $oUsers->user_id->setValue(1);
             $oUsers->user_name_first->setValue( 'Mark');
 
@@ -43,11 +37,7 @@
         }
 
         public function testOr(): void {
-            $oUsers = new Table('users');
-            $oUsers->addFields(
-                new Field\Integer('user_id'),
-                new Field\Text('user_name_first')
-            );
+            $oUsers = new ORMConditionsTestUser();
             $oUsers->user_id->setValue( 1);
             $oUsers->user_name_first->setValue( 'Mark');
 
@@ -59,19 +49,11 @@
         }
 
         public function testAndGroup(): void {
-            $oUserOne = new Table('users');
-            $oUserOne->addFields(
-                new Field\Integer('user_id'),
-                new Field\Text('user_name_first')
-            );
+            $oUserOne = new ORMConditionsTestUser();
             $oUserOne->user_id->setValue(1);
             $oUserOne->user_name_first->setValue('Mark');
 
-            $oUserTwo = new Table('users');
-            $oUserTwo->addFields(
-                new Field\Integer('user_id'),
-                new Field\Text('user_name_first')
-            );
+            $oUserTwo = new ORMConditionsTestUser();
             $oUserTwo->user_id->setValue(2);
             $oUserTwo->user_name_first->setValue('Test');
 
@@ -86,5 +68,27 @@
                 )
             );
             $this->assertEquals('(users.user_id = 1 AND users.user_name_first = "Mark") OR (users.user_id = 2 AND users.user_name_first = "Test")', $oConditions->toSQL());
+        }
+    }
+
+    class ORMConditionsTestUser extends Table {
+        protected string $sTitle = 'users';
+
+        public Field\Integer $user_id;
+        public Field\Text $user_name_first;
+        public Field\Enum $user_gender;
+        public Field\DateTime $user_date_added;
+
+        public static function getTables() {
+            // TODO: Implement getTables() method.
+        }
+
+        protected function init(): void {
+            $this->addFields(
+                new Field\Integer('user_id'),
+                new Field\Text('user_name_first'),
+                new Field\Enum('user_gender', ['Male', 'Female']),
+                new Field\DateTime('user_date_added')
+            );
         }
     }

@@ -65,7 +65,10 @@
              ->group($oUser->user_id)
              ->limit(5, 10);
 
-            $this->assertEquals('SELECT users.user_id, users.user_name, users.user_email, billing.address_city AS billing_address_city, shipping.address_city AS shipping_address_city'
+            $this->assertEquals('SELECT users.user_id, ANY_VALUE(users.user_name) AS user_name,'
+                                . ' ANY_VALUE(users.user_email) AS user_email,'
+                                . ' ANY_VALUE(billing.address_city) AS billing_address_city,'
+                                . ' ANY_VALUE(shipping.address_city) AS shipping_address_city'
                                 . ' FROM users'
                                 . ' LEFT OUTER JOIN addresses AS billing ON users.user_id = billing.user_id'
                                 . ' LEFT OUTER JOIN addresses AS shipping ON users.user_id = shipping.user_id'

@@ -12,15 +12,30 @@
  
     class ORMTextTrimmedTest extends TestCase {
         public function testLefTOuterJoin(): void {
-            $oUsers = new Table('tags');
-            $oUsers->addFields(
-                new Field\Id('tag_id'),
-                new Field\TextTrimmed('tag_title'),
-                new Field\Boolean('tag_indexed')
-            );
+            $oUsers = new ORMTextTrimmedTestTags;
 
             $oUsers->tag_title->setValue(' I am trimmed ');
 
             $this->assertEquals($oUsers->tag_title->getValue(), 'I am trimmed');
+        }
+    }
+
+    class ORMTextTrimmedTestTags extends Table {
+        protected string $sTitle = 'users';
+
+        public Field\Id $tag_id;
+        public Field\TextTrimmed $tag_title;
+        public Field\Boolean $tag_indexed;
+
+        public static function getTables() {
+            // TODO: Implement getTables() method.
+        }
+
+        protected function init(): void {
+            $this->addFields(
+                new Field\Id('tag_id'),
+                new Field\TextTrimmed('tag_title'),
+                new Field\Boolean('tag_indexed')
+            );
         }
     }

@@ -45,18 +45,11 @@
             return $this->sValue;
         }
 
-        /**
-         * @return bool
-         */
         public function hasValue():bool {
             return is_array($this->sValue) && count($this->sValue);
         }
 
-        /**
-         *
-         * @return string
-         */
-        public function __toString() {
+        public function __toString(): string {
             $sValue = is_array($this->sValue) ? $this->sValue : array();
 
             return implode('|', $sValue);

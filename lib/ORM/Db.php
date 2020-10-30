@@ -3,6 +3,8 @@
 
     use DateTime;
     use DateTimeZone;
+    use Enobrev\ORM\Exceptions\DbDuplicateException;
+    use Enobrev\ORM\Exceptions\DbException;
     use Exception;
     use PDO;
     use PDOException;
@@ -13,36 +15,30 @@
     use Enobrev\SQLBuilder;
 
     class Db {
-        /** @var Db|null */
-        private static $oInstance;
+        private static ?Db $oInstance = null;
 
-        /** @var Db|null */
-        private static $oInstance2;
+        private static ?Db $oInstance2 = null;
 
-        /** @var bool */
-        private static $bConnected = false;
+        private static bool $bConnected = false;
 
-        /** @var bool */
-        public static $bUpsertInserted = false;
+        public static bool $bUpsertInserted = false;
 
-        /** @var bool */
-        public static $bUpsertUpdated  = false;
+        public static bool $bUpsertUpdated  = false;
 
         /** @var mixed */
         private $sLastInsertId;
 
-        /** @var int */
-        private $iLastRowsAffected;
+        private ?int $iLastRowsAffected;
 
-        /** @var PDO $oPDO */
-        private $oPDO;
+        private ?PDO $oPDO;
 
         /**
          * @param PDO|null $oPDO
+         *
          * @return Db
          * @throws DbException
          */
-        public static function getInstance(PDO $oPDO = null): Db {
+        public static function getInstance(?PDO $oPDO = null): Db {
             if (!self::$oInstance instanceof self) {
                 if ($oPDO === null) {
                     throw new DbException('Db Has Not been Initialized Properly');
@@ -226,21 +222,11 @@
         }
 
         /**
-         * @param string|string[]       $sName
+         * @param string|string[] $sName
          * @param string|SQLBuilder|SQL $sQuery
          *
          * @return PDOStatement
-         * @throws ConditionInvalidTypeException
-         * @throws ConditionMissingBetweenValueException
-         * @throws ConditionMissingFieldException
-         * @throws ConditionMissingInValueException
-         * @throws ConditionsNonConditionException
-         * @throws DbDuplicateException
          * @throws DbException
-         * @throws \Enobrev\SQLBuilderException
-         * @throws \Enobrev\SQLBuilderMissingConditionException
-         * @throws \Enobrev\SQLBuilderMissingTableOrFieldsException
-         * @throws \Enobrev\SQLBuilderPrimaryValuesNotSetException
          */
         public function namedQuery($sName, $sQuery): PDOStatement {
             if (is_array($sName)) {
@@ -252,21 +238,11 @@
         }
 
         /**
-         * @param string|SQLBuilder|SQL $sQuery
+         * @param string|SQLBuilder $sQuery
          * @param string                $sName
          *
          * @return false|PDOStatement
-         * @throws ConditionInvalidTypeException
-         * @throws ConditionMissingBetweenValueException
-         * @throws ConditionMissingFieldException
-         * @throws ConditionMissingInValueException
-         * @throws ConditionsNonConditionException
-         * @throws DbDuplicateException
          * @throws DbException
-         * @throws \Enobrev\SQLBuilderException
-         * @throws \Enobrev\SQLBuilderMissingConditionException
-         * @throws \Enobrev\SQLBuilderMissingTableOrFieldsException
-         * @throws \Enobrev\SQLBuilderPrimaryValuesNotSetException
          */
         public function query($sQuery, $sName = '') {
             $sTimerName = 'ORM.Db.query.' . $sName;
@@ -277,15 +253,11 @@
             ];
 
             $sSQL = $sQuery;
-            if ($sSQL instanceof SQL || $sSQL instanceof SQLBuilder) {
-                if ($sSQL instanceof SQL) {
-                    $sSQL = (string) $sSQL;
-                } else {
-                    try {
-                        $sSQL = $sSQL->toString();
-                    } catch(Exception $e) {
-                        Log::ex('ORM.Db.query.builder', $e, $aLogOutput);
-                    }
+            if ($sSQL instanceof SQLBuilder) {
+                try {
+                    $sSQL = $sSQL->toString();
+                } catch(Exception $e) {
+                    Log::ex('ORM.Db.query.builder', $e, $aLogOutput);
                 }
 
                 /** @psalm-suppress PossiblyInvalidPropertyFetch */
@@ -360,11 +332,7 @@
                 }
             }
 
-            if (!trim($sSQL)) {
-                $oException = new DbException('Empty Query');
-                Log::ex('ORM.Db.query', $oException, $aLogOutput);
-                throw $oException;
-            }
+            assert(trim($sSQL) !== '', new DbException('Empty Query'));
 
             try {
                 $mResult = $this->rawQuery($sSQL);
@@ -431,7 +399,7 @@
          * @param string $sQuery
          * @return false|PDOStatement
          */
-        public function rawQuery($sQuery) {
+        public function rawQuery(string $sQuery) {
             return $this->oPDO->query($sQuery);
         }
 
@@ -477,9 +445,11 @@
 
         /**
          *
+         * @param DateTimeZone|null $oTimezone
+         *
          * @return DateTime
-         * @psalm-suppress InvalidReturnType
          * @throws Exception
+         * @psalm-suppress InvalidReturnType
          */
         public function getDate(?DateTimeZone $oTimezone = null): DateTime {
             if (!$oTimezone) {
@@ -500,7 +470,7 @@
          * @return DateTime
          * @throws Exception
          */
-        public function getModifiedDate($sModification): DateTime {
+        public function getModifiedDate(string $sModification): DateTime {
             $oDate = $this->getDate();
             $oDate->modify($sModification);
             return $oDate;

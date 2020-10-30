@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
-    use Enobrev\ORM\DbException;
+    use Enobrev\ORM\Exceptions\DbException;
 
     class Hash extends Text {
 
@@ -21,7 +21,6 @@
         }
 
         /**
-         *
          * @return string
          * @throws DbException
          */
@@ -33,11 +32,7 @@
             return 'UNHEX(' . parent::toSQL() . ')';
         }
 
-        /**
-         * @param bool $bWithTable
-         * @return string
-         */
-        public function toSQLColumnsForInsert($bWithTable = true):string {
+        public function toSQLColumnsForInsert(bool $bWithTable = true):string {
             if ($bWithTable) {
                 $aTableColumn = array($this->sTable, $this->sColumn);
                 $sTableColumn = 'LOWER(HEX(' . implode('.', $aTableColumn) . '))';
@@ -48,11 +43,7 @@
             return 'LOWER(HEX(' . $this->sColumn . '))';
         }
 
-        /**
-         * @param bool $bWithTable
-         * @return string
-         */
-        public function toSQLColumnForSelect($bWithTable = true):string {
+        public function toSQLColumnForSelect(bool $bWithTable = true, bool $bAnyValue = false):string {
             if ($bWithTable) {
                 $aTableColumn = array($this->sTable, $this->sColumn);
                 $sTableColumn = implode('.', $aTableColumn);

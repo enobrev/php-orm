@@ -2,13 +2,13 @@
     namespace Enobrev\ORM\Field;
 
     use DateTime as PHP_DateTime;
-    use Enobrev\ORM\DbException;
-    use Enobrev\ORM\Escape;
-    use Enobrev\ORM\Field;
-    use Enobrev\ORM\Table;
-    use Enobrev\ORM\DateFunction;
     use Exception;
     use stdClass;
+
+    use Enobrev\ORM\Escape;
+    use Enobrev\ORM\Exceptions\DbException;
+    use Enobrev\ORM\Table;
+    use Enobrev\ORM\DateFunction;
 
     class DateTime extends Date {
 
@@ -20,9 +20,6 @@
          */
         public $sValue;
 
-        /**
-         * @return bool
-         */
         public function isNull():bool {
             $sValue = $this->sValue instanceof PHP_DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
@@ -58,7 +55,6 @@
         }
 
         /**
-         *
          * @return string
          * @throws DbException
          */

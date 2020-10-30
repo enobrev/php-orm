@@ -9,7 +9,7 @@
     use Enobrev\SQL;
 
     class User extends Table {
-        protected $sTitle = 'users';
+        protected string $sTitle = 'users';
 
         /** @var  F_Id */
         public $user_id;
@@ -40,10 +40,14 @@
 
             $this->happy->setDefault(false);
         }
+
+        public static function getTables() {
+            // TODO: Implement getTables() method.
+        }
     }
 
     class Address extends Table {
-        protected $sTitle = 'addresses';
+        protected string $sTitle = 'addresses';
 
         /** @var  F_Id */
         public $address_id;
@@ -67,6 +71,10 @@
                 new F_Text('address_1'),
                 new F_Text('address_city')
             );
+        }
+
+        public static function getTables() {
+            // TODO: Implement getTables() method.
         }
     }
 

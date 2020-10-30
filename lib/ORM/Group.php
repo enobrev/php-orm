@@ -1,28 +1,25 @@
 <?php
     namespace Enobrev\ORM;
-    
-    class GroupException extends DbException {}
 
     class Group {
         /**
          * @var Field[]
          */
-        private $aFields;
+        private array $aFields;
 
         /**
-         * @param Field[] ...$aFields
+         * @param Field[] $aFields
          * @return Group
-         * @psalm-suppress InvalidPropertyAssignmentValue
          */
         public static function create(...$aFields): Group {
-            $oGroup   = new self;
-            $oGroup->aFields = $aFields;
-
-            return $oGroup;
+            return new self($aFields);
         }
 
-        public function __construct() {
-            $this->aFields = [];
+        /**
+         * @param Field[] $aFields
+         */
+        private function __construct(array $aFields = []) {
+            $this->aFields = $aFields;
         }
 
         public function hasField(Field $oCheckField): bool {

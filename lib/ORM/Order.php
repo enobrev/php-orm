@@ -1,23 +1,16 @@
 <?php
     namespace Enobrev\ORM;
 
-    class OrderException extends DbException {}
-
     class Order {
         protected const TYPE_DESC  = 'DESC';
         protected const TYPE_ASC   = 'ASC';
         protected const TYPE_FIELD = 'BYFIELD';
 
-        /**
-         * @var Field
-         */
-        private $oField;
+        private Field $oField;
 
-        /** @var string */
-        private $sType;
+        private string $sType;
 
-        /** @var array */
-        private $aValues;
+        private array $aValues;
 
         /**
          * @param Field       $oField
@@ -26,8 +19,8 @@
          *
          * @return Order
          */
-        private static function create(Field $oField, string $sType = self::TYPE_ASC, Array $aValues = array()): self {
-            $oOrder   = new self;
+        private static function create(Field $oField, string $sType = self::TYPE_ASC, array $aValues = []): self {
+            $oOrder          = new self;
             $oOrder->oField  = $oField;
             $oOrder->sType   = $sType;
             $oOrder->aValues = $aValues;
@@ -40,7 +33,7 @@
          * @param array $aValues
          * @return Order
          */
-        public static function desc(Field $oField, Array $aValues = array()): self {
+        public static function desc(Field $oField, array $aValues = []): self {
             return self::create($oField, self::TYPE_DESC, $aValues);
         }
 
@@ -49,7 +42,7 @@
          * @param array $aValues
          * @return Order
          */
-        public static function asc(Field $oField, Array $aValues = array()): self {
+        public static function asc(Field $oField, array $aValues = []): self {
             return self::create($oField, self::TYPE_ASC, $aValues);
         }
 
@@ -58,11 +51,11 @@
          * @param array $aValues
          * @return Order
          */
-        public static function byfield(Field $oField, Array $aValues = array()): self {
+        public static function byfield(Field $oField, Array $aValues = []): self {
             return self::create($oField, self::TYPE_FIELD, $aValues);
         }
 
-        public function __construct() {
+        private function __construct() {
         }
 
         public function toSQL(): string {

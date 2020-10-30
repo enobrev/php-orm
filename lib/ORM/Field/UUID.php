@@ -1,8 +1,9 @@
 <?php
     namespace Enobrev\ORM\Field;
 
-    use Enobrev\ORM\DbException;
-    use \Exception;
+    use Exception;
+
+    use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\ORM\Db;
     use Enobrev\ORM\Table;
     use Enobrev\ORM\Field;
@@ -22,7 +23,6 @@
 
         /**
          * @throws DbException
-         * @throws Exception
          */
         public function generateValue(): void {
             $this->setValue(Db::getInstance()->getUUID());
@@ -59,11 +59,7 @@
             }
         }
 
-        /**
-         *
-         * @return string
-         */
-        public function __toString() {
+        public function __toString(): string {
             return strtolower(str_replace('-', '', (string) $this->sValue));
         }
     }

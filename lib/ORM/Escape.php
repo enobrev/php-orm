@@ -7,8 +7,9 @@
         /**
          * @param string $sString
          * @param int    $sPDOType
+         *
          * @return string
-         * @throws DbException
+         * @throws Exceptions\DbException
          */
         public static function string(string $sString, int $sPDOType = PDO::PARAM_STR): string {
             if (defined('PHPUNIT_ENOBREV_ORM_TESTSUITE') === true) {

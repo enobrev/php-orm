@@ -3,13 +3,13 @@
 
     require __DIR__ . '/../../vendor/autoload.php';
 
-    use Enobrev\ORM\Condition;
+    use PHPUnit\Framework\TestCase;
+
+    use Enobrev\ORM\ConditionFactory;
     use Enobrev\ORM\Conditions;
     use Enobrev\ORM\Db;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
-    use PHPUnit\Framework\TestCase;
-
 
     class ORMConditionsTest extends TestCase {
         public function setUp():void {
@@ -20,7 +20,7 @@
             $oUsers = new ORMConditionsTestUser();
             $oUsers->user_id->setValue(1);
 
-            $oConditions = Conditions::also(Condition::eq($oUsers->user_id));
+            $oConditions = Conditions::also(ConditionFactory::eq($oUsers->user_id));
             $this->assertEquals('users.user_id = 1', $oConditions->toSQL());
         }
 
@@ -30,8 +30,8 @@
             $oUsers->user_name_first->setValue( 'Mark');
 
             $oConditions = Conditions::also(
-                Condition::eq($oUsers->user_id),
-                Condition::eq($oUsers->user_name_first)
+                ConditionFactory::eq($oUsers->user_id),
+                ConditionFactory::eq($oUsers->user_name_first)
             );
             $this->assertEquals('users.user_id = 1 AND users.user_name_first = "Mark"', $oConditions->toSQL());
         }
@@ -42,8 +42,8 @@
             $oUsers->user_name_first->setValue( 'Mark');
 
             $oConditions = Conditions::either(
-                Condition::eq($oUsers->user_id),
-                Condition::eq($oUsers->user_name_first)
+                ConditionFactory::eq($oUsers->user_id),
+                ConditionFactory::eq($oUsers->user_name_first)
             );
             $this->assertEquals('users.user_id = 1 OR users.user_name_first = "Mark"', $oConditions->toSQL());
         }
@@ -59,12 +59,12 @@
 
             $oConditions = Conditions::either(
                 Conditions::also(
-                    Condition::eq($oUserOne->user_id),
-                    Condition::eq($oUserOne->user_name_first)
+                    ConditionFactory::eq($oUserOne->user_id),
+                    ConditionFactory::eq($oUserOne->user_name_first)
                 ),
                 Conditions::also(
-                    Condition::eq($oUserTwo->user_id),
-                    Condition::eq($oUserTwo->user_name_first)
+                    ConditionFactory::eq($oUserTwo->user_id),
+                    ConditionFactory::eq($oUserTwo->user_name_first)
                 )
             );
             $this->assertEquals('(users.user_id = 1 AND users.user_name_first = "Mark") OR (users.user_id = 2 AND users.user_name_first = "Test")', $oConditions->toSQL());

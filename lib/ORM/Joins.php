@@ -6,7 +6,7 @@
     class Joins extends ArrayIterator {
 
         /**
-         * @param Join[] ...$aJoins
+         * @param Join[] $aJoins
          * @return Joins
          */
         public static function create(...$aJoins): Joins {

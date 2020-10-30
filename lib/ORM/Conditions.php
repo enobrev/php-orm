@@ -1,31 +1,22 @@
 <?php
     namespace Enobrev\ORM;
     
-    class ConditionsException extends DbException {}
-    class ConditionsNonConditionException extends ConditionsException {}
+    use Enobrev\ORM\Condition\ConditionInterface;
+    use Enobrev\ORM\Exceptions\ConditionsNonConditionException;
 
     class Conditions {
+        // TODO: An ENUM would be great here
         protected const TYPE_AND = 'AND';
         protected const TYPE_OR  = 'OR';
 
-        /** @var array  */
-        private static $aTypes = [
+        private static array $aTypes = [
             self::TYPE_AND, self::TYPE_OR
         ];
 
-        /**
-         * @param mixed $sElement
-         * @return bool
-         */
-        private static function isType($sElement): bool {
-            return in_array($sElement, self::$aTypes, true);
-        }
+        private string $sType;
 
-        /** @var string  */
-        private $sType;
-
-        /** @var Condition[]|Conditions[] */
-        private $aConditions;
+        /** @var ConditionInterface[]|Conditions[] */
+        private array $aConditions;
 
         public function __clone() {
             foreach($this->aConditions as $iIndex => $mCondition) {
@@ -34,35 +25,22 @@
         }
 
         /**
-         * @param Condition[]|Conditions|string[] $aConditions
+         * @param string $sType
+         * @param ConditionInterface[]|ConditionInterface|Conditions|Field|Field[] $aConditions
          *
          * @return Conditions
-         * @throws ConditionInvalidTypeException
-         * @throws ConditionMissingBetweenValueException
-         * @throws ConditionMissingFieldException
-         * @throws ConditionMissingInValueException
-         * @throws ConditionsNonConditionException
-         * @psalm-suppress RawObjectIteration
-         * @psalm-suppress MismatchingDocblockParamType
          */
-        private static function create(...$aConditions): Conditions {
-            $oConditions = new self();
+        private static function create(string $sType, ...$aConditions): Conditions {
+            assert(in_array($sType, self::$aTypes, true));
+
+            $oConditions = new self($sType);
             foreach($aConditions as $mCondition) {
-                switch(true) {
-                    default:
-                        $oConditions->add($mCondition);
-                        break;
-
-                    case is_array($mCondition):
-                        foreach($mCondition as $mArrayCondition) {
-                            $oConditions->add($mArrayCondition);
-                        }
-                        break;
-
-                    case self::isType($mCondition):
-                        /** @var string $mCondition */
-                        $oConditions->sType = $mCondition;
-                        break;
+                if (is_array($mCondition)) {
+                    foreach($mCondition as $mArrayCondition) {
+                        $oConditions->add($mArrayCondition);
+                    }
+                } else {
+                    $oConditions->add($mCondition);
                 }
             }
 
@@ -70,56 +48,42 @@
         }
 
         /**
-         * @param array ...$aArguments
+         * @param ConditionInterface[]|ConditionInterface|Conditions|Field|Field[] $aArguments
          *
          * @return Conditions
-         * @throws ConditionInvalidTypeException
-         * @throws ConditionMissingBetweenValueException
-         * @throws ConditionMissingFieldException
-         * @throws ConditionMissingInValueException
-         * @throws ConditionsNonConditionException
          */
         public static function also(...$aArguments): Conditions {
             return self::create(self::TYPE_AND, ...$aArguments);
         }
 
         /**
-         * @param array ...$aArguments
+         * @param ConditionInterface[]|ConditionInterface|Conditions|Field|Field[] $aArguments
          *
          * @return Conditions
-         * @throws ConditionInvalidTypeException
-         * @throws ConditionMissingBetweenValueException
-         * @throws ConditionMissingFieldException
-         * @throws ConditionMissingInValueException
-         * @throws ConditionsNonConditionException
          */
         public static function either(...$aArguments): Conditions {
             return self::create(self::TYPE_OR, ...$aArguments);
         }
 
-        public function __construct() {
-            $this->sType       = self::TYPE_AND;
+        public function __construct(string $sType = self::TYPE_AND) {
+            $this->sType       = $sType;
             $this->aConditions = [];
         }
 
         /**
-         * @param Condition|Conditions|Field|Condition[]|Field[]|Conditions[]|string $oCondition
-         *
-         * @throws ConditionInvalidTypeException
-         * @throws ConditionMissingBetweenValueException
-         * @throws ConditionMissingFieldException
-         * @throws ConditionMissingInValueException
-         * @throws ConditionsNonConditionException
+         * @param ConditionInterface[]|ConditionInterface|Conditions|Field|Field[] $oCondition
          */
         public function add($oCondition):void {
+            assert($oCondition instanceof Conditions || $oCondition instanceof ConditionInterface || is_array($oCondition), new ConditionsNonConditionException());
+
             switch(true) {
-                case $oCondition instanceof self:
-                case $oCondition instanceof Condition:
+                case $oCondition instanceof Conditions:
+                case $oCondition instanceof ConditionInterface:
                     $this->aConditions[] = $oCondition;
                     break;
 
                 case $oCondition instanceof Field:
-                    $this->add(Condition::eq($oCondition));
+                    $this->aConditions[] = ConditionFactory::eq($oCondition);
                     break;
 
                 case is_array($oCondition):
@@ -128,16 +92,10 @@
                     }
                     break;
 
+                default:
                 case $oCondition === null:
                     // Deliberately skip me, please
                     break;
-
-                case self::isType($oCondition):
-                    break;
-                default:
-                    throw new ConditionsNonConditionException();
-                    break;
-
             }
         }
 
@@ -145,9 +103,6 @@
             return count($this->aConditions);
         }
 
-        /**
-         * @return string
-         */
         public function toSQL(): string {
             $aOutput = array();
 
@@ -168,9 +123,6 @@
             return implode(' ' . $this->sType . ' ', $aOutput);
         }
 
-        /**
-         * @return string
-         */
         public function toSQLLog(): string {
             $aOutput = array();
 

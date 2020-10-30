@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
-    use Enobrev\ORM\DbException;
+    use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
@@ -9,9 +9,6 @@
     use PDO;
 
     class Integer extends Number {
-        /**
-         * @param int $iBy
-         */
         public function increment(int $iBy = 1):void {
             if (!$this->isNull()) {
                 $this->sValue += $iBy;
@@ -20,9 +17,6 @@
             }
         }
 
-        /**
-         * @param int $iBy
-         */
         public function decrement(int $iBy = 1): void {
             if (!$this->isNull()) {
                 $this->sValue -= $iBy;

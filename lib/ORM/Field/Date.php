@@ -1,16 +1,15 @@
 <?php
     namespace Enobrev\ORM\Field;
 
-    use Enobrev\Log;
-    use Enobrev\ORM\DbException;
     use Exception;
+    use stdClass;
     use DateTime as PHP_DateTime;
 
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
     use Enobrev\ORM\DateFunction;
-    use stdClass;
+    use Enobrev\ORM\Exceptions\DbException;
 
     class Date extends Text {
 
@@ -41,12 +40,7 @@
             return parent::hasValue() && (string) $this !== self::NULL_VALUE;
         }
 
-        /**
-         *
-         * @return string
-         * @throws Exception
-         */
-        public function __toString() {
+        public function __toString(): string {
             $sValue = self::NULL_VALUE;
 
             if ($this->sValue instanceof PHP_DateTime) {
@@ -83,11 +77,9 @@
         }
 
         /**
-         *
          * @param mixed $sValue
          *
          * @return $this
-         * @throws Exception
          * @throws Exception
          */
         public function setValue($sValue) {

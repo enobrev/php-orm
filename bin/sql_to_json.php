@@ -20,7 +20,7 @@
     use Garden\Cli\Cli;
 
     use Enobrev\ORM\Db;
-    use Enobrev\ORM\DbException;
+    use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\Log;
 
     use function Enobrev\depluralize;

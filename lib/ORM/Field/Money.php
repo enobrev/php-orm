@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
-    use Enobrev\ORM\DbException;
+    use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\ORM\Table;
     use PDO;
     use stdClass;
@@ -13,7 +13,7 @@
 
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
-    use Enobrev\ORM\FieldInvalidValueException;
+    use Enobrev\ORM\Exceptions\FieldInvalidValueException;
 
     class Money extends Number {
         protected const DEFAULT_CURRENCY = 'USD';
@@ -21,11 +21,9 @@
         /** @var MoneyPHP|null */
         public $sValue;
 
-        /** @var Currency */
-        protected $oCurrency;
+        protected ?Currency $oCurrency = null;
 
-        /** @var string */
-        protected $sCurrencyField;
+        protected string $sCurrencyField;
 
         /**
          * @param string $sCurrency
@@ -49,10 +47,6 @@
             return $this->oCurrency;
         }
 
-        /**
-         *
-         * @return string
-         */
         public function __toString():string {
             $sValue = 0;
 
@@ -63,9 +57,6 @@
             return $sValue !== 0 ? (string) $sValue : '0';
         }
 
-        /**
-         * @param $sValue
-         */
         public function setValueFromDecimal($sValue): void {
             $oParser = new DecimalMoneyParser(new Currencies\ISOCurrencies());
             $this->sValue = $oParser->parse($sValue, $this->getCurrency());
@@ -88,7 +79,6 @@
         }
 
         /**
-         *
          * @param array $aData
          *
          * @throws FieldInvalidValueException
@@ -124,7 +114,6 @@
          * @param mixed $sValue
          *
          * @return $this
-         * @throws FieldInvalidValueException
          * @throws FieldInvalidValueException
          */
         public function setValue($sValue) {
@@ -184,7 +173,6 @@
          * @param mixed $mValue
          *
          * @return bool
-         * @throws FieldInvalidValueException
          * @throws FieldInvalidValueException
          */
         public function is($mValue): bool {

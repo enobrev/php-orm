@@ -2,18 +2,16 @@
     namespace Enobrev\ORM;
     
     class Limit {
-        /** @var null|int */
-        private $iStart;
+        private ?int $iStart = null;
 
-        /** @var null|int */
-        private $iOffset;
+        private ?int $iOffset = null;
 
         /**
          * @param int $iStart
          * @param int $iOffset
          * @return Limit
          */
-        public static function create(int $iStart = null, int $iOffset = null): self {
+        public static function create(?int $iStart = null, ?int $iOffset = null): self {
             $oLimit = new self;
 
             if ($iOffset !== null) {

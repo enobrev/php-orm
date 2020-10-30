@@ -1,12 +1,11 @@
 <?php
     namespace Enobrev\ORM\Field;
 
-    use Enobrev\ORM\DbException;
+    use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
 
     class TextNullable extends Text {
-
         /**
          *
          * @return string|NULL
@@ -53,7 +52,6 @@
         }
 
         /**
-         *
          * @return string
          * @throws DbException
          */

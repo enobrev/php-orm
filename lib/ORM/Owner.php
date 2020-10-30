@@ -23,29 +23,15 @@
         /**
          * @param Table|null $oOwner
          * @return bool
-         * @throws Exception
          */
-        public function hasOwner(Table $oOwner = null): bool {
+        public function hasOwner(?Table $oOwner = null): bool {
             /** @var Field $oOwnerField */
             $oOwnerField = $this->getOwnerField();
             $sTable      = $this->getOwnerTable();
 
-            $bOwnerIsRightType   = $oOwner instanceof $sTable;
+            assert($oOwner instanceof $sTable,                        new Exception('Invalid Owner Table'));
+            assert($oOwner->{$oOwnerField->sColumn} instanceof Field, new Exception('Owner Table does not have Owner Field'));
 
-            if (!$bOwnerIsRightType) {
-                throw new Exception('Invalid Owner Table');
-            }
-
-            $bOwnerHasRightField = $oOwner->{$oOwnerField->sColumn} instanceof Field;
-
-            if (!$bOwnerHasRightField) {
-                throw new Exception('Owner Table does not have Owner Field');
-            }
-
-            $bOwnerHasRightValue = $oOwnerField->is($oOwner->{$oOwnerField->sColumn});
-
-            return $bOwnerIsRightType
-                && $bOwnerHasRightField
-                && $bOwnerHasRightValue;
+            return $oOwnerField->is($oOwner->{$oOwnerField->sColumn});
         }
     }

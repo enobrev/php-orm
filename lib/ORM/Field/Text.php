@@ -2,7 +2,7 @@
     namespace Enobrev\ORM\Field;
 
 
-    use Enobrev\ORM\DbException;
+    use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
@@ -21,11 +21,7 @@
             return mb_convert_encoding($this->sValue, 'UTF-8', 'UTF-8');
         }
 
-        /**
-         *
-         * @return string
-         */
-        public function __toString() {
+        public function __toString(): string {
             return (string) $this->sValue;
         }
 
@@ -42,9 +38,6 @@
             return Escape::string((string) $this);
         }
 
-        /**
-         * @return bool
-         */
         public function hasValue():bool {
             return parent::hasValue() && (string)$this !== '';
         }

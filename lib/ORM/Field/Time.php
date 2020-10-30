@@ -2,10 +2,11 @@
     namespace Enobrev\ORM\Field;
 
     use DateTime as PHP_DateTime;
-    use Enobrev\ORM\DbException;
+    use Exception;
+
+    use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
-    use Exception;
 
     class Time extends DateTime {
 
@@ -44,9 +45,6 @@
         }
 
 
-        /**
-         * @return bool
-         */
         public function isNull():bool {
             $sValue = $this->sValue instanceof PHP_DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
@@ -57,17 +55,10 @@
             return parent::isNull();
         }
 
-        /**
-         * @return bool
-         */
         public function hasValue(): bool {
             return parent::hasValue() && (string) $this !== self::NULL_VALUE;
         }
 
-        /**
-         *
-         * @return string
-         */
         public function __toString():string {
             $sValue = $this->sValue instanceof PHP_DateTime ? $this->sValue->format(self::DEFAULT_FORMAT) : self::NULL_VALUE;
 
@@ -79,7 +70,6 @@
         }
 
         /**
-         *
          * @return string
          * @throws DbException
          */

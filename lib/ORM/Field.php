@@ -3,19 +3,12 @@
     
     use stdClass;
 
-    class FieldException extends DbException {}
-    class FieldInvalidTypeException extends FieldException {}
-    class FieldInvalidValueException extends FieldException {}
-    
     abstract class Field {
-        /** @var string|null  */
-        public $sTable;
+        public ?string $sTable;
 
-        /** @var string|null  */
-        public $sTableClass;
+        public ?string $sTableClass;
 
-        /** @var string  */
-        public $sColumn;
+        public string $sColumn;
 
         /** @var mixed|null  */
         public $sValue;
@@ -23,25 +16,20 @@
         /** @var mixed|null  */
         public $sDefault;
 
-        /** @var string|null  */
-        public $sAlias;
+        public ?string $sAlias;
 
-        /** @var boolean  */
-        private $bPrimary;
+        private bool $bPrimary;
 
-        /** @var boolean  */
-        private $bGenerated;
+        private bool $bGenerated;
 
-        /** @var string|null */
-        private $sReferenceTable;
+        private ?string $sReferenceTable;
 
-        /** @var string|null */
-        private $sReferenceField;
+        private ?string $sReferenceField;
 
         /**
          *
          * @param string $sTable Can also be column name if no table is to be specified
-         * @param string $sColumn
+         * @param string|null $sColumn
          */
         public function __construct(string $sTable, string $sColumn = null) {
             if ($sColumn === null) {
@@ -66,24 +54,12 @@
          */
         abstract public function __toString();
 
-        /**
-         *
-         * @return string
-         */
         abstract public function toSQL(): string;
 
-        /**
-         *
-         * @return string
-         */
         public function toSQLLog(): string {
             return str_replace('Field_', '', get_class($this));
         }
 
-        /**
-         * @param bool $bWithTable
-         * @return string
-         */
         public function toSQLColumn(bool $bWithTable=true): string {
             if ($bWithTable) {
                 if ($this->sAlias && $this->sAlias !== '') {
@@ -136,6 +112,8 @@
 
         /**
          * @param bool $bWithTable
+         * @param bool $bAnyValue
+         *
          * @return string
          */
         public function toSQLColumnForSelect(bool $bWithTable = true, bool $bAnyValue = false): string {
@@ -144,6 +122,7 @@
 
         /**
          * @param bool $bWithTable
+         *
          * @return string
          */
         public function toSQLColumnForCount(bool $bWithTable = true): string {
@@ -154,17 +133,10 @@
             return $this->sColumn;
         }
 
-        /**
-         * @return string
-         */
         public function toSQLColumnForInsert(): string {
             return $this->toSQLColumnForFields(false);
         }
 
-        /**
-         *
-         * @return array
-         */
         public function toInfoArray():array {
             return [
                 'name'  => $this->sColumn,
@@ -173,8 +145,8 @@
         }
 
         /**
+         * @param $sValue
          *
-         * @param mixed $sValue
          * @return $this
          */
         public function setValue($sValue) {
@@ -195,81 +167,46 @@
             $this->setValue($this->sDefault);
         }
 
-        /**
-         * @param string $sDefault
-         */
         public function setDefault($sDefault): void {
             $this->sDefault = $sDefault;
         }
 
-        /**
-         * @return bool
-         */
         public function hasDefault(): bool {
             return $this->sDefault !== null;
         }
 
-        /**
-         * @return bool
-         */
         public function isDefault(): bool {
             return $this->getValue() === $this->sDefault;
         }
 
-        /**
-         * @param string $sAlias
-         */
-        public function setAlias($sAlias): void {
+        public function setAlias(string $sAlias): void {
             $this->sAlias = $sAlias;
         }
 
-        /**
-         * @return bool
-         */
         public function hasAlias(): bool {
             return $this->sAlias !== null;
         }
 
-        /**
-         * @param boolean $bGenerated
-         */
         public function setGenerated(bool $bGenerated):void {
             $this->bGenerated = $bGenerated;
         }
 
-        /**
-         * @return bool
-         */
         public function isGenerated(): bool {
             return $this->bGenerated;
         }
 
-        /**
-         * @param boolean $bPrimary
-         */
         public function setPrimary(bool $bPrimary):void {
             $this->bPrimary = $bPrimary;
         }
 
-        /**
-         * @return bool
-         */
         public function isPrimary(): bool {
             return $this->bPrimary;
         }
 
-        /**
-         *
-         * @return mixed
-         */
         public function getValue() {            
             return $this->sValue;
         }
 
-        /**
-         *
-         * @return mixed
-         */
         public function getValueOrDefault() {
             return $this->hasValue() ? $this->sValue : $this->sDefault;
         }
@@ -315,18 +252,11 @@
 
             return false;
         }
-        
-        /**
-         *
-         * @return boolean
-         */
+
         public function isNull(): bool {
             return $this->sValue === NULL;
         }
 
-        /**
-         * @return bool
-         */
         public function hasValue(): bool {
             return !$this->isNull();
         }
@@ -341,19 +271,12 @@
             }
         }
 
-        /**
-         *
-         * @param array $aData
-         */
-        public function setValueFromArray($aData): void {
+        public function setValueFromArray(array $aData): void {
             if (array_key_exists($this->sColumn, $aData)) {
                 $this->setValue($aData[$this->sColumn]);
             }
         }
 
-        /**
-         * @return Table|null
-         */
         public function getTable(): ?Table {
             if ($this->sTableClass) {
                 return new $this->sTableClass;
@@ -362,34 +285,20 @@
             return null;
         }
 
-        /**
-         * @param string $sTable
-         * @param string $sField
-         */
-        public function references($sTable, $sField): void {
+        public function references(string $sTable, string $sField): void {
             $this->sReferenceTable = $sTable;
             $this->sReferenceField = $sField;
         }
 
-        /**
-         * @param Table $oTable
-         * @return bool
-         */
         public function referencesTable(Table $oTable): bool {
             return $this->sReferenceTable === $oTable->getTitle();
         }
 
-        /**
-         * @return bool
-         */
         public function hasReference(): bool {
             return $this->sReferenceTable !== null
                 && $this->sReferenceField !== null;
         }
 
-        /**
-         * @return null|string
-         */
         public function referenceField(): ?string {
             return $this->sReferenceField;
         }

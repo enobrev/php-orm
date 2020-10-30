@@ -5,10 +5,6 @@
     use Enobrev\ORM\Table;
 
     class Phone extends Text {
-        /**
-         *
-         * @return string
-         */
         public function __toString() {
             return $this->sValue;
         }

@@ -1,44 +1,36 @@
 <?php
     namespace Enobrev\ORM;
     
-    class JoinException extends DbException {}
+    use Enobrev\ORM\Condition\ConditionInterface;
+    use Enobrev\ORM\Exceptions\ConditionsNonConditionException;
 
     class Join {
         protected const LEFT_OUTER = 'LEFT OUTER';
 
-        /** @var string  */
-        private $sType;
-        
-        /** @var  Field */
-        private $oFrom;
+        private string $sType;
 
-        /** @var  Field */
-        private $oTo;
+        private Field $oFrom;
 
-        /** @var  Condition|Conditions */
-        private $oConditions;
+        private Field $oTo;
+
+        private Conditions $oConditions;
 
         /**
-         * @param $oFrom
-         * @param $oTo
-         * @param $oConditions
+         * @param Field $oFrom
+         * @param Field $oTo
+         * @param ConditionInterface|Conditions|null $oConditions
          *
          * @return Join
-         * @throws ConditionInvalidTypeException
-         * @throws ConditionMissingBetweenValueException
-         * @throws ConditionMissingFieldException
-         * @throws ConditionMissingInValueException
-         * @throws ConditionsNonConditionException
          */
-        public static function create($oFrom, $oTo, $oConditions = null): Join {
+        public static function create(Field $oFrom, Field $oTo, $oConditions = null): Join {
             $oJoin = new self;
             $oJoin->oFrom       = $oFrom;
             $oJoin->oTo         = $oTo;
 
             $oJoinCondition = new Conditions();
-            $oJoinCondition->add(Condition::eq($oFrom, $oTo, Condition::JOIN));
+            $oJoinCondition->add(ColumnsConditionFactory::eq($oFrom, $oTo));
 
-            if ($oConditions instanceof Condition
+            if ($oConditions instanceof ConditionInterface
             ||  $oConditions instanceof Conditions) {
                 $oJoinCondition->add($oConditions);
             }

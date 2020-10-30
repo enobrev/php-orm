@@ -7,7 +7,6 @@
     class TextTrimmed extends Text {
 
         /**
-         *
          * @return string
          */
         public function getValue(): string {
@@ -15,7 +14,6 @@
         }
 
         /**
-         *
          * @param mixed $sValue
          * @return $this
          */
@@ -32,11 +30,7 @@
             return $this;
         }
 
-        /**
-         *
-         * @return string
-         */
-        public function __toString() {
+        public function __toString(): string {
             return trim($this->sValue);
         }
     }

@@ -1,16 +1,15 @@
 <?php
     namespace Enobrev\ORM\Field;
 
-
-    use Enobrev\ORM\DbException;
     use Enobrev\ORM\Escape;
+    use Enobrev\ORM\Exceptions\DbException;
+    use Enobrev\ORM\Exceptions\FieldInvalidValueException;
     use Enobrev\ORM\Field;
-    use Enobrev\ORM\FieldInvalidValueException;
     use Enobrev\ORM\Table;
 
     class Enum extends Field {
         /** @var string[]  */
-        public $aValues = [];
+        public array $aValues = [];
 
         /** @var string  */
         public $sValue;
@@ -57,18 +56,11 @@
         public function toSQL(): string {
             return Escape::string($this->__toString());
         }
-        /**
-         *
-         * @return string
-         */
+
         public function toSQLLog(): string {
             return parent::toSQLLog() . ':' . $this->__toString();
         }
 
-        /**
-         *
-         * @return array
-         */
         public function toInfoArray(): array {
             $aInfo = parent::toInfoArray();
             $aInfo['values'] = $this->aValues;
@@ -76,15 +68,12 @@
             return $aInfo;
         }
 
-        /**
-         * @return bool
-         */
         public function hasValue(): bool {
             return parent::hasValue() && (string)$this !== '';
         }
 
         /**
-         * @param string $sValue
+         * @param $sValue
          * @return bool
          */
         public function isValue($sValue):bool {
@@ -94,7 +83,6 @@
         /**
          * @param mixed $sValue
          * @return $this
-         * @throws FieldInvalidValueException
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -106,10 +94,8 @@
             }
 
             $sValue = (string) $sValue;
-                        
-            if (!$this->isValue($sValue)) {
-                throw new FieldInvalidValueException($this->sColumn . ' [' . $sValue . ']');
-            }
+
+            assert($this->isValue($sValue), new FieldInvalidValueException($this->sColumn . ' [' . $sValue . ']'));
 
             $this->sValue = $sValue;
 

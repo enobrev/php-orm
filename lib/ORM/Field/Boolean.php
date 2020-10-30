@@ -1,18 +1,15 @@
 <?php
     namespace Enobrev\ORM\Field;
 
-    use Enobrev\ORM\DbException;
+    use PDO;
+
     use Enobrev\ORM\Escape;
+    use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
 
-    use PDO;
-
     class Boolean extends Number {
-        /**
-         *
-         * @return string
-         */
+
         public function __toString():string {
             return $this->sValue ? '1' : '0';
         }
@@ -42,22 +39,15 @@
             return $this;
         }
 
-        /**
-         * @return bool
-         */
         public function isTrue():bool {
             return $this->sValue ? true : false;
         }
 
-        /**
-         * @return bool
-         */
         public function isFalse():bool {
             return !$this->isTrue();
         }
 
         /**
-         *
          * @return string
          * @throws DbException
          */

@@ -1,15 +1,15 @@
 <?php
     namespace Enobrev;
 
+    use Enobrev\ORM\Condition\ConditionInterface;
+    use Enobrev\ORM\ConditionFactory;
+    use Enobrev\ORM\Conditions;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Group;
+    use Enobrev\ORM\Limit;
+    use Enobrev\ORM\Table;
     use Exception;
     use stdClass;
-
-    class SQLBuilderException extends Exception {}
-    class SQLBuilderMissingTableOrFieldsException extends SQLBuilderException {}
-    class SQLBuilderMissingConditionException extends SQLBuilderException {}
-    class SQLBuilderPrimaryValuesNotSetException extends SQLBuilderException {}
 
     class SQLBuilder {
         public const TYPE_SELECT = 'SELECT';
@@ -18,48 +18,46 @@
         public const TYPE_UPDATE = 'UPDATE';
         public const TYPE_UPSERT = 'UPSERT';
         public const TYPE_DELETE = 'DELETE';
+        private const TYPES = [
+            self::TYPE_SELECT,
+            self::TYPE_COUNT,
+            self::TYPE_INSERT,
+            self::TYPE_UPDATE,
+            self::TYPE_UPSERT,
+            self::TYPE_DELETE
+        ];
 
-        /** @var null|string  */
-        public $sSQL;
+        public ?string $sSQL = null;
 
-        /** @var string  */
-        public $sSQLGroup;
+        public ?string $sSQLGroup = null;
 
-        /** @var string  */
-        public $sSQLTable;
+        public ?string $sSQLTable = null;
 
-        /** @var string  */
-        public $sSQLType;
+        public ?string $sSQLType = null;
 
-        /** @var string  */
-        public $sSelectFieldExtra;
+        public ?string $sSelectFieldExtra = null;
 
-        /** @var bool  */
-        private $bStar       = false;
+        private bool $bStar       = false;
 
-        /** @var ORM\Table */
-        private $oTable;
+        private ?Table $oTable;
 
-        /** @var ORM\Field[] $aFields */
-        private $aFields     = [];
+        /** @var ORM\Field[] */
+        private array $aFields = [];
 
-        /** @var ORM\Table[] $aTables */
-        private $aTables     = [];
+        /** @var ORM\Table[] */
+        private array $aTables = [];
 
-        /** @var ORM\Join[] $aJoins */
-        private $aJoins      = [];
+        /** @var ORM\Join[] */
+        private array $aJoins  = [];
 
-        /** @var ORM\Order[] $aOrders */
-        private $aOrders     = [];
+        /** @var ORM\Order[] */
+        private array $aOrders = [];
 
-        /** @var ORM\Group $oGroup */
-        private $oGroup;
+        private ?Group $oGroup = null;
 
-        /** @var ORM\Limit $oLimit */
-        private $oLimit;
+        private ?Limit $oLimit = null;
 
-        /** @var ORM\Conditions $oConditions */
-        private $oConditions;
+        private ?Conditions $oConditions = null;
 
         public function __clone() {
             if ($this->oTable) {
@@ -108,35 +106,28 @@
             $this->oConditions  = new ORM\Conditions;
         }
 
-        /**
-         * @return bool
-         */
         public function hasConditions(): bool {
             return $this->oConditions->count() > 0;
         }
 
-        /**
-         * @param $sType
-         */
         public function setType(string $sType): void {
+            assert(in_array($sType, self::TYPES));
+
             $this->sSQLType = $sType;
             $this->sSQL     = null; // Reset SQL so it will be regenerated when using (string) self
         }
 
         /**
-         * @param ORM\Table|array ...$aArguments
+         * @param Table $oTable
+         *
          * @return $this
          */
-        public function from(...$aArguments): self {
-            foreach($aArguments as $oTable) {
-                if ($oTable instanceof ORM\Table) {
-                    $this->aTables[] = $oTable;
+        public function from(Table $oTable): self {
+            $this->aTables[] = $oTable;
 
-                    if (count($this->aTables) === 1) {
-                        $this->oTable    = $oTable;
-                        $this->sSQLTable = (string) $oTable->getTitle();
-                    }
-                }
+            if (count($this->aTables) === 1) {
+                $this->oTable    = $oTable;
+                $this->sSQLTable = (string) $oTable->getTitle();
             }
 
             return $this;
@@ -146,11 +137,12 @@
          * @param array ...$aArguments
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
+         */
+
+        /**
+         * @param ConditionInterface[]|ConditionInterface|Conditions|Field|Field[] $aArguments
+         *
+         * @return $this
          */
         public function either(...$aArguments): self {
             $this->oConditions->add(SQL::either(...$aArguments));
@@ -158,14 +150,9 @@
         }
 
         /**
-         * @param array ...$aArguments
+         * @param ConditionInterface[]|ConditionInterface|Conditions|Field|Field[] $aArguments
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
         public function also(...$aArguments): self {
             $this->oConditions->add(SQL::also(...$aArguments));
@@ -173,234 +160,162 @@
         }
 
         /**
-         * @param array ...$aArguments
+         * @param Field       $oField
+         * @param Field|mixed $oFieldOrValue
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
-        public function eq(...$aArguments): self {
-            $this->oConditions->add(SQL::eq(...$aArguments));
+        public function eq(Field $oField, $oFieldOrValue = ConditionFactory::NOT_SET): self {
+            $this->oConditions->add(SQL::eq($oField, $oFieldOrValue));
             return $this;
         }
 
         /**
-         * @param Field $oField
-         * @param mixed $mValue
+         * @param Field             $oField
+         * @param Field|mixed|array $oFieldOrValue
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
-        public function eq_in(Field $oField, $mValue): self {
-            /** @psalm-suppress InvalidArgument */
-            if (is_array($mValue)) {
-                $this->oConditions->add(SQL::in($oField, $mValue));
-            } else if (is_string($mValue) && strpos($mValue, ',')) {
-                $this->oConditions->add(SQL::in($oField, explode(',', $mValue)));
-            } else {
-                $this->oConditions->add(SQL::eq($oField, $mValue));
+        public function eq_in(Field $oField, $oFieldOrValue = ConditionFactory::NOT_SET): self {
+            if (is_array($oFieldOrValue)) {
+                return $this->in($oField, $oFieldOrValue);
             }
-            return $this;
+
+            if (is_string($oFieldOrValue) && strpos($oFieldOrValue, ',') !== false) {
+                return $this->in($oField, explode(', ', $oFieldOrValue));
+            }
+
+            return $this->eq($oField, $oFieldOrValue);
         }
 
         /**
-         * @param array ...$aArguments
+         * @param Field       $oField
+         * @param Field|mixed $oFieldOrValue
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
-        public function neq(...$aArguments): self {
-            $this->oConditions->add(SQL::neq(...$aArguments));
+        public function neq(Field $oField, $oFieldOrValue = ConditionFactory::NOT_SET): self {
+            $this->oConditions->add(SQL::neq($oField, $oFieldOrValue));
             return $this;
         }
 
         /**
-         * @param array ...$aArguments
+         * @param Field       $oField
+         * @param Field|mixed $oFieldOrValue
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
-        public function lt(...$aArguments): self {
-            $this->oConditions->add(SQL::lt(...$aArguments));
+        public function like(Field $oField, $oFieldOrValue = ConditionFactory::NOT_SET): self {
+            $this->oConditions->add(SQL::like($oField, $oFieldOrValue));
             return $this;
         }
 
         /**
-         * @param array ...$aArguments
+         * @param Field       $oField
+         * @param Field|mixed $oFieldOrValue
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
-        public function gt(...$aArguments): self {
-            $this->oConditions->add(SQL::gt(...$aArguments));
+        public function nlike(Field $oField, $oFieldOrValue = ConditionFactory::NOT_SET): self {
+            $this->oConditions->add(SQL::nlike($oField, $oFieldOrValue));
             return $this;
         }
 
         /**
-         * @param array ...$aArguments
+         * @param Field       $oField
+         * @param Field|mixed $oFieldOrValue
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
-        public function lte(...$aArguments): self {
-            $this->oConditions->add(SQL::lte(...$aArguments));
+        public function gt(Field $oField, $oFieldOrValue = ConditionFactory::NOT_SET): self {
+            $this->oConditions->add(SQL::gt($oField, $oFieldOrValue));
             return $this;
         }
 
         /**
-         * @param array ...$aArguments
+         * @param Field       $oField
+         * @param Field|mixed $oFieldOrValue
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
-        public function gte(...$aArguments): self {
-            $this->oConditions->add(SQL::gte(...$aArguments));
+        public function gte(Field $oField, $oFieldOrValue = ConditionFactory::NOT_SET): self {
+            $this->oConditions->add(SQL::gte($oField, $oFieldOrValue));
             return $this;
         }
 
         /**
-         * @param array ...$aArguments
+         * @param Field       $oField
+         * @param Field|mixed $oFieldOrValue
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
-        public function like(...$aArguments): self {
-            $this->oConditions->add(SQL::like(...$aArguments));
+        public function lt(Field $oField, $oFieldOrValue = ConditionFactory::NOT_SET): self {
+            $this->oConditions->add(SQL::lt($oField, $oFieldOrValue));
             return $this;
         }
 
         /**
-         * @param array ...$aArguments
+         * @param Field       $oField
+         * @param Field|mixed $oFieldOrValue
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
-        public function nlike(...$aArguments): self {
-            $this->oConditions->add(SQL::nlike(...$aArguments));
+        public function lte(Field $oField, $oFieldOrValue = ConditionFactory::NOT_SET): self {
+            $this->oConditions->add(SQL::lte($oField, $oFieldOrValue));
             return $this;
         }
 
+
+
+        public function nul(Field $oField): self {
+            $this->oConditions->add(SQL::nul($oField));
+            return $this;
+        }
+
+        public function nnul(Field $oField): self {
+            $this->oConditions->add(SQL::nnul($oField));
+            return $this;
+        }
+
+        public function in(Field $oField, array $aValues): self {
+            $this->oConditions->add(SQL::in($oField, $aValues));
+            return $this;
+        }
+
+        public function nin(Field $oField, array $aValues): self {
+            $this->oConditions->add(SQL::nin($oField, $aValues));
+            return $this;
+        }
         /**
-         * @param array ...$aArguments
+         * @param Field         $oField
+         * @param Field|mixed   $mLow
+         * @param Field|mixed   $mHigh
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
-        public function nul(...$aArguments): self {
-            $this->oConditions->add(SQL::nul(...$aArguments));
+        public function between(Field $oField, $mLow = ConditionFactory::NOT_SET, $mHigh = ConditionFactory::NOT_SET): self {
+            $this->oConditions->add(SQL::between($oField, $mLow, $mHigh));
             return $this;
         }
 
         /**
-         * @param array ...$aArguments
+         * @param Field         $oField
+         * @param Field|mixed   $mLow
+         * @param Field|mixed   $mHigh
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
-        public function nnul(...$aArguments): self {
-            $this->oConditions->add(SQL::nnul(...$aArguments));
+        public function nbetween(Field $oField, $mLow = ConditionFactory::NOT_SET, $mHigh = ConditionFactory::NOT_SET): self {
+            $this->oConditions->add(SQL::nbetween($oField, $mLow, $mHigh));
             return $this;
         }
 
         /**
-         * @param array ...$aArguments
+         * @param Field $oFrom
+         * @param Field $oTo
+         * @param ConditionInterface|Conditions|null $oConditions
          *
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
-         */
-        public function in(...$aArguments): self {
-            $this->oConditions->add(SQL::in(...$aArguments));
-            return $this;
-        }
-
-        /**
-         * @param array ...$aArguments
-         *
-         * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
-         */
-        public function nin(...$aArguments): self {
-            $this->oConditions->add(SQL::nin(...$aArguments));
-            return $this;
-        }
-
-        /**
-         * @param array ...$aArguments
-         *
-         * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
-         */
-        public function between(...$aArguments): self {
-            $this->oConditions->add(SQL::between(...$aArguments));
-            return $this;
-        }
-
-        /**
-         * @param ORM\Field                         $oFrom
-         * @param ORM\Field                         $oTo
-         * @param ORM\Condition|ORM\Conditions|null $oConditions
-         *
-         * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
          */
         public function join(ORM\Field $oFrom, ORM\Field $oTo, $oConditions = null): self {
             $this->aJoins[] = SQL::join($oFrom, $oTo, $oConditions);
@@ -412,13 +327,13 @@
          * @param int|null $iOffset
          * @return $this
          */
-        public function limit($iStart = null, $iOffset = null): self {
+        public function limit(?int $iStart = null, ?int $iOffset = null): self {
             $this->oLimit = SQL::limit($iStart, $iOffset);
             return $this;
         }
 
         /**
-         * @param ORM\Field[]  ...$aFields
+         * @param ORM\Field[] $aFields
          * @return $this
          */
         public function group(...$aFields): self {
@@ -431,7 +346,7 @@
          * @param array $aValues
          * @return $this
          */
-        public function desc(ORM\Field $oField, Array $aValues = array()): self {
+        public function desc(ORM\Field $oField, array $aValues = []): self {
             $this->aOrders[] = SQL::desc($oField, $aValues);
             return $this;
         }
@@ -441,7 +356,7 @@
          * @param array $aValues
          * @return $this
          */
-        public function asc(ORM\Field $oField, Array $aValues = array()): self {
+        public function asc(ORM\Field $oField, Array $aValues = []): self {
             $this->aOrders[] = SQL::asc($oField, $aValues);
             return $this;
         }
@@ -451,7 +366,7 @@
          * @param array $aValues
          * @return $this
          */
-        public function byfield(ORM\Field $oField, Array $aValues = array()): self {
+        public function byfield(ORM\Field $oField, Array $aValues = []): self {
             $this->aOrders[] = SQL::byfield($oField, $aValues);
             return $this;
         }
@@ -498,7 +413,7 @@
 
         /**
          * @param ORM\Table   $oTable
-         * @param ORM\Field[] ...$aFields
+         * @param ORM\Field[] $aFields
          * @return $this
          */
         public static function select(ORM\Table $oTable, ...$aFields): self {
@@ -510,7 +425,7 @@
 
         /**
          * @param ORM\Table   $oTable
-         * @param ORM\Field[] ...$aFields
+         * @param ORM\Field[] $aFields
          * @return $this
          */
         public static function count(ORM\Table $oTable, ...$aFields): self {
@@ -521,7 +436,7 @@
         }
 
         /**
-         * @param ORM\Table   $oTable
+         * @param ORM\Table $oTable
          * @return $this
          */
         public static function insert(ORM\Table $oTable): self {
@@ -562,18 +477,12 @@
 
         /**
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
-         * @throws SQLBuilderException
-         * @throws SQLBuilderMissingConditionException
-         * @throws SQLBuilderMissingTableOrFieldsException
-         * @throws SQLBuilderPrimaryValuesNotSetException
          */
         public function build(): self {
+            assert(in_array($this->sSQLType, self::TYPES), new ORM\Exceptions\SQLBuilderException('Invalid SQL Builder Type'));
+
             switch($this->sSQLType) {
+                default:
                 case self::TYPE_SELECT: return $this->buildSelect();
                 case self::TYPE_COUNT:  return $this->buildCount();
                 case self::TYPE_INSERT: return $this->buildInsert();
@@ -581,15 +490,14 @@
                 case self::TYPE_UPSERT: return $this->buildUpsert();
                 case self::TYPE_DELETE: return $this->buildDelete();
             }
-
-            throw new SQLBuilderException('Invalid SQL Builder Type');
         }
 
         /**
          * @return $this
-         * @throws SQLBuilderMissingTableOrFieldsException
          */
         private function buildSelect(): self {
+            assert(count($this->aFields) || count($this->aTables), new ORM\Exceptions\SQLBuilderMissingTableOrFieldsException);
+
             if (count($this->aFields)) {
                 foreach($this->aFields as $oField) {
                     $sTable = $oField->getTable();
@@ -599,8 +507,6 @@
                 }
             } else if (count($this->aTables)) {
                 $this->bStar  = true;
-            } else {
-                throw new SQLBuilderMissingTableOrFieldsException;
             }
 
             $aSQL = array(self::TYPE_SELECT);
@@ -652,7 +558,7 @@
             }
 
             if (count($this->aOrders)) {
-                $aOrderSQL = array();
+                $aOrderSQL = [];
                 foreach($this->aOrders as $oOrder) {
                     $aOrderSQL[] = $oOrder->toSQL();
                 }
@@ -718,14 +624,13 @@
 
         /**
          * @return $this
-         * @throws SQLBuilderMissingTableOrFieldsException
          */
         private function buildInsert(): self {
+            assert(count($this->aFields) || count($this->aTables), new ORM\Exceptions\SQLBuilderMissingTableOrFieldsException);
+
             if (count($this->aFields) === 0) {
                 if (count($this->aTables)) {
                     $this->aFields = $this->aTables[0]->getNonGeneratedFields();
-                } else {
-                    throw new SQLBuilderMissingTableOrFieldsException;
                 }
             }
 
@@ -756,20 +661,15 @@
 
         /**
          * @return $this
-         * @throws SQLBuilderMissingConditionException
-         * @throws SQLBuilderMissingTableOrFieldsException
          */
         public function buildUpdate(): self {
+            assert(count($this->aFields) || count($this->aTables), new ORM\Exceptions\SQLBuilderMissingTableOrFieldsException);
+            assert($this->oConditions->count() > 0,                new ORM\Exceptions\SQLBuilderMissingConditionException);
+
             if (count($this->aFields) === 0) {
                 if (count($this->aTables)) {
                     $this->aFields = $this->aTables[0]->getNonGeneratedFields();
-                } else {
-                    throw new SQLBuilderMissingTableOrFieldsException;
                 }
-            }
-
-            if ($this->oConditions->count() === 0) {
-                throw new SQLBuilderMissingConditionException;
             }
 
             $this->sSQL = implode(' ',
@@ -793,19 +693,14 @@
 
         /**
          * @return $this
-         * @throws SQLBuilderMissingTableOrFieldsException
-         * @throws SQLBuilderPrimaryValuesNotSetException
          */
         public function buildUpsert(): self {
-            if (!$this->oTable->primaryHasValue()) {
-                throw new SQLBuilderPrimaryValuesNotSetException;
-            }
+            assert(count($this->aFields) || count($this->aTables), new ORM\Exceptions\SQLBuilderMissingTableOrFieldsException);
+            assert($this->oTable->primaryHasValue(), new ORM\Exceptions\SQLBuilderPrimaryValuesNotSetException);
 
             if (count($this->aFields) === 0) {
                 if (count($this->aTables)) {
                     $this->aFields = $this->aTables[0]->getNonGeneratedFields();
-                } else {
-                    throw new SQLBuilderMissingTableOrFieldsException;
                 }
             }
 
@@ -839,19 +734,11 @@
 
         /**
          * @return $this
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
-         * @throws SQLBuilderMissingTableOrFieldsException
          */
         public function buildDelete(): self {
-            if ($this->oConditions->count() === 0) {
-                if (count($this->aFields) === 0) {
-                    throw new SQLBuilderMissingTableOrFieldsException;
-                }
+            assert($this->oConditions->count() > 0 || count($this->aFields), new ORM\Exceptions\SQLBuilderMissingTableOrFieldsException);
 
+            if ($this->oConditions->count() === 0) {
                 $this->oConditions->add($this->aFields);
             }
 
@@ -863,19 +750,18 @@
 
         /**
          * @param ORM\Field[] $aFields
-         * @param bool $bWithTable
+         * @param Group|null  $oGroup
+         *
          * @return string
          */
-        private static function toSQLColumnsForSelect($aFields, ?Group $oGroup = null): string {
-            $aColumns = array();
+        private static function toSQLColumnsForSelect(array $aFields, ?Group $oGroup = null): string {
+            $aColumns = [];
 
             if ($oGroup instanceof Group) {
-                /** @var ORM\Field $oField */
                 foreach ($aFields as $oField) {
                     $aColumns[] = $oField->toSQLColumnForSelect(true, !$oGroup->hasField($oField));
                 }
             } else {
-                /** @var ORM\Field $oField */
                 foreach ($aFields as $oField) {
                     $aColumns[] = $oField->toSQLColumnForSelect(true);
                 }
@@ -886,13 +772,13 @@
 
         /**
          * @param ORM\Field[] $aFields
-         * @param bool $bWithTable
+         * @param bool        $bWithTable
+         *
          * @return string
          */
-        private static function toSQLColumnsForCount($aFields, $bWithTable = true): string {
-            $aColumns = array();
+        private static function toSQLColumnsForCount(array $aFields, $bWithTable = true): string {
+            $aColumns = [];
 
-            /** @var ORM\Field $oField */
             foreach($aFields as $oField) {
                 $aColumns[] = $oField->toSQLColumnForCount($bWithTable);
             }
@@ -904,10 +790,9 @@
          * @param ORM\Field[] $aFields
          * @return string
          */
-        private static function toSQLColumnsForInsert($aFields): string {
-            $aColumns = array();
+        private static function toSQLColumnsForInsert(array $aFields): string {
+            $aColumns = [];
 
-            /** @var ORM\Field $oField */
             foreach($aFields as $oField) {
                 $aColumns[] = $oField->toSQLColumnForInsert();
             }
@@ -919,10 +804,9 @@
          * @param ORM\Field[] $aFields
          * @return string
          */
-        private static function toSQL($aFields): string {
-            $aColumns = array();
+        private static function toSQL(array $aFields): string {
+            $aColumns = [];
 
-            /** @var ORM\Field $oField */
             foreach($aFields as $oField) {
                 $aColumns[] = $oField->toSQL();
             }
@@ -934,8 +818,8 @@
          * @param ORM\Field[] $aFields
          * @return string
          */
-        private static function toSQLLog($aFields): string {
-            $aColumns = array();
+        private static function toSQLLog(array $aFields): string {
+            $aColumns = [];
             foreach($aFields as $oField) {
                 $aColumns[] = get_class($oField);
             }
@@ -948,8 +832,8 @@
          * @param stdClass|null $oResult
          * @return string
          */
-        public static function toSQLUpdate(Array $aFields, stdClass $oResult = NULL): string {
-            $aColumns = array();
+        public static function toSQLUpdate(array $aFields, stdClass $oResult = NULL): string {
+            $aColumns = [];
 
             foreach($aFields as $oField) {
                 if ($oResult !== NULL) {
@@ -970,10 +854,9 @@
          * @param stdClass|null $oResult
          * @return string
          */
-        public static function toSQLUpdateLog(Array $aFields, stdClass $oResult = NULL): string {
-            $aColumns = array();
+        public static function toSQLUpdateLog(array $aFields, stdClass $oResult = NULL): string {
+            $aColumns = [];
 
-            /** @var ORM\Field $oField */
             foreach($aFields as $oField) {
                 if (($oResult !== null) &&
                     property_exists($oResult, $oField->sColumn) &&
@@ -988,18 +871,6 @@
             return implode(', ', $aColumns);
         }
 
-        /**
-         * @return string
-         * @throws ORM\ConditionInvalidTypeException
-         * @throws ORM\ConditionMissingBetweenValueException
-         * @throws ORM\ConditionMissingFieldException
-         * @throws ORM\ConditionMissingInValueException
-         * @throws ORM\ConditionsNonConditionException
-         * @throws SQLBuilderException
-         * @throws SQLBuilderMissingConditionException
-         * @throws SQLBuilderMissingTableOrFieldsException
-         * @throws SQLBuilderPrimaryValuesNotSetException
-         */
         public function toString():string {
             if ($this->sSQL === null) {
                 /*
@@ -1021,10 +892,7 @@
             return $this->sSQL;
         }
 
-        /**
-         * @return string
-         */
-        public function __toString() {
+        public function __toString(): string {
             try {
                 return $this->toString();
             } catch (Exception $e) {

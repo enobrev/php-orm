@@ -1,7 +1,7 @@
 <?php
     namespace Enobrev\ORM\Field;
 
-    use Enobrev\ORM\DbException;
+    use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\ORM\Escape;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
@@ -35,7 +35,6 @@
         }
 
         /**
-         *
          * @return string
          * @throws DbException
          */

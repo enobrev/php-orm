@@ -11,13 +11,13 @@
     use Enobrev\Log;
     use Enobrev\SQL;
     use Enobrev\SQLBuilder;
-    use Enobrev\SQLBuilderException;
-
-    class TablesException extends DbException {}
-    class TablesMultiplePrimaryException  extends TablesException {}
-    class TablesInvalidTableException     extends TablesException {}
-    class TablesInvalidFieldException     extends TablesException {}
-    class TablesInvalidReferenceException extends TablesException {}
+    use Enobrev\ORM\Exceptions\DbException;
+    use Enobrev\ORM\Exceptions\TablesException;
+    use Enobrev\ORM\Exceptions\TablesInvalidFieldException;
+    use Enobrev\ORM\Exceptions\TablesInvalidReferenceException;
+    use Enobrev\ORM\Exceptions\TablesInvalidTableException;
+    use Enobrev\ORM\Exceptions\TablesMultiplePrimaryException;
+    use Throwable;
 
     abstract class Tables extends ArrayIterator {
         const WILDCARD = '*';
@@ -67,9 +67,7 @@
          * @param int $iCount
          *
          * @return static
-         * @throws DbDuplicateException
          * @throws DbException
-         * @throws SQLBuilderException
          */
         public static function getRandom(int $iCount = 1) {
             if (!$iCount) {
@@ -84,7 +82,8 @@
         }
 
         /**
-         * @param null|string $sSearch
+         * @param string|null $sSearch
+         *
          * @return array
          */
         public static function searchTermPreProcess(?string $sSearch): array {
@@ -150,6 +149,7 @@
 
         /**
          * @param string $sSort
+         *
          * @return array
          */
         public static function sortTermPreProcess(string $sSort): array {
@@ -182,15 +182,14 @@
         }
 
         /**
-         * @param int|null $iPage
-         * @param int|null $iPer
-         * @param array|null $aSearch
-         * @param array|null $aSort
-         * @param null|string $sSyncDate
-         * @return Table[]|Tables
-         * @throws DbDuplicateException
+         * @param int|null    $iPage
+         * @param int|null    $iPer
+         * @param array|null  $aSearch
+         * @param array|null  $aSort
+         * @param string|null $sSyncDate
+         *
+         * @return static
          * @throws DbException
-         * @throws TablesException
          * @throws TablesInvalidReferenceException
          * @throws TablesInvalidTableException
          */
@@ -202,8 +201,8 @@
 
         /**
          * @param array|null $aSearch
+         *
          * @return int
-         * @throws DbDuplicateException
          * @throws DbException
          * @throws TablesInvalidReferenceException
          * @throws TablesInvalidTableException
@@ -231,11 +230,6 @@
          * @param null|Field[] $aFields
          *
          * @return SQLBuilder
-         * @throws ConditionInvalidTypeException
-         * @throws ConditionMissingBetweenValueException
-         * @throws ConditionMissingFieldException
-         * @throws ConditionMissingInValueException
-         * @throws ConditionsNonConditionException
          * @throws TablesInvalidReferenceException
          * @throws TablesInvalidTableException
          */
@@ -389,7 +383,7 @@
                         /** @var Table $oSortTable */
                         $oSortTable = new $sSortTableClass();
                         if (!$oSortTable instanceof Table) {
-                            throw new TablesInvalidTableException($sSortTableClass . ' is not a valid Table');
+                            throw new Exceptions\TablesInvalidTableException($sSortTableClass . ' is not a valid Table');
                         }
 
                         $oSortReference = $oSortTable->getFieldThatReferencesTable($oTable);
@@ -400,7 +394,7 @@
                                 $sReferenceField = $oSortReference->referenceField();
                                 $oQuery->fields($oTable); // Setting Primary Table fields to ensure joined fields aren't the only ones returned
                                 $oQuery->join($oTable->$sReferenceField, $oSortReference);
-                            } catch (ConditionsNonConditionException $e) {
+                            } catch (Throwable $e) {
                                 Log::ex('Tables.getForCMS.Sort.Foreign.JoinConditionError', $e);
                             }
                         } else {
@@ -416,7 +410,7 @@
                                     // No worries
                                 }
                                 
-                                throw new TablesInvalidReferenceException("Cannot Associate $sTableName with  $sRefTableName");
+                                throw new Exceptions\TablesInvalidReferenceException("Cannot Associate $sTableName with  $sRefTableName");
                             }
 
                             try {
@@ -425,7 +419,7 @@
                                 $sReferenceField = $oSortReference->referenceField();
                                 $oQuery->fields($oTable); // Setting Primary Table fields to ensure joined fields aren't the only ones returned
                                 $oQuery->join($oSortReference, $oSortTable->$sReferenceField);
-                            } catch (ConditionsNonConditionException $e) {
+                            } catch (Throwable $e) {
                                 Log::ex('Tables.getForCMS.Sort.Foreign.JoinConditionError', $e);
                             }
                         }
@@ -469,12 +463,11 @@
          * @param Table $oTable
          * @param array $aData
          * @param array $aMap
-         * @return Table[]|static
-         * @throws DbDuplicateException
-         * @throws DbException
-         * @throws TableException
+         *
+         * @return static
+         * @throws Exceptions\TablesException
          */
-        public static function createAndUpdateFromMap(Table $oTable, Array $aData, Array $aMap) {
+        public static function createAndUpdateFromMap(Table $oTable, array $aData, array $aMap) {
             $aOutput = new static;
             foreach($aData as $aDatum) {
                 /** @var Table $sTable */
@@ -489,12 +482,10 @@
          * @param Table $oTable
          * @param array $aData
          *
-         * @return Table[]|static
-         * @throws DbDuplicateException
-         * @throws DbException
-         * @throws TableException
+         * @return static
+         * @throws Exceptions\TablesException
          */
-        public static function createAndUpdate(Table $oTable, Array $aData) {
+        public static function createAndUpdate(Table $oTable, array $aData) {
             $aOutput = new static;
             foreach($aData as $aDatum) {
                 /** @var Table $sTable */
@@ -507,8 +498,10 @@
 
         /**
          * @param PDOStatement $oResults
-         * @param Table[] $aTables
+         * @param Table[]      $aTables
+         *
          * @return static
+         * @throws Exceptions\TablesException
          */
         protected static function fromResults(PDOStatement $oResults, ...$aTables) {
             if (count($aTables) > 1) {
@@ -538,9 +531,10 @@
 
         /**
          * @param PDOStatement $oResults
-         * @param Table $oTable
+         * @param Table        $oTable
+         *
          * @return static
-         * @throws Exception
+         * @throws Exceptions\TablesException
          */
         protected static function fromResultsWithMeta(PDOStatement $oResults, Table $oTable) {
             /** @var Table $sPrefixedTable */
@@ -554,6 +548,7 @@
 
         /**
          * @param mixed $value
+         *
          * @throws TablesException
          * @throws Exception
          */
@@ -563,7 +558,7 @@
                 parent::append($value);
             } else {
                 // TODO: Log incorrect value or throw an exception or something
-                throw new TablesException('Cannot Append Table of Type ' . get_class($value) . ' to ' . get_class($this));
+                throw new Exceptions\TablesException('Cannot Append Table of Type ' . get_class($value) . ' to ' . get_class($this));
             }
         }
 
@@ -654,6 +649,7 @@
 
         /**
          * @param string $sField
+         *
          * @return array
          * @throws TablesInvalidFieldException
          */
@@ -671,6 +667,7 @@
 
         /**
          * @param string $sField
+         *
          * @return Field[]
          * @throws TablesInvalidFieldException
          */
@@ -682,7 +679,7 @@
             }
 
             if (array_values((array) $this)[0]->$sField instanceof Field === false) {
-                throw new TablesInvalidFieldException('Invalid Field Requested');
+                throw new Exceptions\TablesInvalidFieldException('Invalid Field Requested');
             }
 
             foreach ($this as $oTable) {
@@ -729,7 +726,7 @@
         private function getOnlyPrimary(): Field {
             $aPrimary = static::getTable()->getPrimary();
             if (count($aPrimary) > 1) {
-                throw new TablesMultiplePrimaryException('Can Only get Primary Array of Tables with Single Primary Keys');
+                throw new Exceptions\TablesMultiplePrimaryException('Can Only get Primary Array of Tables with Single Primary Keys');
             }
 
             return $aPrimary[0];

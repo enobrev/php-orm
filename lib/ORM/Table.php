@@ -6,6 +6,8 @@
     use PDOStatement;
     use stdClass;
 
+    use Enobrev\ORM\Exceptions\TableException;
+    use Enobrev\ORM\Exceptions\TableFieldNotFoundException;
     use Enobrev\SQLBuilder;
 
     abstract class Table {
@@ -18,12 +20,17 @@
 
         /**
          * @return Db
-         * @throws DbException
+         * @throws Exceptions\DbException
          */
         protected static function Db(): Db {
             return Db::getInstance();
         }
 
+        /**
+         * @param string $sTableClass
+         *
+         * @return static
+         */
         public static function getInstanceFromName(string $sTableClass): self {
             $sTable = Tables::getNamespacedTableClassName($sTableClass);
             return new $sTable;
@@ -75,9 +82,7 @@
          * @param string|null $sPrimaryField
          *
          * @return static
-         * @throws DbDuplicateException
-         * @throws DbException
-         * @throws TableException
+         * @throws Exceptions\DbException
          */
         public static function createAndUpdateFromMap(array $aData, array $aMap, array $aOverride = [], ?string $sPrimaryField = null): self {
             $oTable = new static;
@@ -108,10 +113,8 @@
         /**
          * @param array $aData
          *
-         * @return Table
-         * @throws DbDuplicateException
-         * @throws DbException
-         * @throws TableException
+         * @return static
+         * @throws Exceptions\DbException
          */
         public static function createAndUpdate(array $aData): self {
             $oTable = new static;
@@ -399,30 +402,24 @@
         }
 
         /**
-         * @return static|null
-         * @throws DbDuplicateException
-         * @throws DbException
-         * @throws TableException
+         * @return $this|null
+         * @throws Exceptions\DbException
          */
         public function getByPrimary() {
             return self::getBy(...$this->getPrimary());
         }
 
         /**
-         * @param Field[] $aFields
+         * @param mixed ...$aFields
          *
          * @return static|null
-         * @throws DbDuplicateException
-         * @throws DbException
-         * @throws TableException
+         * @throws Exceptions\DbException
          */
         public static function getBy(...$aFields) {
             $oTable = new static;
             $oSQL   = SQLBuilder::select($oTable)->also($aFields);
 
-            if ($oSQL->hasConditions() === false) {
-                throw new TableException('No Conditions Given');
-            }
+            assert($oSQL->hasConditions() !== false, new TableException('No Conditions Given'));
 
             $aQueryName = [];
             foreach($aFields as $oField) {
@@ -440,6 +437,9 @@
             return NULL;
         }
 
+        /**
+         * @param Field $oField
+         */
         public function addField(Field $oField): void {
             $oField->sTable      = $this->sTitle;
             $oField->sTableClass = static::class;
@@ -459,7 +459,6 @@
 
         /**
          * @param Field[] $aFields
-         * @psalm-suppress InvalidArgument
          */
         public function addFields(...$aFields): void {
             foreach ($aFields as $oField) {
@@ -491,10 +490,8 @@
         protected function postUpdate(): void {}
 
         /**
-         *
-         * @return PDOStatement|bool
-         * @throws DbDuplicateException
-         * @throws DbException
+         * @return false|PDOStatement
+         * @throws Exceptions\DbException
          */
         public function update() {
             if (!$this->changed()) {
@@ -529,10 +526,8 @@
         protected function postDelete(): void {}
 
         /**
-         *
-         * @return PDOStatement|bool
-         * @throws DbDuplicateException
-         * @throws DbException
+         * @return false|PDOStatement
+         * @throws Exceptions\DbException
          */
         public function delete() {
             if ($this->primaryHasValue()) {
@@ -551,10 +546,8 @@
         protected function postInsert(): void {}
 
         /**
-         *
-         * @return int|mixed
-         * @throws DbDuplicateException
-         * @throws DbException
+         * @return int|mixed|null
+         * @throws Exceptions\DbException
          */
         public function insert() {
             $this->preInsert();
@@ -608,8 +601,7 @@
 
         /**
          * @return int
-         * @throws DbDuplicateException
-         * @throws DbException
+         * @throws Exceptions\DbException
          */
         public function upsert(): int {
             $this->preUpsert();
@@ -631,8 +623,9 @@
         }
 
         /**
+         * @return DateTime
+         * @throws Exceptions\DbException
          * @throws Exception
-         * @throws DbException
          */
         public function now(): DateTime {
             return static::Db()->getDate();

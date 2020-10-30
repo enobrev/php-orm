@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLBuilderSelectNotInTest extends \PHPUnit\Framework\TestCase {
+    class SelectNotInTest extends \PHPUnit\Framework\TestCase {
         public function testSelectNoIntNotInValue() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->nin($oUser->user_id, [1, 2, 3, 4, 5]);

@@ -5,7 +5,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLBuilderUpdateTest extends \PHPUnit\Framework\TestCase {
+    class UpdateTest extends \PHPUnit\Framework\TestCase {
         public function testOne() {
             $oUser    = new User();
             $oUser->user_id->setValue(2);

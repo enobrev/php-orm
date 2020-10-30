@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLBuilderSQLGroupTest extends \PHPUnit\Framework\TestCase {
+    class SelectGroupTest extends \PHPUnit\Framework\TestCase {
         public function testSelectGroup() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->group($oUser->user_id);

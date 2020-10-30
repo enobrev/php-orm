@@ -12,7 +12,7 @@
     ],
     "config": {
         "platform": {
-            "php": "7.2"
+            "php": "7.4"
         },
         "sort-packages": true
     },
@@ -34,13 +34,14 @@
         "ext-readline": "*",
         "adbario/php-dot-notation": "^2.2",
         "enobrev/php-tools": "dev-master",
-        "moneyphp/money": "^3.1",
-        "twig/twig": "^2.9",
-        "vanilla/garden-cli": "^2.2"
+        "moneyphp/money": "^3.3",
+        "twig/twig": "^3.1",
+        "vanilla/garden-cli": "^3.1"
     },
     "require-dev": {
         "ext-sqlite3": "*",
-        "phpunit/phpunit": "^8.1"
+        "phpunit/phpunit": "^9.4",
+        "vimeo/psalm": "^4.1"
     },
     "autoload": {
         "psr-4": {

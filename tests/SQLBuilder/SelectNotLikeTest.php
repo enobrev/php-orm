@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLBuilderSelectNotLikeTest extends \PHPUnit\Framework\TestCase {
+    class SelectNotLikeTest extends \PHPUnit\Framework\TestCase {
         public function testSelectIntNotLikeValue() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->nlike($oUser->user_email, '%gmail%');

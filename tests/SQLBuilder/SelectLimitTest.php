@@ -3,7 +3,7 @@
 
     use Enobrev\ORM\Mock\Table\User;
 
-    class SQLBuilderSQLLimitTest extends \PHPUnit\Framework\TestCase {
+    class SelectLimitTest extends \PHPUnit\Framework\TestCase {
         public function testSelectLimitCount() {
             $oSQL = SQLBuilder::select(new User())->limit(10);
             $this->assertEquals("SELECT * FROM users LIMIT 10", (string) $oSQL);

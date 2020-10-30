@@ -6,7 +6,7 @@
     use Enobrev\ORM\Mock\Table\User;
     use PHPUnit\Framework\TestCase;
 
-    class SQLBuilderSelectAlsoTest extends TestCase {
+    class SelectAlsoTest extends TestCase {
         public function testSelectAlsoFlat() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)

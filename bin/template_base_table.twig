@@ -151,7 +151,7 @@
 {% set owned = false %}
 {% if count.inbound %}
 {% for field in fields %}
-{% if field.primary and field.name == 'user_id' %}
+{% if field.primary and count.primary == 1 and field.name == 'user_id' %}
 {% set owned = true %}
 
         /**

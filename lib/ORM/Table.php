@@ -42,7 +42,6 @@
          * @param string|null $sAlias
          *
          * @return Field
-         * @throws TableFieldNotFoundException
          */
         public static function Field(string $sField, ?string $sAlias = null): Field {
             $oTable = new static;
@@ -55,7 +54,7 @@
                 return $oTable->$sField;
             }
 
-            throw new TableFieldNotFoundException($sField);
+            assert(false, new TableFieldNotFoundException($sField));
         }
 
         abstract public static function getTables();

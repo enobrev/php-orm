@@ -32,7 +32,7 @@
          *
          * @return static
          */
-        public static function getInstanceFromName(string $sTableClass): self {
+        public static function getInstanceFromName(string $sTableClass) {
             $sTable = Tables::getNamespacedTableClassName($sTableClass);
             return new $sTable;
         }
@@ -59,13 +59,23 @@
 
         abstract public static function getTables();
 
-        public static function createFromArray(array $aData): self {
+        /**
+         * @param array $aData
+         *
+         * @return static
+         */
+        public static function createFromArray(array $aData) {
             $oTable = new static;
             $oTable->setFromArray($aData);
             return $oTable;
         }
 
-        public static function createFromObject(?stdClass $oObject = NULL): ?self {
+        /**
+         * @param stdClass|null $oObject
+         *
+         * @return static|null
+         */
+        public static function createFromObject(?stdClass $oObject = NULL) {
             if ($oObject instanceof stdClass === false) {
                 return NULL;
             }
@@ -84,7 +94,7 @@
          * @return static
          * @throws Exceptions\DbException
          */
-        public static function createAndUpdateFromMap(array $aData, array $aMap, array $aOverride = [], ?string $sPrimaryField = null): self {
+        public static function createAndUpdateFromMap(array $aData, array $aMap, array $aOverride = [], ?string $sPrimaryField = null) {
             $oTable = new static;
             $oTable->mapArrayToFields($aData, $aMap, $aOverride);
 
@@ -116,7 +126,7 @@
          * @return static
          * @throws Exceptions\DbException
          */
-        public static function createAndUpdate(array $aData): self {
+        public static function createAndUpdate(array $aData) {
             $oTable = new static;
             $oTable->setFromArray($aData);
 
@@ -323,7 +333,7 @@
          *
          * @return $this
          */
-        public function setFromObject(stdClass $oData): self {
+        public function setFromObject(stdClass $oData) {
             $this->oResult = $oData;
             foreach ($this->getFields() as $oField) {
                 $oField->setValueFromData($oData);
@@ -337,7 +347,7 @@
          *
          * @return $this
          */
-        public function setFromArray(array $aData): self {
+        public function setFromArray(array $aData) {
             $aFields     = $this->getFields();
             $aFieldData  = array_intersect_key($aData, $aFields);
             foreach($aFieldData as $sField => $mValue) {

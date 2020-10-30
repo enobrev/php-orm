@@ -2,21 +2,14 @@
     namespace Enobrev\ORM;
 
     use ArrayIterator;
-    use Exception;
     use PDO;
     use PDOStatement;
-    use ReflectionClass;
-    use ReflectionException;
+    use Throwable;
 
     use Enobrev\Log;
+    use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\SQL;
     use Enobrev\SQLBuilder;
-    use Enobrev\ORM\Exceptions\DbException;
-    use Enobrev\ORM\Exceptions\TablesInvalidFieldException;
-    use Enobrev\ORM\Exceptions\TablesInvalidReferenceException;
-    use Enobrev\ORM\Exceptions\TablesInvalidTableException;
-    use Enobrev\ORM\Exceptions\TablesMultiplePrimaryException;
-    use Throwable;
 
     abstract class Tables extends ArrayIterator {
         const WILDCARD = '*';
@@ -198,8 +191,6 @@
          *
          * @return static
          * @throws DbException
-         * @throws TablesInvalidReferenceException
-         * @throws TablesInvalidTableException
          */
         public static function getForCMS(?int $iPage = 1, ?int $iPer = 100, ?array $aSearch = null, ?array $aSort = null, ?string $sSyncDate = null) {
             $oQuery = self::getQueryForCMS($aSearch, $iPage, $iPer, $aSort, $sSyncDate);
@@ -217,8 +208,6 @@
          *
          * @return int
          * @throws DbException
-         * @throws TablesInvalidReferenceException
-         * @throws TablesInvalidTableException
          */
         public static function countForCMS(?array $aSearch = null): int {
             if (!$aSearch) {
@@ -249,7 +238,6 @@
          * @param null|Field[] $aFields
          *
          * @return SQLBuilder
-         * @throws TablesInvalidReferenceException
          * @throws TablesInvalidTableException
          */
         protected static function getQueryForCMS(?array $aSearch = null, ?int $iPage = null, ?int $iPer = null, ?array $aSort = null, ?string $sSyncDate = null, array $aFields = []): SQLBuilder {
@@ -304,7 +292,7 @@
                                 } else if ($oField instanceof Field\Date) {
                                     try {
                                         $aSQLConditions[] = SQL::eq($oField, $sSearchValue);
-                                    } catch (Exception $e) {
+                                    } catch (Throwable $e) {
                                         Log::w('Tables.getQueryForCMS.InvalidValueForDateSearch');
                                     }
                                 } else if ($oField instanceof Field\Enum) {
@@ -325,7 +313,7 @@
                             } else if ($oSearchField instanceof Field\Date) {
                                 try {
                                     $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
-                                } catch (Exception $e) {
+                                } catch (Throwable $e) {
                                     Log::w('Tables.getQueryForCMS.InvalidValueForDateSearch');
                                 }
                             } else if ($oSearchField instanceof Field\Enum) {
@@ -402,9 +390,8 @@
                         $sSortTableClass = $aField['table'];
 
                         $oSortTable = new $sSortTableClass();
-                        if (!$oSortTable instanceof Table) {
-                            throw new Exceptions\TablesInvalidTableException($sSortTableClass . ' is not a valid Table');
-                        }
+
+                        assert($oSortTable instanceof Table, new Exceptions\TablesInvalidTableException($sSortTableClass . ' is not a valid Table'));
 
                         $oSortReference = $oSortTable->getFieldThatReferencesTable($oTable);
                         if ($oSortReference instanceof Field) {
@@ -420,18 +407,7 @@
                         } else {
                             $oSortReference = $oTable->getFieldThatReferencesTable($oSortTable);
 
-                            if ($oSortReference instanceof Field === false) {
-                                $sTableName = '[Table]';
-                                $sRefTableName = '[Referenced Table]';
-                                try {
-                                    $sTableName    = (new ReflectionClass($oTable))->getShortName();
-                                    $sRefTableName = (new ReflectionClass($oSortReference))->getShortName(); //FIXME: This is impossible since isntanceof Field === false
-                                } catch (ReflectionException $e) {
-                                    // No worries
-                                }
-                                
-                                throw new Exceptions\TablesInvalidReferenceException("Cannot Associate $sTableName with  $sRefTableName");
-                            }
+                            assert($oSortReference instanceof Field, new Exceptions\TablesInvalidReferenceException("Cannot Associate [Table] with [Referenced Table] "));
 
                             try {
                                 // The SortBy Field is in a table that our Primary Table references
@@ -673,7 +649,6 @@
          * @param string $sField
          *
          * @return array
-         * @throws TablesInvalidFieldException
          */
         public function toFieldValueArray(string $sField): array {
             $aFields = $this->toFieldArray($sField);
@@ -691,7 +666,6 @@
          * @param string $sField
          *
          * @return Field[]
-         * @throws TablesInvalidFieldException
          */
         public function toFieldArray(string $sField): array {
             $aReturn = [];
@@ -700,9 +674,7 @@
                 return $aReturn;
             }
 
-            if (array_values((array) $this)[0]->$sField instanceof Field === false) {
-                throw new Exceptions\TablesInvalidFieldException('Invalid Field Requested');
-            }
+            assert(array_values((array) $this)[0]->$sField instanceof Field, new Exceptions\TablesInvalidFieldException('Invalid Field Requested'));
 
             foreach ($this as $oTable) {
                 $aReturn[] = $oTable->$sField;
@@ -713,8 +685,6 @@
 
         /**
          * @return Field[]
-         * @throws TablesInvalidFieldException
-         * @throws TablesMultiplePrimaryException
          */
         public function toPrimaryFieldArray(): array {
             $aReturn = [];
@@ -728,8 +698,6 @@
 
         /**
          * @return Field[]
-         * @throws TablesInvalidFieldException
-         * @throws TablesMultiplePrimaryException
          */
         public function toPrimaryArray(): array {
             $aReturn = [];
@@ -743,13 +711,11 @@
 
         /**
          * @return Field
-         * @throws TablesMultiplePrimaryException
          */
         private function getOnlyPrimary(): Field {
             $aPrimary = static::getTable()->getPrimary();
-            if (count($aPrimary) > 1) {
-                throw new Exceptions\TablesMultiplePrimaryException('Can Only get Primary Array of Tables with Single Primary Keys');
-            }
+
+            assert(count($aPrimary) === 1, new Exceptions\TablesMultiplePrimaryException('Can Only get Primary Array of Tables with Single Primary Keys'));
 
             return $aPrimary[0];
         }
@@ -775,7 +741,6 @@
 
         /**
          * @return Table[]
-         * @throws TablesMultiplePrimaryException
          */
         public function toPrimaryKeyedArray(): array {
             $sPrimary = $this->getOnlyPrimary()->sColumn;

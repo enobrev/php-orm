@@ -6,11 +6,9 @@
     use Exception;
 
 {% endif %}
-    use Enobrev\ORM\Exceptions\DbDuplicateException;
     use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Table;
-    use Enobrev\ORM\TableException;
 {% if has_date %}
     use Enobrev\ORM\ModifiedDateColumn;
     use Enobrev\ORM\ModifiedDate;
@@ -107,9 +105,9 @@
 {% for field in primary %}
          * @param {{ field.php_type }}|{{ field.type }}|PublicNS\{{table.title}} ${{field.var}}
 {% endfor %}
-         * @throws DbDuplicateException
+
+         * @return PublicNS\{{table.title}}|null
          * @throws DbException
-         * @throws TableException
          */
         public static function getById({% for field in primary %}${{field.var}}{% if not loop.last %}, {% endif %}{% endfor %}): ?PublicNS\{{table.title}} {
             $oTable = new PublicNS\{{ table.title }};
@@ -129,9 +127,8 @@
 
         /**
          * @param {{ field.php_type }}|{{ field.type }}|PublicNS\{{table.title}} ${{field.var}}
-         * @throws DbDuplicateException
+         * @return PublicNS\{{table.title}}|null
          * @throws DbException
-         * @throws TableException
          */
         public static function getBy{{field.short_title}}(${{field.var}}): ?PublicNS\{{table.title}} {
             $oTable = new PublicNS\{{ table.title }};
@@ -173,9 +170,7 @@
         }
 
         /**
-         * @throws DbDuplicateException
          * @throws DbException
-         * @throws TableException
          */
         public function getOwner(): ?Table {
             return PublicNS\{{ table.title }}::getById($this->user_id);
@@ -205,9 +200,7 @@
         }
 
         /**
-         * @throws DbDuplicateException
          * @throws DbException
-         * @throws TableException
          */
         public function getOwner(): ?PublicNS\User {
             return PublicNS\User::getById($this->user_id);
@@ -216,9 +209,7 @@
 {% else %}
 
         /**
-         * @throws DbDuplicateException
          * @throws DbException
-         * @throws TableException
          */
         public function get{{field.reference.title}}(): ?PublicNS\{{field.reference.table.title}} {
             return $this->{{field.name}}->hasValue()

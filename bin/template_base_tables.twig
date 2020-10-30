@@ -30,14 +30,12 @@
          * @param string $index
          * @param PublicNS\{{table.title}} $newval
          */
-        public function offsetSet($index, $newval) {
+        public function offsetSet($index, $newval): void {
             parent::offsetSet($index, $newval);
         }
 
         /**
          * @param PublicNS\{{table.title}} $value
-         *
-         * @throws \Enobrev\ORM\TablesException
          */
         public function append($value): void {
             parent::append($value);
@@ -49,7 +47,7 @@
          * @return PublicNS\{{ table.plural }}
          * @throws DbException
          */
-        public static function getBy{{ primary.0.plural }}(Array ${{ primary.0.var_array }}) {
+        public static function getBy{{ primary.0.plural }}(Array ${{ primary.0.var_array }}): PublicNS\{{ table.plural }} {
             if (count(${{ primary.0.var_array }}) === 0) {
                 return new PublicNS\{{ table.plural }};
             }
@@ -70,7 +68,7 @@
          * @return PublicNS\{{ table.plural }}
          * @throws DbException
          */
-        public static function getBy{{field.reference.title}}(${{ field.reference.field.var }}) {
+        public static function getBy{{field.reference.title}}(${{ field.reference.field.var }}): PublicNS\{{ table.plural }} {
             if (!${{ field.reference.field.var }}) {
                 return new PublicNS\{{ table.plural }}();
             }
@@ -87,7 +85,7 @@
          * @return PublicNS\{{ table.plural }}
          * @throws DbException
          */
-        public static function getBy{{field.reference.title_plural}}(${{ field.reference.field.var_array }}) {
+        public static function getBy{{field.reference.title_plural}}(${{ field.reference.field.var_array }}): PublicNS\{{ table.plural }} {
             if (${{ field.reference.field.var_array }} instanceof {{ field.reference.table.plural }}) {
                 ${{ field.reference.field.var_array }} = ${{ field.reference.field.var_array }}->toPrimaryArray();
             }

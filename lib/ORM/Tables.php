@@ -12,7 +12,6 @@
     use Enobrev\SQL;
     use Enobrev\SQLBuilder;
     use Enobrev\ORM\Exceptions\DbException;
-    use Enobrev\ORM\Exceptions\TablesException;
     use Enobrev\ORM\Exceptions\TablesInvalidFieldException;
     use Enobrev\ORM\Exceptions\TablesInvalidReferenceException;
     use Enobrev\ORM\Exceptions\TablesInvalidTableException;
@@ -465,7 +464,7 @@
          * @param array $aMap
          *
          * @return static
-         * @throws Exceptions\TablesException
+         * @throws DbException
          */
         public static function createAndUpdateFromMap(Table $oTable, array $aData, array $aMap) {
             $aOutput = new static;
@@ -483,7 +482,7 @@
          * @param array $aData
          *
          * @return static
-         * @throws Exceptions\TablesException
+         * @throws DbException
          */
         public static function createAndUpdate(Table $oTable, array $aData) {
             $aOutput = new static;
@@ -501,7 +500,6 @@
          * @param Table[]      $aTables
          *
          * @return static
-         * @throws Exceptions\TablesException
          */
         protected static function fromResults(PDOStatement $oResults, ...$aTables) {
             if (count($aTables) > 1) {
@@ -523,6 +521,10 @@
                 return $oOutput;
             }
 
+            if ($oResults->rowCount() === 0) {
+                return new static();
+            }
+
             /** @psalm-suppress InvalidArgument */
             $sPrefixedTable = get_class($aTables[0]);
             return new static($oResults->fetchAll(PDO::FETCH_CLASS, $sPrefixedTable, ['', true]));
@@ -534,7 +536,6 @@
          * @param Table        $oTable
          *
          * @return static
-         * @throws Exceptions\TablesException
          */
         protected static function fromResultsWithMeta(PDOStatement $oResults, Table $oTable) {
             /** @var Table $sPrefixedTable */
@@ -548,18 +549,13 @@
 
         /**
          * @param mixed $value
-         *
-         * @throws TablesException
-         * @throws Exception
          */
         public function append($value): void {
             $sClass = static::getTable();
-            if ($value instanceof $sClass !== false) {
-                parent::append($value);
-            } else {
-                // TODO: Log incorrect value or throw an exception or something
-                throw new Exceptions\TablesException('Cannot Append Table of Type ' . get_class($value) . ' to ' . get_class($this));
-            }
+
+            assert($value instanceof $sClass, new Exceptions\TablesException('Cannot Append Table of Type ' . get_class($value) . ' to ' . get_class($this)));
+
+            parent::append($value);
         }
 
         /**

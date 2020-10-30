@@ -15,6 +15,14 @@
         /** @var mixed */
         protected        $mHigh;
 
+        /**
+         * ColumnBetweenValues constructor.
+         *
+         * @param string $sSign
+         * @param Field  $oField
+         * @param mixed  $mLow
+         * @param mixed  $mHigh
+         */
         public function __construct(string $sSign, Field $oField, $mLow, $mHigh) {
             $this->sSign  = $sSign;
             $this->oLeft  = $oField;

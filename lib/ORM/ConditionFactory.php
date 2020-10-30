@@ -20,7 +20,7 @@
         public const GT           = '>';
         public const GTE          = '>=';
         public const EQ           = '=';
-        public const NEQ          = '<>';
+        public const N_EQ         = '<>';
         public const IN           = 'IN';
         public const N_IN         = 'NOT IN';
         public const LIKE         = 'LIKE';
@@ -33,10 +33,10 @@
         protected string $sSign;
 
         protected static array $aSignsSimple = [
-            self::LT,       self::LTE,
-            self::GT,       self::GTE,
-            self::EQ,       self::NEQ,
-            self::LIKE,     self::N_LIKE
+            self::LT,   self::LTE,
+            self::GT,   self::GTE,
+            self::EQ,   self::N_EQ,
+            self::LIKE, self::N_LIKE
         ];
 
         protected static array $aSignsIn = [
@@ -68,7 +68,7 @@
          * @return ConditionInterface
          */
         public static function neq(Field $oField, $oFieldOrValue = self::NOT_SET): ConditionInterface {
-            return self::_simple(self::NEQ, $oField, $oFieldOrValue);
+            return self::_simple(self::N_EQ, $oField, $oFieldOrValue);
         }
 
         /**
@@ -154,7 +154,7 @@
          *
          * @return ConditionInterface
          */
-        public static function between(Field $oField, $mLow = self::NOT_SET, $mHigh = self::NOT_SET) {
+        public static function between(Field $oField, $mLow = self::NOT_SET, $mHigh = self::NOT_SET): ConditionInterface {
             return self::_between(self::BETWEEN, $oField, $mLow, $mHigh);
         }
 
@@ -165,7 +165,7 @@
          *
          * @return ConditionInterface
          */
-        public static function nbetween(Field $oField, $mLow = self::NOT_SET, $mHigh = self::NOT_SET) {
+        public static function nbetween(Field $oField, $mLow = self::NOT_SET, $mHigh = self::NOT_SET): ConditionInterface {
             return self::_between(self::N_BETWEEN, $oField, $mLow, $mHigh);
         }
 

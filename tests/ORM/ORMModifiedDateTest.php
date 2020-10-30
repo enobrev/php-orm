@@ -48,7 +48,7 @@
                 'user_happy'        => true
             ]);
 
-            foreach($this->aUsers as &$oUser) {
+            foreach($this->aUsers as $oUser) {
                 $oUser->insert();
             }
             unset($oUser);
@@ -65,7 +65,7 @@
                 'address_city'          => 'Brooklyn'
             ]);
 
-            foreach($this->aAddresses as &$oAddress) {
+            foreach($this->aAddresses as $oAddress) {
                 $oAddress->insert();
             }
             unset($oAddress);

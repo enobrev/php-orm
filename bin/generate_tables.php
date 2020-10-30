@@ -74,7 +74,7 @@
     $aIndices = array_unique(explode(',', $aIndices));
 
     $aChosenTables = array();
-    if (in_array(0, $aIndices, false)) {
+    if (in_array(0, $aIndices)) {
         $aChosenTables = $aDatabase['tables'];
     } else if (count($aIndices)) {
         $aChosen = array();

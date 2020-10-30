@@ -29,17 +29,17 @@
 
         public ?string $sSQL = null;
 
-        public ?string $sSQLGroup = null;
+        public string $sSQLGroup;
 
-        public ?string $sSQLTable = null;
+        public string $sSQLTable;
 
-        public ?string $sSQLType = null;
+        public string $sSQLType;
 
         public ?string $sSelectFieldExtra = null;
 
         private bool $bStar       = false;
 
-        private ?Table $oTable;
+        private Table $oTable;
 
         /** @var ORM\Field[] */
         private array $aFields = [];
@@ -57,12 +57,10 @@
 
         private ?Limit $oLimit = null;
 
-        private ?Conditions $oConditions = null;
+        private Conditions $oConditions;
 
         public function __clone() {
-            if ($this->oTable) {
-                $this->oTable = clone $this->oTable;
-            }
+            $this->oTable = clone $this->oTable;
 
             if (count($this->aFields)) {
                 foreach($this->aFields as $iIndex => $oField) {
@@ -96,9 +94,7 @@
                 $this->oLimit = clone $this->oLimit;
             }
 
-            if ($this->oConditions) {
-                $this->oConditions = clone $this->oConditions;
-            }
+            $this->oConditions = clone $this->oConditions;
         }
 
         public function __construct(string $sMethod) {
@@ -134,12 +130,6 @@
         }
 
         /**
-         * @param array ...$aArguments
-         *
-         * @return $this
-         */
-
-        /**
          * @param ConditionInterface[]|ConditionInterface|Conditions|Field|Field[] $aArguments
          *
          * @return $this
@@ -150,7 +140,7 @@
         }
 
         /**
-         * @param ConditionInterface[]|ConditionInterface|Conditions|Field|Field[] $aArguments
+         * @param ConditionInterface[]|ConditionInterface|Conditions|Field|Field[] ...$aArguments
          *
          * @return $this
          */
@@ -174,7 +164,7 @@
          * @param Field             $oField
          * @param Field|mixed|array $oFieldOrValue
          *
-         * @return $this
+         * @return self
          */
         public function eq_in(Field $oField, $oFieldOrValue = ConditionFactory::NOT_SET): self {
             if (is_array($oFieldOrValue)) {
@@ -192,7 +182,7 @@
          * @param Field       $oField
          * @param Field|mixed $oFieldOrValue
          *
-         * @return $this
+         * @return self
          */
         public function neq(Field $oField, $oFieldOrValue = ConditionFactory::NOT_SET): self {
             $this->oConditions->add(SQL::neq($oField, $oFieldOrValue));
@@ -382,12 +372,12 @@
         }
 
         /**
-         * @param ORM\Table|ORM\Field[] $aFields
+         * @param ORM\Table[]|ORM\Field[] $aFields
          * @return $this
          * @psalm-suppress MismatchingDocblockParamType
          */
         public function fields(...$aFields): self {
-            if (is_array($aFields) && count($aFields) && $aFields[0] instanceof ORM\Table) {
+            if (count($aFields) && $aFields[0] instanceof ORM\Table) {
                 /** @var ORM\Table $oTable */
                 $oTable  = $aFields[0];
                 $aFields = $oTable->getFields();
@@ -413,7 +403,7 @@
 
         /**
          * @param ORM\Table   $oTable
-         * @param ORM\Field[] $aFields
+         * @param ORM\Field[]|null $aFields
          * @return $this
          */
         public static function select(ORM\Table $oTable, ...$aFields): self {
@@ -425,7 +415,7 @@
 
         /**
          * @param ORM\Table   $oTable
-         * @param ORM\Field[] $aFields
+         * @param ORM\Field[]|null $aFields
          * @return $this
          */
         public static function count(ORM\Table $oTable, ...$aFields): self {

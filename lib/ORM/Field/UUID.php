@@ -12,6 +12,7 @@
         /**
          * @param mixed $sValue
          * @return $this
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function setValue($sValue) {
             parent::setValue($sValue);

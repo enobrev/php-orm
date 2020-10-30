@@ -46,7 +46,6 @@
         }
 
         /**
-         * @noinspection PhpDocSignatureInspection
          * @return Table
          */
         abstract public static function getTable();
@@ -77,6 +76,11 @@
             $oSQL     = SQLBuilder::select($oTable);
             $sSQL     = $oSQL->toString() . ' ORDER BY RAND() ' . SQL::limit($iCount)->toSQL();
             $oResults = static::Db()->namedQuery(__METHOD__, $sSQL);
+
+            if (!$oResults) {
+                return new static();
+            }
+
             return self::fromResults($oResults, $oTable);
         }
 
@@ -105,6 +109,10 @@
             $aSearch = str_getcsv($sSearch, ' ');
 
             foreach($aSearch as $sSearchTerm) {
+                if ($sSearchTerm === null) {
+                    continue;
+                }
+
                 if (strpos($sSearchTerm, '>') !== false) {
                     // FIXME: Obviously ridiculous.  we should be parsing this properly instead of repeating
                     $aCondition = [];
@@ -137,6 +145,7 @@
                     $aCondition['value']    = implode(':', $aSearchTerm);
                     $aResponse['conditions'][] = $aCondition;
                 } else {
+                    $aCondition = [];
                     $aCondition['operator'] = '::';
                     $aCondition['value']    = $sSearchTerm;
                     $aResponse['conditions'][] = $aCondition;
@@ -195,6 +204,11 @@
         public static function getForCMS(?int $iPage = 1, ?int $iPer = 100, ?array $aSearch = null, ?array $aSort = null, ?string $sSyncDate = null) {
             $oQuery = self::getQueryForCMS($aSearch, $iPage, $iPer, $aSort, $sSyncDate);
             $oResults = static::Db()->namedQuery(__METHOD__, $oQuery);
+
+            if(!$oResults) {
+                return new static();
+            }
+
             return static::fromResults($oResults, static::getTable());
         }
 
@@ -211,12 +225,18 @@
                 $oTable   = static::getTable();
                 $sTable   = $oTable->getTitle();
                 $oResults = static::Db()->namedQuery(__METHOD__, "SHOW TABLE STATUS LIKE '$sTable'");
+                if (!$oResults) {
+                    return 0;
+                }
                 return (int) $oResults->fetchObject()->Rows;
             }
 
             $oQuery = self::getQueryForCMS($aSearch);
             $oQuery->setType(SQLBuilder::TYPE_COUNT);
             $oResults = static::Db()->namedQuery(__METHOD__, $oQuery);
+            if (!$oResults) {
+                return 0;
+            }
             return (int) $oResults->fetchObject()->row_count;
         }
 
@@ -232,7 +252,7 @@
          * @throws TablesInvalidReferenceException
          * @throws TablesInvalidTableException
          */
-        protected static function getQueryForCMS(?array $aSearch = null, ?int $iPage = null, ?int $iPer = null, ?array $aSort = null, ?string $sSyncDate = null, ?array $aFields = []): SQLBuilder {
+        protected static function getQueryForCMS(?array $aSearch = null, ?int $iPage = null, ?int $iPer = null, ?array $aSort = null, ?string $sSyncDate = null, array $aFields = []): SQLBuilder {
             $oTable      = static::getTable();
             $oQuery      = SQLBuilder::select($oTable);
 
@@ -272,6 +292,8 @@
                             continue;
                         }
                     }
+
+                    /** @var Field $oSearchField */
 
                     switch($aCondition['operator']) {
                         case '::':
@@ -379,14 +401,13 @@
                         Log::d('Tables.getForCMS.Sort.Foreign', $aField);
                         $sSortTableClass = $aField['table'];
 
-                        /** @var Table $oSortTable */
                         $oSortTable = new $sSortTableClass();
                         if (!$oSortTable instanceof Table) {
                             throw new Exceptions\TablesInvalidTableException($sSortTableClass . ' is not a valid Table');
                         }
 
                         $oSortReference = $oSortTable->getFieldThatReferencesTable($oTable);
-                        if ($oSortReference instanceof Field !== false) {
+                        if ($oSortReference instanceof Field) {
                             try {
                                 // The SortBy Field is in a table that references our Primary Table
                                 // Join from the Referenced Primary Table Field to the Sort Table Referencing Field
@@ -404,7 +425,7 @@
                                 $sRefTableName = '[Referenced Table]';
                                 try {
                                     $sTableName    = (new ReflectionClass($oTable))->getShortName();
-                                    $sRefTableName = (new ReflectionClass($oSortReference))->getShortName();
+                                    $sRefTableName = (new ReflectionClass($oSortReference))->getShortName(); //FIXME: This is impossible since isntanceof Field === false
                                 } catch (ReflectionException $e) {
                                     // No worries
                                 }
@@ -449,6 +470,11 @@
         public static function total(): int {
             $oTable   = static::getTable();
             $oResults = static::Db()->namedQuery(__METHOD__, SQLBuilder::count($oTable));
+
+            if (!$oResults) {
+                return 0;
+            }
+
             $iTotal   = $oResults->fetchColumn();
             /** @psalm-suppress TypeDoesNotContainType */
             if ($iTotal !== false) {

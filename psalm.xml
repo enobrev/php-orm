@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <psalm
     name="Example Psalm config with recommended defaults"
-    stopOnFirstError="false"
     useDocblockTypes="true"
-    totallyTyped="false"
+    allowPhpStormGenerics="true"
+    allowStringToStandInForClass="true"
 >
     <projectFiles>
         <directory name="lib" />
@@ -19,10 +19,8 @@
         <MissingReturnType errorLevel="info" />
         <MissingPropertyType errorLevel="info" />
         <InvalidDocblock errorLevel="info" />
-        <MisplacedRequiredParam errorLevel="info" />
 
         <PropertyNotSetInConstructor errorLevel="info" />
         <MissingConstructor errorLevel="info" />
-        <UntypedParam errorLevel="info" />
     </issueHandlers>
 </psalm>

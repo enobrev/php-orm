@@ -10,6 +10,11 @@
         protected Field  $oLeft;
         protected        $mRight;
 
+        /**
+         * @param string $sSign
+         * @param Field  $oField
+         * @param mixed  $mValue
+         */
         public function __construct(string $sSign, Field $oField, $mValue) {
             $this->sSign  = $sSign;
             $this->oLeft  = $oField;

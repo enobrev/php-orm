@@ -7,9 +7,10 @@
         private ?int $iOffset = null;
 
         /**
-         * @param int $iStart
-         * @param int $iOffset
-         * @return Limit
+         * @param int|null $iStart
+         * @param int|null $iOffset
+         *
+         * @return self
          */
         public static function create(?int $iStart = null, ?int $iOffset = null): self {
             $oLimit = new self;

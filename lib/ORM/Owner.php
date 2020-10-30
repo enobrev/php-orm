@@ -7,7 +7,8 @@
     trait Owner {
 
         /**
-         * @return Table
+         * @return Table|null
+         * @throws Exceptions\DbException
          */
         public function getOwner(): ?Table {
             /** @var Field $oOwnerField */

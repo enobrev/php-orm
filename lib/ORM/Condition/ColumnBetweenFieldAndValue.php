@@ -12,6 +12,11 @@
         /** @var mixed */
         protected        $mHigh;
 
+        /**
+         * @param string $sSign
+         * @param Field  $oLow
+         * @param mixed  $mHigh
+         */
         public function __construct(string $sSign, Field $oLow, $mHigh) {
             $this->sSign = $sSign;
             $this->oLow  = $oLow;

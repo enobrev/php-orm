@@ -2,7 +2,6 @@
     namespace Enobrev\ORM;
     
     use Enobrev\ORM\Condition\ConditionInterface;
-    use Enobrev\ORM\Exceptions\ConditionsNonConditionException;
 
     class Join {
         protected const LEFT_OUTER = 'LEFT OUTER';

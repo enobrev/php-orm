@@ -32,6 +32,9 @@
             $this->oCurrency = new Currency($sCurrency);
         }
 
+        /**
+         * @param Field|string $sField
+         */
         public function setCurrencyField($sField): void {
             $this->sCurrencyField = $sField instanceof Field ? $sField->sColumn : $sField;
         }
@@ -67,6 +70,7 @@
          * @param stdClass $oData
          *
          * @throws FieldInvalidValueException
+         * @noinspection PhpMissingParamTypeInspection
          */
         public function setValueFromData($oData): void {
             if (isset($oData->{$this->sColumn})) {
@@ -83,7 +87,7 @@
          *
          * @throws FieldInvalidValueException
          */
-        public function setValueFromArray($aData): void {
+        public function setValueFromArray(array $aData): void {
             if (array_key_exists($this->sColumn, $aData)) {
                 if (array_key_exists($this->sCurrencyField, $aData)) {
                     $this->setCurrency($aData[$this->sCurrencyField]);
@@ -115,6 +119,7 @@
          *
          * @return $this
          * @throws FieldInvalidValueException
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

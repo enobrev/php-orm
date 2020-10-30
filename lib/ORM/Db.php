@@ -3,15 +3,14 @@
 
     use DateTime;
     use DateTimeZone;
-    use Enobrev\ORM\Exceptions\DbDuplicateException;
-    use Enobrev\ORM\Exceptions\DbException;
     use Exception;
     use PDO;
     use PDOException;
     use PDOStatement;
 
     use Enobrev\Log;
-    use Enobrev\SQL;
+    use Enobrev\ORM\Exceptions\DbDuplicateException;
+    use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\SQLBuilder;
 
     class Db {
@@ -68,10 +67,7 @@
             return self::$oInstance2;
         }
 
-        /**
-         * @return PDO
-         */
-        public function getPDO(): PDO {
+        public function getPDO(): ?PDO {
             return $this->oPDO;
         }
 
@@ -217,18 +213,18 @@
             return $this->sLastInsertId;
         }
 
-        public function getLastRowsAffected(): int {
+        public function getLastRowsAffected(): ?int {
             return $this->iLastRowsAffected;
         }
 
         /**
          * @param string|string[] $sName
-         * @param string|SQLBuilder|SQL $sQuery
+         * @param string|SQLBuilder $sQuery
          *
-         * @return PDOStatement
+         * @return PDOStatement|null
          * @throws DbException
          */
-        public function namedQuery($sName, $sQuery): PDOStatement {
+        public function namedQuery($sName, $sQuery): ?PDOStatement {
             if (is_array($sName)) {
                 $sName = implode('.', $sName);
             }
@@ -239,12 +235,12 @@
 
         /**
          * @param string|SQLBuilder $sQuery
-         * @param string                $sName
+         * @param string            $sName
          *
-         * @return false|PDOStatement
+         * @return PDOStatement|null
          * @throws DbException
          */
-        public function query($sQuery, $sName = '') {
+        public function query($sQuery, $sName = ''): ?PDOStatement {
             $sTimerName = 'ORM.Db.query.' . $sName;
             Log::startTimer($sTimerName);
 
@@ -262,7 +258,7 @@
 
                 /** @psalm-suppress PossiblyInvalidPropertyFetch */
                 $aLogOutput['sql'] = [
-                    'driver' => $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME),
+                    'driver' => $this->oPDO ? $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
                     'query'  => $sSQL,
                     'group'  => $sQuery->sSQLGroup,
                     'table'  => $sQuery->sSQLTable,
@@ -273,11 +269,12 @@
                     ]
                 ];
             } else {
+                /* @var string $sSQL */
                 // We have no pre-defined group, so the name or the query itself becomes the group
                 $sGroup     = trim($sName) !== '' ? $sName : $sSQL;
 
                 $aLogOutput['sql'] = [
-                    'driver' => $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME),
+                    'driver' => $this->oPDO ? $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
                     'query'  => $sSQL,
                     'group'  => $sGroup,
                     'hash'   => [
@@ -332,6 +329,7 @@
                 }
             }
 
+            /* @var string $sSQL */
             assert(trim($sSQL) !== '', new DbException('Empty Query'));
 
             try {
@@ -397,10 +395,15 @@
         /**
          * Do not use Log class here as it will cause an infinite loop
          * @param string $sQuery
-         * @return false|PDOStatement
+         * @return PDOStatement|null
          */
-        public function rawQuery(string $sQuery) {
-            return $this->oPDO->query($sQuery);
+        public function rawQuery(string $sQuery): ?PDOStatement {
+            $oResult = $this->oPDO->query($sQuery);
+            if ($oResult === false) {
+                return null;
+            }
+            
+            return $oResult;
         }
 
         /**

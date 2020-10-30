@@ -58,7 +58,6 @@ These classes are very simple and are meant to be used together.  For instance, 
 For an example usage, let’s create a couple table classes to play with.  Since the primary purpose of this library is to generate SQL, this code can work just fine without an actual database.
 
 ```php
-    <?php
         require_once __DIR__ .'/../vendor/autoload.php';
 
         use DateTime;

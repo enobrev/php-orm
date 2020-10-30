@@ -5,14 +5,15 @@
     use Enobrev\ORM\Table;
 
     class Phone extends Text {
-        public function __toString() {
+        public function __toString(): string {
             return $this->sValue;
         }
         
         /**
          *
-         * @param mixed $sValue
+         * @param Field|Table|string $sValue
          * @return $this
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

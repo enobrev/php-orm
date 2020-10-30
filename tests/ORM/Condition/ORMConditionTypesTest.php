@@ -59,14 +59,14 @@
         public function testNotEqual(): void {
             $oUsers = new ORMConditionTypesTestUser();
             $oUsers->user_id->setValue(10);
-            $oCondition = new Condition\ColumnToFieldValue(ConditionFactory::NEQ, $oUsers->user_id);
+            $oCondition = new Condition\ColumnToFieldValue(ConditionFactory::N_EQ, $oUsers->user_id);
             $this->assertEquals('users.user_id <> 10', $oCondition->toSQL());
         }
 
         public function testNotEqualHelper(): void {
             $oUsers = new ORMConditionTypesTestUser();
             $oUsers->user_id->setValue(10);
-            $oCondition = new Condition\ColumnToValue(ConditionFactory::NEQ, $oUsers->user_id, 10);
+            $oCondition = new Condition\ColumnToValue(ConditionFactory::N_EQ, $oUsers->user_id, 10);
             $this->assertEquals('users.user_id <> 10', $oCondition->toSQL());
         }
 

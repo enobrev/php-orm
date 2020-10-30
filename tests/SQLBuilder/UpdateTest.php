@@ -4,8 +4,9 @@
     require __DIR__ . '/../../vendor/autoload.php';
 
     use Enobrev\ORM\Mock\Table\User;
+    use PHPUnit\Framework\TestCase;
 
-    class UpdateTest extends \PHPUnit\Framework\TestCase {
+    class UpdateTest extends TestCase {
         public function testOne() {
             $oUser    = new User();
             $oUser->user_id->setValue(2);

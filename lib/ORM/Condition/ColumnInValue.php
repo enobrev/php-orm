@@ -12,9 +12,7 @@
         protected array  $aRight;
 
         public function __construct(string $sSign, Field $oField, array $aValue) {
-            if (!count($aValue)) {
-                throw new ConditionMissingInValueException();
-            }
+            assert(count($aValue) > 0, new ConditionMissingInValueException());
 
             $this->sSign  = $sSign;
             $this->oLeft  = $oField;
@@ -24,7 +22,7 @@
         public function toSQL(): string {
             $oRight = clone $this->oLeft;
             $aRight = [];
-            foreach($this->aRight as &$mValue) {
+            foreach($this->aRight as $mValue) {
                 $oRight->setValue($mValue);
                 $aRight[] = $oRight->toSQL();
             }

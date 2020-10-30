@@ -9,6 +9,7 @@
          *
          * @param mixed $sValue
          * @return $this
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function setValue($sValue) {
             parent::setValue($sValue);
@@ -49,14 +50,14 @@
                 $sTableColumn = implode('.', $aTableColumn);
                 $sTableColumn = 'LOWER(HEX(' . $sTableColumn . '))';
 
-                if ($this->sAlias && $this->sAlias !== '') {
+                if ($this->sAlias) {
                     $aAliasColumn = array($this->sAlias, $this->sColumn);
                     $sAliasColumn = implode('_', $aAliasColumn);
 
                     return implode(' ', array($sTableColumn, 'AS', $sAliasColumn));
                 }
 
-                if ($this->sTable && $this->sTable !== '') {
+                if ($this->sTable) {
                     return implode(' ', array($sTableColumn, 'AS', $this->sColumn));
                 }
             }
@@ -64,6 +65,7 @@
             return 'LOWER(HEX(' . $this->sColumn . '))';
         }
 
+        /** @noinspection PhpMissingReturnTypeInspection */
         public function getValue() {
             if ($this->isNull()) {
                 return null;

@@ -28,6 +28,7 @@
          *
          * @param mixed $sValue
          * @return $this
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

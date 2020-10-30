@@ -2,8 +2,9 @@
     namespace Enobrev;
 
     use Enobrev\ORM\Mock\Table\User;
+    use PHPUnit\Framework\TestCase;
 
-    class SelectGtTest extends \PHPUnit\Framework\TestCase {
+    class SelectGtTest extends TestCase {
         public function testSelectIntGreaterThanValue() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->gt($oUser->user_id, 1);

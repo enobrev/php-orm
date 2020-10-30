@@ -2,8 +2,9 @@
     namespace Enobrev;
 
     use Enobrev\ORM\Mock\Table\User;
+    use PHPUnit\Framework\TestCase;
 
-    class SelectEqTest extends \PHPUnit\Framework\TestCase {
+    class SelectEqTest extends TestCase {
         public function testSelectIntEqualsValue() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->eq($oUser->user_id, 1);

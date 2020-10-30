@@ -2,8 +2,9 @@
     namespace Enobrev;
 
     use Enobrev\ORM\Mock\Table\User;
+    use PHPUnit\Framework\TestCase;
 
-    class SelectNotNullTest extends \PHPUnit\Framework\TestCase {
+    class SelectNotNullTest extends TestCase {
         public function testSelectIntNotNull() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->nnul($oUser->user_id);

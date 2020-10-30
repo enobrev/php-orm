@@ -81,6 +81,7 @@
          *
          * @return $this
          * @throws Exception
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -156,7 +157,6 @@
                 return false;           // My Value is null but comparator is not
             }
 
-            /** @noinspection TypeUnsafeComparisonInspection */
             return (string) $this == (string) (new self($this->sTable))->setValue($mValue);
         }
     }

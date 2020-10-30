@@ -24,6 +24,7 @@
          *
          * @return $this
          * @throws Exception
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

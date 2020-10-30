@@ -2,8 +2,9 @@
     namespace Enobrev;
 
     use Enobrev\ORM\Mock\Table\User;
+    use PHPUnit\Framework\TestCase;
 
-    class SelectOrderTest extends \PHPUnit\Framework\TestCase {
+    class SelectOrderTest extends TestCase {
         public function testSelectOrderAsc() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->asc($oUser->user_id);

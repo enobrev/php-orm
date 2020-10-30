@@ -2,6 +2,7 @@
     namespace Enobrev\ORM;
 
     use DateTime;
+    use Enobrev\ORM\Condition\ConditionInterface;
     use Exception;
     use PDOStatement;
     use stdClass;
@@ -152,6 +153,7 @@
 
         /**
          * @param static $oThis
+         * @noinspection PhpMissingParamTypeInspection
          */
         private static function setOriginalProperties($oThis) {
             if (self::$aOriginalProperties === null) {
@@ -198,7 +200,7 @@
         // Applies non-table properties from results to oResult
         private function applyPropertiesToResult(): void {
             $aProperties      = get_object_vars($this);
-            $aExtraResultKeys = array_diff(array_keys($aProperties), self::$aOriginalProperties);
+            $aExtraResultKeys = array_diff(array_keys($aProperties), self::$aOriginalProperties ?? []);
             foreach($aExtraResultKeys as $sProperty) {
                 if ($this->$sProperty instanceof Field === false) {
                     $this->oResult->$sProperty = $this->$sProperty;
@@ -410,7 +412,7 @@
         }
 
         /**
-         * @param mixed ...$aFields
+         * @param ConditionInterface[]|Conditions[]|Field[] $aFields
          *
          * @return static|null
          * @throws Exceptions\DbException
@@ -490,12 +492,12 @@
         protected function postUpdate(): void {}
 
         /**
-         * @return false|PDOStatement
+         * @return PDOStatement|null
          * @throws Exceptions\DbException
          */
-        public function update() {
+        public function update(): ?PDOStatement {
             if (!$this->changed()) {
-                return false;
+                return null;
             }
 
             if ($this->primaryHasValue()) {
@@ -508,7 +510,7 @@
                 return $oReturn;
             }
 
-            return false;
+            return null;
         }
 
         public function primaryHasValue(): bool {
@@ -526,10 +528,10 @@
         protected function postDelete(): void {}
 
         /**
-         * @return false|PDOStatement
+         * @return PDOStatement|null
          * @throws Exceptions\DbException
          */
-        public function delete() {
+        public function delete(): ?PDOStatement {
             if ($this->primaryHasValue()) {
                 $this->preDelete();
                 $oReturn = static::Db()->namedQuery(get_class($this) . '.delete',
@@ -539,7 +541,7 @@
                 return $oReturn;
             }
 
-            return false;
+            return null;
         }
 
         protected function preInsert(): void {}
@@ -573,7 +575,6 @@
         private function updatePrimary(int $iLastInsertId): void {
             $aPrimary = $this->getPrimary();
             if (count($aPrimary) === 1) {
-                /** @var Field\Id $oField */
                 $oField =& $aPrimary[0];
                 if ( $oField instanceof Field\Id ) {
                     $oField->setValue($iLastInsertId);

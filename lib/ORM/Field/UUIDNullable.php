@@ -6,9 +6,12 @@
     use Enobrev\ORM\Table;
 
     class UUIDNullable extends UUID {
+        /** @var string|null */
+        public $sValue;
+
         /**
          *
-         * @return string|NULL
+         * @return string|null
          */
         public function getValue(): ?string {
             $sValue = $this->sValue;
@@ -28,6 +31,7 @@
          *
          * @param mixed $sValue
          * @return $this
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

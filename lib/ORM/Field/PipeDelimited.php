@@ -13,8 +13,9 @@
 
         /**
          *
-         * @param array|string|Field $sValue
+         * @param array|string|Field|Table $sValue
          * @return $this
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

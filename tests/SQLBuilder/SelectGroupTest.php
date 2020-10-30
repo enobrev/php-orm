@@ -2,8 +2,9 @@
     namespace Enobrev;
 
     use Enobrev\ORM\Mock\Table\User;
+    use PHPUnit\Framework\TestCase;
 
-    class SelectGroupTest extends \PHPUnit\Framework\TestCase {
+    class SelectGroupTest extends TestCase {
         public function testSelectGroup() {
             $oUser = new User();
             $oSQL = SQLBuilder::select($oUser)->group($oUser->user_id);

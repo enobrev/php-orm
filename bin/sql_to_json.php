@@ -474,7 +474,7 @@
                         }
 
                         foreach($oTemplateField['values'] as $sKey => $aValue) {
-                            $oTemplateField['values'][$sKey]['const_padded'] = str_pad($aValue['const'], $iLongest, ' ');
+                            $oTemplateField['values'][$sKey]['const_padded'] = str_pad($aValue['const'], $iLongest);
                         }
                     }
 
@@ -487,7 +487,6 @@
                     /** @noinspection ForgottenDebugOutputInspection */
                     print_r($oField);
                     exit('Danger Will Robinson');
-                    break;
             }
 
             if ($oField->column_key === 'PRI') {
@@ -518,8 +517,8 @@
         }
 
         foreach($aData['fields'] as &$aField) {
-            $aField['short_pad'] = str_replace($aField['short'], '', str_pad($aField['short'], $iFieldNameShortLength, ' '));
-            $aField['name_pad']  = str_replace($aField['name'],  '', str_pad($aField['name'],  $iFieldNameLength,      ' '));
+            $aField['short_pad'] = str_replace($aField['short'], '', str_pad($aField['short'], $iFieldNameShortLength));
+            $aField['name_pad']  = str_replace($aField['name'],  '', str_pad($aField['name'],  $iFieldNameLength));
 
             if ($aField['primary']) {
                 $aData['primary'][] = $aField;

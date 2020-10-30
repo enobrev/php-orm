@@ -16,7 +16,7 @@
         protected const NULL_VALUE     = '0000-00-00 00:00:00';
 
         /**
-         * @var PHP_DateTime|null
+         * @var PHP_DateTime|DateFunction|null
          */
         public $sValue;
 

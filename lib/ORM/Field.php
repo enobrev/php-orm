@@ -42,17 +42,13 @@
             }
 
             $this->bPrimary    = false;
-            $this->bGenerated    = false;
+            $this->bGenerated  = false;
             $this->sDefault    = null;
             $this->sValue      = null;
             $this->sAlias      = null;
         }
 
-        /**
-         *
-         * @return string|integer
-         */
-        abstract public function __toString();
+        abstract public function __toString(): string;
 
         abstract public function toSQL(): string;
 
@@ -84,7 +80,7 @@
             if ($bWithTable) {
                 $sTableColumn = implode('.', [$this->sTable, $this->sColumn]);
 
-                if ($this->sAlias && $this->sAlias !== '') {
+                if ($this->sAlias) {
                     $sTableColumn = implode('.', [$this->sAlias, $this->sColumn]);
                     $sAliasColumn = implode('_', [$this->sAlias, $this->sColumn]);
                     if ($bAnyValue) {
@@ -94,7 +90,7 @@
                     return implode(' ', [$sTableColumn, 'AS', $sAliasColumn]);
                 }
 
-                if ($this->sTable && $this->sTable !== '') {
+                if ($this->sTable) {
                     if ($bAnyValue) {
                         return implode(' ', ["ANY_VALUE($sTableColumn)", 'AS', $this->sColumn]);
                     }
@@ -148,6 +144,7 @@
          * @param $sValue
          *
          * @return $this
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {
@@ -264,6 +261,7 @@
         /**
          *
          * @param stdClass $oData
+         * @noinspection PhpMissingParamTypeInspection
          */
         public function setValueFromData($oData): void {
             if (isset($oData->{$this->sColumn})) {

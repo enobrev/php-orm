@@ -18,6 +18,8 @@
          * @param string $sTable
          * @param array|string $sColumn
          * @param array $aValues
+         *
+         * @noinspection PhpMissingParamTypeInspection
          */
         public function __construct($sTable, $sColumn, Array $aValues = array()) {
             $this->sColumn = '';
@@ -38,9 +40,9 @@
         
         /**
          *
-         * @return string|integer
+         * @return string
          */
-        public function __toString() {
+        public function __toString(): string {
             if ($this->sValue) {
                 return $this->sValue;
             }
@@ -83,6 +85,7 @@
         /**
          * @param mixed $sValue
          * @return $this
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function setValue($sValue) {
             if ($sValue instanceof Table) {

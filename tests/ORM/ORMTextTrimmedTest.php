@@ -16,7 +16,7 @@
 
             $oUsers->tag_title->setValue(' I am trimmed ');
 
-            $this->assertEquals($oUsers->tag_title->getValue(), 'I am trimmed');
+            $this->assertEquals('I am trimmed', $oUsers->tag_title->getValue());
         }
     }
 

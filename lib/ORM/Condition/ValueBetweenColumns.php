@@ -7,9 +7,17 @@
         use ConditionKeyTrait;
 
         protected string $sSign;
+        /** @var mixed */
         protected        $mLeft;
         protected Field  $oLow;
         protected Field  $oHigh;
+
+        /**
+         * @param string $sSign
+         * @param mixed  $mValue
+         * @param Field  $oLow
+         * @param Field  $oHigh
+         */
 
         public function __construct(string $sSign, $mValue, Field $oLow, Field $oHigh) {
             $this->sSign  = $sSign;
@@ -40,7 +48,7 @@
         }
 
         public function __clone() {
-            $this->oLeft = clone $this->oLow;
+            $this->oLow  = clone $this->oLow;
             $this->oHigh = clone $this->oHigh;
         }
     }

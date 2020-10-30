@@ -3,8 +3,9 @@
 
     use Enobrev\ORM\Mock\Table\Address;
     use Enobrev\ORM\Mock\Table\User;
+    use PHPUnit\Framework\TestCase;
 
-    class SelectJoinTest extends \PHPUnit\Framework\TestCase {
+    class SelectJoinTest extends TestCase {
         public function testSelectJoin() {
             $oUser    = new User();
             $oAddress = new Address();

@@ -7,14 +7,12 @@
     use Enobrev\ORM\Exceptions\ConditionInvalidTypeException;
 
     class ColumnsConditionFactory {
-        private const NOT_SET       = '__NOT_SET__';
-
         public const LT           = '<';
         public const LTE          = '<=';
         public const GT           = '>';
         public const GTE          = '>=';
-        public const EQUAL        = '=';
-        public const NEQ          = '<>';
+        public const EQ           = '=';
+        public const N_EQ         = '<>';
         public const LIKE         = 'LIKE';
         public const N_LIKE       = 'NOT LIKE';
         public const BETWEEN      = 'BETWEEN';
@@ -23,54 +21,54 @@
         protected string $sSign;
 
         protected static array $aSignsSimple = [
-            self::LT,       self::LTE,
-            self::GT,       self::GTE,
-            self::EQUAL,    self::NEQ,
-            self::LIKE,     self::N_LIKE
+            self::LT,   self::LTE,
+            self::GT,   self::GTE,
+            self::EQ,   self::N_EQ,
+            self::LIKE, self::N_LIKE
         ];
 
         protected static array $aSignsBetween = [
             self::BETWEEN,  self::N_BETWEEN
         ];
 
-        public static function eq(Field $oField, $oFieldOrValue = self::NOT_SET): ConditionInterface {
-            return self::_simple(self::EQUAL, $oField, $oFieldOrValue);
+        public static function eq(Field $oLeft, Field $oRight): ConditionInterface {
+            return self::_simple(self::EQ, $oLeft, $oRight);
         }
 
-        public static function neq(Field $oField, $oFieldOrValue = self::NOT_SET): ConditionInterface {
-            return self::_simple(self::NEQ, $oField, $oFieldOrValue);
+        public static function neq(Field $oLeft, Field $oRight): ConditionInterface {
+            return self::_simple(self::N_EQ, $oLeft, $oRight);
         }
 
-        public static function like(Field $oField, $oFieldOrValue = self::NOT_SET): ConditionInterface {
-            return self::_simple(self::LIKE, $oField, $oFieldOrValue);
+        public static function like(Field $oLeft, Field $oRight): ConditionInterface {
+            return self::_simple(self::LIKE, $oLeft, $oRight);
         }
 
-        public static function nlike(Field $oField, $oFieldOrValue = self::NOT_SET): ConditionInterface {
-            return self::_simple(self::N_LIKE, $oField, $oFieldOrValue);
+        public static function nlike(Field $oLeft, Field $oRight): ConditionInterface {
+            return self::_simple(self::N_LIKE, $oLeft, $oRight);
         }
 
-        public static function gt(Field $oField, $oFieldOrValue = self::NOT_SET): ConditionInterface {
-            return self::_simple(self::GT, $oField, $oFieldOrValue);
+        public static function gt(Field $oLeft, Field $oRight): ConditionInterface {
+            return self::_simple(self::GT, $oLeft, $oRight);
         }
 
-        public static function gte(Field $oField, $oFieldOrValue = self::NOT_SET): ConditionInterface {
-            return self::_simple(self::GTE, $oField, $oFieldOrValue);
+        public static function gte(Field $oLeft, Field $oRight): ConditionInterface {
+            return self::_simple(self::GTE, $oLeft, $oRight);
         }
 
-        public static function lt(Field $oField, $oFieldOrValue = self::NOT_SET): ConditionInterface {
-            return self::_simple(self::LT, $oField, $oFieldOrValue);
+        public static function lt(Field $oLeft, Field $oRight): ConditionInterface {
+            return self::_simple(self::LT, $oLeft, $oRight);
         }
 
-        public static function lte(Field $oField, $oFieldOrValue = self::NOT_SET): ConditionInterface {
-            return self::_simple(self::LTE, $oField, $oFieldOrValue);
+        public static function lte(Field $oLeft, Field $oRight): ConditionInterface {
+            return self::_simple(self::LTE, $oLeft, $oRight);
         }
 
-        public static function between(Field $oField, $mLow = self::NOT_SET, $mHigh = self::NOT_SET) {
-            return self::_between(self::BETWEEN, $oField, $mLow, $mHigh);
+        public static function between(Field $oField, Field $oLow, Field $oHigh): ConditionInterface {
+            return self::_between(self::BETWEEN, $oField, $oLow, $oHigh);
         }
 
-        public static function nbetween(Field $oField, $mLow = self::NOT_SET, $mHigh = self::NOT_SET) {
-            return self::_between(self::N_BETWEEN, $oField, $mLow, $mHigh);
+        public static function nbetween(Field $oField, Field $oLow, Field $oHigh): ConditionInterface {
+            return self::_between(self::N_BETWEEN, $oField, $oLow, $oHigh);
         }
 
         /**

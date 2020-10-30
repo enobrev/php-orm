@@ -3,10 +3,12 @@
 
     require __DIR__ . '/../../vendor/autoload.php';
 
+    use DateTime;
     use Enobrev\ORM\Mock\Table\Address;
     use Enobrev\ORM\Mock\Table\User;
+    use PHPUnit\Framework\TestCase;
 
-    class SelectTest extends \PHPUnit\Framework\TestCase {
+    class SelectTest extends TestCase {
         public function testSelectStar() {
             $this->assertEquals("SELECT * FROM users", (string) SQLBuilder::select(new User()));
         }
@@ -59,7 +61,7 @@
                     SQL::eq($oUser->user_id, 1),
                     SQL::eq($oUser->user_email, 'test@example.com')
                 ),
-                SQL::between($oUser->user_date_added, new \DateTime('2015-01-01'), new \DateTime('2015-06-01'))
+                SQL::between($oUser->user_date_added, new DateTime('2015-01-01'), new DateTime('2015-06-01'))
              )->asc($oUser->user_name)
              ->desc($oUser->user_email)
              ->group($oUser->user_id)

@@ -44,7 +44,7 @@
         abstract public static function getTable();
 
         /**
-         * @return Table[]|static
+         * @return static
          * @throws DbException
          * @psalm-suppress InvalidArgument
          */

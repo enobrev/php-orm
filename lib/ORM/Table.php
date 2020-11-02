@@ -164,7 +164,7 @@
          * @param static $oThis
          * @noinspection PhpMissingParamTypeInspection
          */
-        private static function setOriginalProperties($oThis) {
+        private static function setOriginalProperties($oThis): void {
             if (self::$aOriginalProperties === null) {
                 self::$aOriginalProperties = array_keys(get_object_vars($oThis));
             }

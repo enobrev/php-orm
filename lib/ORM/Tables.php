@@ -498,12 +498,16 @@
         }
 
         /**
-         * @param PDOStatement $oResults
-         * @param Table[]      $aTables
+         * @param PDOStatement|null $oResults
+         * @param mixed             ...$aTables
          *
          * @return static
          */
-        protected static function fromResults(PDOStatement $oResults, ...$aTables) {
+        protected static function fromResults(?PDOStatement $oResults, ...$aTables) {
+            if ($oResults === null) {
+                return new static();
+            }
+
             if (count($aTables) > 1) {
                 $oOutput = new static;
                 while ($oResult = $oResults->fetchObject()) {

@@ -74,7 +74,7 @@
          * @param ConditionInterface[]|ConditionInterface|Conditions|Field|Field[]|null $oCondition
          */
         public function add($oCondition):void {
-            assert($oCondition instanceof Conditions || $oCondition instanceof ConditionInterface || is_array($oCondition), new ConditionsNonConditionException());
+            assert($oCondition instanceof Conditions || $oCondition instanceof ConditionInterface || $oCondition instanceof Field || is_array($oCondition) || $oCondition === null, new ConditionsNonConditionException());
 
             switch(true) {
                 case $oCondition instanceof Conditions:

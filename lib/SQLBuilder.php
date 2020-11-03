@@ -29,7 +29,7 @@
 
         public ?string $sSQL = null;
 
-        public string $sSQLGroup;
+        public ?string $sSQLGroup = null;
 
         public string $sSQLTable;
 

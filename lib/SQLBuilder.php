@@ -323,6 +323,21 @@
         }
 
         /**
+         * @param int      $iPage
+         * @param int|null $iPer
+         *
+         * @return $this
+         */
+        public function page(int $iPage = 1, ?int $iPer = null): self {
+            if ($iPer) {
+                $iStart = $iPer * ($iPage - 1);
+                return $this->limit($iStart, $iPer);
+            }
+
+            return $this->limit($iStart);
+        }
+
+        /**
          * @param ORM\Field[] $aFields
          * @return $this
          */

@@ -505,12 +505,15 @@
          * @throws Exceptions\DbException
          */
         public function update(): ?PDOStatement {
+            if ($this->primaryHasValue()) {
+                $this->preUpdate();
+            }
+
             if (!$this->changed()) {
                 return null;
             }
 
             if ($this->primaryHasValue()) {
-                $this->preUpdate();
                 $oReturn = static::Db()->namedQuery(get_class($this) . '.update',
                     SQLBuilder::update($this)->also($this->getPrimary())
                 );

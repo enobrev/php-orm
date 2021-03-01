@@ -531,9 +531,10 @@
                 return new static();
             }
 
-            /** @psalm-suppress InvalidArgument */
-            $sPrefixedTable = get_class($aTables[0]);
-            return new static($oResults->fetchAll(PDO::FETCH_CLASS, $sPrefixedTable, ['', true]));
+            /** @var Table $oTable */
+            $oTable = $aTables[0];
+            $sPrefixedTable = get_class($oTable);
+            return new static($oResults->fetchAll(PDO::FETCH_CLASS, $sPrefixedTable, [$oTable->getTitle(), true]));
 
         }
 

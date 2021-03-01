@@ -2,22 +2,25 @@
     namespace Enobrev\ORM;
 
     use DateTime;
-    use Enobrev\ORM\Condition\ConditionInterface;
     use Exception;
     use PDOStatement;
+    use ReflectionClass;
     use stdClass;
 
+    use Enobrev\ORM\Condition\ConditionInterface;
     use Enobrev\ORM\Exceptions\TableException;
     use Enobrev\ORM\Exceptions\TableFieldNotFoundException;
     use Enobrev\SQLBuilder;
+
+    use function Enobrev\dbg;
 
     abstract class Table {
         protected string $sTitle = '';
 
         /** @var Field[] */
-        private array $aFields = [];
+        protected array $aFields = [];
 
-        public ?stdClass $oResult;
+        public ?stdClass $oResult = null;
 
         /**
          * @return Db
@@ -161,25 +164,11 @@
         }
 
         /**
-         * @param static $oThis
-         * @noinspection PhpMissingParamTypeInspection
-         */
-        private static function setOriginalProperties($oThis): void {
-            if (self::$aOriginalProperties === null) {
-                self::$aOriginalProperties = array_keys(get_object_vars($oThis));
-            }
-        }
-
-        private static ?array $aOriginalProperties = null;
-
-        /**
          *
          * @param string $sTitle
          * @param bool   $bFromPDO
          */
         public function __construct($sTitle = '', $bFromPDO = false) {
-            self::setOriginalProperties($this);
-
             if ($this->bConstructed === false) {
                 $this->bFromPDO = $bFromPDO;
                 $this->oResult  = new stdClass();
@@ -208,11 +197,16 @@
 
         // Applies non-table properties from results to oResult
         private function applyPropertiesToResult(): void {
-            $aProperties      = get_object_vars($this);
-            $aExtraResultKeys = array_diff(array_keys($aProperties), self::$aOriginalProperties ?? []);
-            foreach($aExtraResultKeys as $sProperty) {
-                if ($this->$sProperty instanceof Field === false) {
-                    $this->oResult->$sProperty = $this->$sProperty;
+            $oReflectionClass = new ReflectionClass(static::class);
+            $aOriginal        = array_keys($oReflectionClass->getDefaultProperties());
+            $aProperties      = array_keys(get_object_vars($this));
+            $aExtraResultKeys = array_diff($aProperties, $aOriginal ?? []);
+            if (count($aExtraResultKeys)) {
+                foreach ($aExtraResultKeys as $sProperty) {
+                    if ($this->$sProperty instanceof Field === false) {
+                        $this->oResult->$sProperty = $this->$sProperty;
+                        unset($this->$sProperty);
+                    }
                 }
             }
         }

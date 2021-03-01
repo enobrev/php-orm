@@ -221,6 +221,34 @@
             return $this->sTitle;
         }
 
+        /**
+         * @param Field             $oField
+         * @param Table|Field|mixed $mValue
+         *
+         * @return bool
+         */
+        public function fieldChangedTo(Field $oField, $mValue): bool {
+            if (!$this->fieldChanged($oField)) {
+                return false;
+            }
+
+            return $oField->is($mValue);
+        }
+
+        /**
+         * @param Field             $oField
+         * @param Table|Field|mixed $mValue
+         *
+         * @return bool
+         */
+        public function fieldChangedFrom(Field $oField, $mValue): bool {
+            if (!$this->fieldChanged($oField)) {
+                return false;
+            }
+
+            return $oField->was($mValue);
+        }
+
         public function fieldChanged(Field $oField): bool {
             if (!$this->oResult) {
                 return true;

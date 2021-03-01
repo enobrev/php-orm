@@ -34,17 +34,19 @@
          ->opt('host:h',     'The hostname or IP of the mysql server you are trying to connect to')
          ->opt('user:u',     'The username to log into the database with')
          ->opt('password:p', 'Prompt for a password', false, 'boolean')
-         ->opt('database:d', 'The name of the database you are connecting to');
+         ->opt('database:d', 'The name of the database you are connecting to')
+         ->opt('settings:s', 'Settings File');
 
     $oArgs = $oCLI->parse($argv, true);
 
-    $Db    = null;
-    $sPass = '';
-    $sHost = $oArgs->getOpt('host');
-    $sUser = $oArgs->getOpt('user');
-    $sName = $oArgs->getOpt('database');
-    $bPass = $oArgs->getOpt('password');
-    $bConnected = false;
+    $Db             = null;
+    $sPass          = '';
+    $sHost          = $oArgs->getOpt('host');
+    $sUser          = $oArgs->getOpt('user');
+    $sName          = $oArgs->getOpt('database');
+    $bPass          = $oArgs->getOpt('password');
+    $sSettingsFile  = $oArgs->getOpt('settings');
+    $bConnected     = false;
 
     while ($bConnected === false) {
         if (!$sHost) {
@@ -167,19 +169,54 @@
         return pluralize(str_replace(' ', '', ucwords(str_replace('_', ' ', depluralizeTableName($sTable)))));
     }
 
-    $aM2MTables   = [];
-    $sJsonM2MFile = getcwd() . '/.sql.m2m.json';
-    if (file_exists($sJsonM2MFile)) {
-        echo 'Using ' . $sJsonM2MFile . "\n";
+    $aM2MTables           = [];
+    $aIgnoreTables        = [];
+    $aOverrides           = [];
+    $bSettingsFileExisted = false;
+    $aSettings = [
+        'ignore'    => [],
+        'override'  => [],
+        'm2m'       => []
+    ];
+    if ($sSettingsFile && file_exists($sSettingsFile)) {
+        echo 'Using ' . $sSettingsFile . "\n";
 
-        $sJsonM2MContents = file_get_contents($sJsonM2MFile);
-        $aJsonM2M         = json_decode($sJsonM2MContents, true);
-        if (count($aJsonM2M)) {
-            foreach(array_keys($aJsonM2M) as $sTable) {
-                $aM2MTables[$sTable] = 1;
-            }
+        $bSettingsFileExisted = true;
+        $sSettingsContents = file_get_contents($sSettingsFile);
+        $aSettings         = array_merge($aSettings, json_decode($sSettingsContents, true));
+
+        if (!isset($aSettings['ignore'])) {
+            $aSettings['ignore'] = [];
         }
-    } else {
+
+        if (!isset($aSettings['override'])) {
+            $aSettings['override'] = [];
+        }
+
+        if (!isset($aSettings['m2m'])) {
+            $aSettings['m2m'] = [];
+        }
+    }
+
+    if (count($aSettings['m2m'])) {
+        foreach($aSettings['m2m'] as $sTable) {
+            $aM2MTables[$sTable] = 1;
+        }
+    }
+
+    if (count($aSettings['ignore'])) {
+        foreach($aSettings['ignore'] as $sTable) {
+            $aIgnoreTables[$sTable] = 1;
+        }
+    }
+
+    if (count($aSettings['override'])) {
+        foreach($aSettings['override'] as $sTable => $aFields) {
+            $aOverrides[$sTable] = $aFields;
+        }
+    }
+
+    if (!$bSettingsFileExisted) {
         echo str_pad('0', 3, ' ', STR_PAD_LEFT) . ': ALL' . "\n";
         foreach ($aTableNames as $iIndex => $sTable) {
             echo str_pad($iIndex + 1, 3, ' ', STR_PAD_LEFT) . ': ' . $sTable . "\n";
@@ -199,8 +236,9 @@
             }
 
             if (count($aM2MTables)) {
-                file_put_contents($sJsonM2MFile, json_encode(array_keys($aM2MTables), JSON_PRETTY_PRINT));
-                echo 'Created ' . $sJsonM2MFile . "\n";
+                $aSettings['m2m'] = array_keys($aM2MTables);
+                file_put_contents($sSettingsFile, json_encode($aSettings, JSON_PRETTY_PRINT));
+                echo 'Created ' . $sSettingsFile . "\n";
             }
         }
     }
@@ -211,6 +249,11 @@
     );
 
     foreach($aTables as $sTable => $aTable) {
+        if (isset($aIgnoreTables[$sTable])) {
+            echo "Ignoring $sTable\n";
+            continue;
+        }
+
         $aOutput = array();
 
         $sClassName       = 'Table\\' . getClassName($sTable);
@@ -508,6 +551,11 @@
                 $oTemplateField['default'] = null;
             }
 
+            if (isset($aOverrides[$sTable][$sField])) {
+                echo "Overriding $sTable.$sField\n";
+                $oTemplateField = array_merge($oTemplateField, $aOverrides[$sTable][$sField]);
+            }
+
             $aData['fields'][] = $oTemplateField;
 
             $sType = str_replace('Field\\', '', $oTemplateField['type']);
@@ -536,6 +584,10 @@
     }
 
     foreach ($aAllData['tables'] as $sTable => $aData) {
+        if (isset($aIgnoreTables[$sTable])) {
+            echo "Ignoring $sTable References\n";
+            continue;
+        }
 
         if (isset($aReferences[$sTable]) && count($aReferences[$sTable])) {
             foreach($aReferences[$sTable] as $sColumn => $aReference) {
@@ -577,6 +629,11 @@
                 foreach($aReverseReferencesForColumn as $aReverseReference) {
                     $sReferencedTable  = $aReverseReference['table'];
                     $sReferencedField  = $aReverseReference['field'];
+
+                    if (isset($aIgnoreTables[$sReferencedTable])) {
+                        continue;
+                    }
+
                     $aReferencedFields = $aAllData['tables'][$sReferencedTable]['fields'];
 
                     $aReferencedTable  = $aAllData['tables'][$sReferencedTable]['table'];

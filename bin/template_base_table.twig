@@ -43,11 +43,10 @@
 {% endfor %}
 {% for field in fields %}
 {% if field.field.reference.field.type == "Field\Id" %}
-        /** @var {{field.reference.field.type}} */
+        public {{field.reference.field.type}} ${{ field.name }};
 {% else %}
-        /** @var {{field.type}} */
+        public {{field.type}} ${{ field.name }};
 {% endif %}
-        public ${{ field.name }};
 
 {% endfor %}
 
@@ -229,7 +228,6 @@
 
         /**
          * @throws DbException
-         * @throws Exception
          */
         protected function preInsert():void {
 {% if primary %}
@@ -251,7 +249,6 @@
 
         /**
          * @throws DbException
-         * @throws Exception
          */
         protected function preUpsert():void {
 {% if primary %}
@@ -274,7 +271,6 @@
 
         /**
          * @throws DbException
-         * @throws Exception
          */
         protected function preUpdate():void {
 {% if date_updated %}

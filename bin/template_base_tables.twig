@@ -43,11 +43,11 @@
 {% if count.primary == 1 %}
 
         /**
-         * @param {{ primary.0.php_type }}[] {{ primary.0.var_array }}
+         * @param {{ primary.0.php_type }}[] ${{ primary.0.var_array }}
          * @return PublicNS\{{ table.plural }}
          * @throws DbException
          */
-        public static function getBy{{ primary.0.plural }}(Array ${{ primary.0.var_array }}): PublicNS\{{ table.plural }} {
+        public static function getBy{{ primary.0.plural }}(array ${{ primary.0.var_array }}): PublicNS\{{ table.plural }} {
             if (count(${{ primary.0.var_array }}) === 0) {
                 return new PublicNS\{{ table.plural }};
             }
@@ -81,7 +81,7 @@
         }
 
         /**
-         * @param PublicNS\{{ field.reference.table.plural }} ${{ field.reference.field.var_array }}
+         * @param PublicNS\{{ field.reference.table.plural }}|{{ field.reference.field.php_type }}[] ${{ field.reference.field.var_array }}
          * @return PublicNS\{{ table.plural }}
          * @throws DbException
          */

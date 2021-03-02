@@ -531,10 +531,7 @@
                 return new static();
             }
 
-            /** @var Table $oTable */
-            $oTable = $aTables[0];
-            $sPrefixedTable = get_class($oTable);
-            return new static($oResults->fetchAll(PDO::FETCH_CLASS, $sPrefixedTable, [$oTable->getTitle(), true]));
+            return self::fromResultsWithMeta($oResults, $aTables[0]);
 
         }
 
@@ -545,11 +542,9 @@
          * @return static
          */
         protected static function fromResultsWithMeta(PDOStatement $oResults, Table $oTable) {
-            /** @var Table $sPrefixedTable */
-            $sPrefixedTable = get_class($oTable);
             $oOutput        = new static;
-            while ($oResult = $oResults->fetchObject()) {
-                $oOutput->append($sPrefixedTable::createFromObject($oResult));
+            while ($oResult = $oTable->createFromPDOStatement($oResults)) {
+                $oOutput->append($oResult);
             }
             return $oOutput;
         }

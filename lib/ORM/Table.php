@@ -155,9 +155,12 @@
          * @return static|null
          */
         public function createFromPDOStatement(PDOStatement $oResults): ?Table {
-            $oResponse = $oResults->fetchObject(static::class, [$this->getTitle(), true]);
-            if ($oResponse) {
-                return $oResponse;
+            // $oResponse = $oResults->fetchObject(static::class, [$this->getTitle(), true]); // FIXME: This is ideal, but doesn't work with typed properties
+            $oResult = $oResults->fetchObject();
+            if ($oResult) {
+                $oTable  = new static($this->getTitle());
+                $oTable->setFromObject($oResult);
+                return $oTable;
             }
 
             return null;

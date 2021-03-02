@@ -43,10 +43,11 @@
 {% endfor %}
 {% for field in fields %}
 {% if field.field.reference.field.type == "Field\Id" %}
-        public {{field.reference.field.type}} ${{ field.name }};
+        /** @var {{field.reference.field.type}} */
 {% else %}
-        public {{field.type}} ${{ field.name }};
+        /** @var {{field.type}} */
 {% endif %}
+        public ${{ field.name }};
 
 {% endfor %}
 

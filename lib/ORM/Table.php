@@ -243,7 +243,15 @@
                 return false;
             }
 
-            return $oField->was($mValue);
+            if ($mValue instanceof Table) {
+                $mValue = $mValue->{$this->sColumn};
+            }
+
+            if ($mValue instanceof self) {
+                $mValue = $mValue->getValue();
+            }
+
+            return (string) $this->oResult->{$oField->sColumn} === (string) $mValue;
         }
 
         public function fieldChanged(Field $oField): bool {

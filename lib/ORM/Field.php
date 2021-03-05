@@ -233,22 +233,6 @@
         }
 
         /**
-         * @param Table|Field|mixed $mValue
-         * @return bool
-         */
-        public function was($mValue): bool {
-            if ($mValue instanceof Table) {
-                $mValue = $mValue->{$this->sColumn};
-            }
-
-            if ($mValue instanceof self) {
-                $mValue = $mValue->getValue();
-            }
-
-            return (string) $this->oResult->{$this->sColumn} === (string) $mValue;
-        }
-
-        /**
          * @param $aValues
          * @return bool
          */

@@ -160,12 +160,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/enobrev/php-tools.git",
-                "reference": "fe7c01d8cef2293351aa41049355aa755308983a"
+                "reference": "0996bacb501eb00a7eef8b12e4ef87146f4cefea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/fe7c01d8cef2293351aa41049355aa755308983a",
-                "reference": "fe7c01d8cef2293351aa41049355aa755308983a",
+                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/0996bacb501eb00a7eef8b12e4ef87146f4cefea",
+                "reference": "0996bacb501eb00a7eef8b12e4ef87146f4cefea",
                 "shasum": ""
             },
             "require": {
@@ -211,7 +211,7 @@
                 "source": "https://github.com/enobrev/php-tools/tree/master",
                 "issues": "https://github.com/enobrev/php-tools/issues"
             },
-            "time": "2021-01-27T20:03:24+00:00"
+            "time": "2021-03-12T20:23:31+00:00"
         },
         {
             "name": "laminas/laminas-diactoros",

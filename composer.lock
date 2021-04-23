@@ -160,12 +160,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/enobrev/php-tools.git",
-                "reference": "5055ce088cf40ccf88096d2d8021a449013945ba"
+                "reference": "094ddbe1cd11c5be52b007fc7865a9306c9fde7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/5055ce088cf40ccf88096d2d8021a449013945ba",
-                "reference": "5055ce088cf40ccf88096d2d8021a449013945ba",
+                "url": "https://api.github.com/repos/enobrev/php-tools/zipball/094ddbe1cd11c5be52b007fc7865a9306c9fde7c",
+                "reference": "094ddbe1cd11c5be52b007fc7865a9306c9fde7c",
                 "shasum": ""
             },
             "require": {
@@ -210,20 +210,20 @@
                 "source": "https://github.com/enobrev/php-tools/tree/master",
                 "issues": "https://github.com/enobrev/php-tools/issues"
             },
-            "time": "2021-04-08T07:13:13+00:00"
+            "time": "2021-04-22T17:43:50+00:00"
         },
         {
             "name": "laminas/laminas-diactoros",
-            "version": "2.5.0",
+            "version": "2.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-diactoros.git",
-                "reference": "4ff7400c1c12e404144992ef43c8b733fd9ad516"
+                "reference": "53df7b7cd66e0905e6133970a4b90392a7a08075"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-diactoros/zipball/4ff7400c1c12e404144992ef43c8b733fd9ad516",
-                "reference": "4ff7400c1c12e404144992ef43c8b733fd9ad516",
+                "url": "https://api.github.com/repos/laminas/laminas-diactoros/zipball/53df7b7cd66e0905e6133970a4b90392a7a08075",
+                "reference": "53df7b7cd66e0905e6133970a4b90392a7a08075",
                 "shasum": ""
             },
             "require": {
@@ -310,20 +310,20 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2020-11-18T18:39:28+00:00"
+            "time": "2021-04-13T19:39:11+00:00"
         },
         {
             "name": "laminas/laminas-httphandlerrunner",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-httphandlerrunner.git",
-                "reference": "e8f850bd12cb82b268ff235fe74b2df906e8bfe8"
+                "reference": "6a2dd33e4166469ade07ad1283b45924383b224b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-httphandlerrunner/zipball/e8f850bd12cb82b268ff235fe74b2df906e8bfe8",
-                "reference": "e8f850bd12cb82b268ff235fe74b2df906e8bfe8",
+                "url": "https://api.github.com/repos/laminas/laminas-httphandlerrunner/zipball/6a2dd33e4166469ade07ad1283b45924383b224b",
+                "reference": "6a2dd33e4166469ade07ad1283b45924383b224b",
                 "shasum": ""
             },
             "require": {
@@ -339,7 +339,9 @@
             "require-dev": {
                 "laminas/laminas-coding-standard": "~1.0.0",
                 "laminas/laminas-diactoros": "^2.1.1",
-                "phpunit/phpunit": "^9.3"
+                "phpunit/phpunit": "^9.3",
+                "psalm/plugin-phpunit": "^0.15.1",
+                "vimeo/psalm": "^4.6"
             },
             "type": "library",
             "extra": {
@@ -379,7 +381,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2020-11-19T17:12:59+00:00"
+            "time": "2021-04-08T13:52:56+00:00"
         },
         {
             "name": "laminas/laminas-zendframework-bridge",

@@ -259,7 +259,7 @@
                 /** @psalm-suppress PossiblyInvalidPropertyFetch */
                 $aLogOutput['sql'] = [
                     'driver' => $this->oPDO ? $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
-                    'query'  => $sSQL,
+                    'query'  => preg_replace("/[\r\n\s\t]+/", " ", $sSQL),
                     'group'  => $sQuery->sSQLGroup,
                     'table'  => $sQuery->sSQLTable,
                     'type'   => $sQuery->sSQLType,
@@ -275,7 +275,7 @@
 
                 $aLogOutput['sql'] = [
                     'driver' => $this->oPDO ? $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
-                    'query'  => $sSQL,
+                    'query'  => preg_replace("/[\r\n\s\t]+/", " ", $sSQL),
                     'group'  => $sGroup,
                     'hash'   => [
                         'group' => hash('sha1', $sGroup),

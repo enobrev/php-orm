@@ -425,23 +425,18 @@
             return $this->oPDO->quote($sString, $sPDOType);
         }
 
-        /**
-         * @return bool
-         */
         public function beginTransaction(): bool {
             return $this->oPDO->beginTransaction();
         }
 
-        /**
-         * @return bool
-         */
+        public function inTransaction(): bool {
+            return $this->oPDO->inTransaction();
+        }
+
         public function rollBack(): bool {
             return $this->oPDO->rollBack();
         }
 
-        /**
-         * @return bool
-         */
         public function commit(): bool {
             return $this->oPDO->commit();
         }

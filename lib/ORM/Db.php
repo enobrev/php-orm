@@ -3,6 +3,7 @@
 
     use DateTime;
     use DateTimeZone;
+    use Enobrev\ORM\Exceptions\DbDeadlockException;
     use Exception;
     use PDO;
     use PDOException;
@@ -337,10 +338,19 @@
             } catch(PDOException $e) {
                 $iCode = (int) $e->getCode();
 
-                if ($iCode === 1062 || $iCode === 23000) {
-                    $oException = new DbDuplicateException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
-                } else {
-                    $oException = new DbException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
+                switch($iCode) {
+                    case 1062:
+                    case 23000:
+                        $oException = new DbDuplicateException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
+                        break;
+
+                    case 40001:
+                        $oException = new DbDeadlockException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
+                        break;
+
+                    default:
+                        $oException = new DbException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
+                        break;
                 }
 
                 $aLogOutput['--ms']  = Log::stopTimer($sTimerName);

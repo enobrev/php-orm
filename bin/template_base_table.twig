@@ -278,7 +278,7 @@
          */
         protected function preUpdate():void {
 {% if date_updated %}
-            if ($this->changed()) {
+            if ($this->{{date_updated.name}}->hasValue() === false || $this->changed()) {
                 $this->{{date_updated.name}}->setValue($this->now());
             }
 {% endif %}

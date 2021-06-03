@@ -3,6 +3,7 @@
 
     use DateTime;
     use DateTimeZone;
+    use Enobrev\ORM\Exceptions\DbConstraintException;
     use Enobrev\ORM\Exceptions\DbDeadlockException;
     use Exception;
     use PDO;
@@ -337,25 +338,30 @@
                 $mResult = $this->rawQuery($sSQL);
             } catch(PDOException $e) {
                 $iCode = (int) $e->getCode();
+                $sMessage = $e->getMessage();
 
                 switch($iCode) {
                     case 1062:
                     case 23000:
-                        $oException = new DbDuplicateException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
+                        if (strpos($sMessage, 'foreign key constraint fails') !== false) {
+                            $oException = new DbConstraintException($sMessage . ' in SQL: ' . $sSQL, $iCode);
+                        } else {
+                            $oException = new DbDuplicateException($sMessage . ' in SQL: ' . $sSQL, $iCode);
+                        }
                         break;
 
                     case 40001:
-                        $oException = new DbDeadlockException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
+                        $oException = new DbDeadlockException($sMessage . ' in SQL: ' . $sSQL, $iCode);
                         break;
 
                     default:
-                        $oException = new DbException($e->getMessage() . ' in SQL: ' . $sSQL, $iCode);
+                        $oException = new DbException($sMessage . ' in SQL: ' . $sSQL, $iCode);
                         break;
                 }
 
                 $aLogOutput['--ms']  = Log::stopTimer($sTimerName);
 
-                Log::ex('ORM.Db.query', $oException, $aLogOutput);
+                Log::ex('ORM.Db.query', $e, $aLogOutput);
 
                 throw $oException;
             }

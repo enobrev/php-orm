@@ -547,7 +547,7 @@
             }
 
             if ($this->primaryHasValue()) {
-                $oReturn = static::Db()->namedQuery(get_class($this) . '.update',
+                $oReturn = static::Db()->namedQuery(static::class . '.' . __FUNCTION__,
                     SQLBuilder::update($this)->also($this->getPrimary())
                 );
                 $this->postUpdate();
@@ -579,7 +579,7 @@
         public function delete(): ?PDOStatement {
             if ($this->primaryHasValue()) {
                 $this->preDelete();
-                $oReturn = static::Db()->namedQuery(get_class($this) . '.delete',
+                $oReturn = static::Db()->namedQuery(static::class  . '.' . __FUNCTION__,
                     SQLBuilder::delete($this)->also($this->getPrimary())
                 );
                 $this->postDelete();
@@ -601,7 +601,7 @@
 
             $bPrimaryAlreadySet = $this->primaryHasValue();
 
-            static::Db()->namedQuery(get_class($this) . '.insert',
+            static::Db()->namedQuery(static::class . '.' . __FUNCTION__,
                 SQLBuilder::insert($this)
             );
 
@@ -651,7 +651,7 @@
          */
         public function upsert(): int {
             $this->preUpsert();
-            static::Db()->namedQuery(get_class($this) . '.upsert',
+            static::Db()->namedQuery(static::class  . '.' . __FUNCTION__,
                 SQLBuilder::upsert($this)
             );
 

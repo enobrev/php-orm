@@ -2,6 +2,7 @@
     namespace Enobrev\ORM;
 
     use ArrayIterator;
+    use Enobrev\ORM\Exceptions\TablesInvalidTableException;
     use PDO;
     use PDOStatement;
     use Throwable;
@@ -50,7 +51,7 @@
          */
         public static function get() {
             $oTable   = static::getTable();
-            $oResults = static::Db()->namedQuery(__METHOD__, SQLBuilder::select($oTable));
+            $oResults = static::Db()->namedQuery(static::class . '.' . __FUNCTION__, SQLBuilder::select($oTable));
             return static::fromResults($oResults, $oTable);
         }
 
@@ -68,7 +69,7 @@
             $oTable   = static::getTable();
             $oSQL     = SQLBuilder::select($oTable);
             $sSQL     = $oSQL->toString() . ' ORDER BY RAND() ' . SQL::limit($iCount)->toSQL();
-            $oResults = static::Db()->namedQuery(__METHOD__, $sSQL);
+            $oResults = static::Db()->namedQuery(static::class . '.' . __FUNCTION__, $sSQL);
 
             if (!$oResults) {
                 return new static();
@@ -194,7 +195,7 @@
          */
         public static function getForCMS(?int $iPage = 1, ?int $iPer = 100, ?array $aSearch = null, ?array $aSort = null, ?string $sSyncDate = null) {
             $oQuery = self::getQueryForCMS($aSearch, $iPage, $iPer, $aSort, $sSyncDate);
-            $oResults = static::Db()->namedQuery(__METHOD__, $oQuery);
+            $oResults = static::Db()->namedQuery(static::class . '.' . __FUNCTION__, $oQuery);
 
             if(!$oResults) {
                 return new static();
@@ -213,7 +214,7 @@
             if (!$aSearch) {
                 $oTable   = static::getTable();
                 $sTable   = $oTable->getTitle();
-                $oResults = static::Db()->namedQuery(__METHOD__, "SHOW TABLE STATUS LIKE '$sTable'");
+                $oResults = static::Db()->namedQuery(static::class . '.' . __FUNCTION__, "SHOW TABLE STATUS LIKE '$sTable'");
                 if (!$oResults) {
                     return 0;
                 }
@@ -222,7 +223,7 @@
 
             $oQuery = self::getQueryForCMS($aSearch);
             $oQuery->setType(SQLBuilder::TYPE_COUNT);
-            $oResults = static::Db()->namedQuery(__METHOD__, $oQuery);
+            $oResults = static::Db()->namedQuery(static::class . '.' . __FUNCTION__, $oQuery);
             if (!$oResults) {
                 return 0;
             }
@@ -230,15 +231,14 @@
         }
 
         /**
-         * @param array|null   $aSearch
-         * @param int|null     $iPage
-         * @param int|null     $iPer
-         * @param array|null   $aSort
-         * @param null|string  $sSyncDate
-         * @param null|Field[] $aFields
+         * @param array|null  $aSearch
+         * @param int|null    $iPage
+         * @param int|null    $iPer
+         * @param array|null  $aSort
+         * @param string|null $sSyncDate
+         * @param array       $aFields
          *
          * @return SQLBuilder
-         * @throws TablesInvalidTableException
          */
         protected static function getQueryForCMS(?array $aSearch = null, ?int $iPage = null, ?int $iPer = null, ?array $aSort = null, ?string $sSyncDate = null, array $aFields = []): SQLBuilder {
             $oTable      = static::getTable();
@@ -445,7 +445,7 @@
          */
         public static function total(): int {
             $oTable   = static::getTable();
-            $oResults = static::Db()->namedQuery(__METHOD__, SQLBuilder::count($oTable));
+            $oResults = static::Db()->namedQuery(static::class . '.' . __FUNCTION__, SQLBuilder::count($oTable));
 
             if (!$oResults) {
                 return 0;

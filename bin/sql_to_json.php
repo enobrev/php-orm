@@ -33,7 +33,7 @@
     $oCLI->description('Generate SQL.json file from existing database')
          ->opt('host:h',     'The hostname or IP of the mysql server you are trying to connect to')
          ->opt('user:u',     'The username to log into the database with')
-         ->opt('password:p', 'Prompt for a password', false, 'boolean')
+         ->opt('password:p', 'The password to log into the database with')
          ->opt('database:d', 'The name of the database you are connecting to')
          ->opt('settings:s', 'Settings File');
 
@@ -44,7 +44,7 @@
     $sHost          = $oArgs->getOpt('host');
     $sUser          = $oArgs->getOpt('user');
     $sName          = $oArgs->getOpt('database');
-    $bPass          = $oArgs->getOpt('password');
+    $sPass          = $oArgs->getOpt('password');
     $sSettingsFile  = $oArgs->getOpt('settings');
     $bConnected     = false;
 
@@ -62,7 +62,7 @@
             }
         }
 
-        if ($bPass) {
+        if (!$sPass) {
             while (strlen($sPass) === 0) {
                 $sPass = readline('Password: ');
             }

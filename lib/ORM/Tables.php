@@ -503,7 +503,7 @@
          *
          * @return static
          */
-        protected static function fromResults(?PDOStatement $oResults, ...$aTables) {
+        public static function fromResults(?PDOStatement $oResults, ...$aTables) {
             if ($oResults === null) {
                 return new static();
             }
@@ -529,6 +529,10 @@
 
             if ($oResults->rowCount() === 0) {
                 return new static();
+            }
+
+            if (!count($aTables)) {
+                return self::fromResultsWithMeta($oResults, static::getTable());
             }
 
             return self::fromResultsWithMeta($oResults, $aTables[0]);

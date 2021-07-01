@@ -4,6 +4,7 @@
     use Enobrev\ORM\Condition\ConditionInterface;
     use Enobrev\ORM\ConditionFactory;
     use Enobrev\ORM\Conditions;
+    use Enobrev\ORM\Exceptions\SQLBuilderMissingTableOrFieldsException;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Group;
     use Enobrev\ORM\Limit;
@@ -832,12 +833,7 @@
             return implode(', ', $aColumns);
         }
 
-        /**
-         * @param ORM\Field[] $aFields
-         * @param stdClass|null $oResult
-         * @return string
-         */
-        public static function toSQLUpdate(array $aFields, stdClass $oResult = NULL): string {
+        public static function getSQLUpdateFields(array $aFields, stdClass $oResult = NULL): array {
             $aColumns = [];
 
             foreach($aFields as $oField) {
@@ -849,6 +845,20 @@
                 }
 
                 $aColumns[] = $oField->toSQLColumn(false) . ' = ' . $oField->toSQL();
+            }
+
+            return $aColumns;
+        }
+
+        /**
+         * @param ORM\Field[] $aFields
+         * @param stdClass|null $oResult
+         * @return string
+         */
+        public static function toSQLUpdate(array $aFields, stdClass $oResult = NULL): string {
+            $aColumns = self::getSQLUpdateFields($aFields, $oResult);
+            if (count($aColumns) === 0) {
+                throw new SQLBuilderMissingUpdateFieldsException();
             }
 
             return implode(', ', $aColumns);

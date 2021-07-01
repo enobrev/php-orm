@@ -547,9 +547,14 @@
             }
 
             if ($this->primaryHasValue()) {
-                $oReturn = static::Db()->namedQuery(static::class . '.' . __FUNCTION__,
-                    SQLBuilder::update($this)->also($this->getPrimary())
-                );
+                try {
+                    $sSQL = SQLBuilder::update($this)->also($this->getPrimary());
+                } catch (SQLBuilderMissingUpdateFieldsException $e) {
+                    // Nothing to update - same as !changed
+                    return null;
+                }
+
+                $oReturn = static::Db()->namedQuery(static::class . '.' . __FUNCTION__, $sSQL);
                 $this->postUpdate();
 
                 return $oReturn;

@@ -7,6 +7,7 @@
     use ReflectionClass;
     use stdClass;
 
+    use Enobrev\Log;
     use Enobrev\ORM\Condition\ConditionInterface;
     use Enobrev\ORM\Exceptions\TableException;
     use Enobrev\ORM\Exceptions\TableFieldNotFoundException;
@@ -543,6 +544,7 @@
             }
 
             if (!$this->changed()) {
+                Log::d(Log::method(__METHOD__), ['state' => 'no-update', 'reason' => 'unchanged']);
                 return null;
             }
 
@@ -550,14 +552,17 @@
                 try {
                     $sSQL = SQLBuilder::update($this)->also($this->getPrimary());
                 } catch (SQLBuilderMissingUpdateFieldsException $e) {
+                    Log::d(Log::method(__METHOD__), ['state' => 'no-update', 'reason' => 'missing-updated-fields']);
                     // Nothing to update - same as !changed
                     return null;
                 }
 
-                $oReturn = static::Db()->namedQuery(static::class . '.' . __FUNCTION__, $sSQL);
+                $oReturn = static::Db()->namedQuery(static::class  . '.' . __FUNCTION__, $sSQL);
                 $this->postUpdate();
 
                 return $oReturn;
+            } else {
+                Log::w(Log::method(__METHOD__), ['state' => 'no-update', 'reason' => 'no-primary-value']);
             }
 
             return null;
@@ -589,7 +594,10 @@
                 );
                 $this->postDelete();
                 return $oReturn;
+            } else {
+                Log::w(Log::method(__METHOD__), ['state' => 'no-delete', 'reason' => 'no-primary-value']);
             }
+
 
             return null;
         }

@@ -552,7 +552,7 @@
                 try {
                     $sSQL = SQLBuilder::update($this)->also($this->getPrimary());
                 } catch (SQLBuilderMissingUpdateFieldsException $e) {
-                    Log::d(Log::method(__METHOD__), ['state' => 'no-update', 'reason' => 'missing-updated-fields']);
+                    Log::w(Log::method(__METHOD__), ['state' => 'no-update', 'reason' => 'missing-updated-fields']);
                     // Nothing to update - same as !changed
                     return null;
                 }

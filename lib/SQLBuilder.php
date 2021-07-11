@@ -5,6 +5,7 @@
     use Enobrev\ORM\ConditionFactory;
     use Enobrev\ORM\Conditions;
     use Enobrev\ORM\Exceptions\SQLBuilderMissingTableOrFieldsException;
+    use Enobrev\ORM\Exceptions\SQLBuilderMissingUpdateFieldsException;
     use Enobrev\ORM\Field;
     use Enobrev\ORM\Group;
     use Enobrev\ORM\Limit;

@@ -5,6 +5,7 @@
     use DateTimeZone;
     use Enobrev\ORM\Exceptions\DbConstraintException;
     use Enobrev\ORM\Exceptions\DbDeadlockException;
+    use Enobrev\ORM\Exceptions\DbEmptyQueryException;
     use Exception;
     use PDO;
     use PDOException;
@@ -352,6 +353,10 @@
 
                     case 40001:
                         $oException = new DbDeadlockException($sMessage . ' in SQL: ' . $sSQL, $iCode);
+                        break;
+
+                    case 42000:
+                        $oException = new DbEmptyQueryException($sMessage, $iCode);
                         break;
 
                     default:

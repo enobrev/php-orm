@@ -282,12 +282,13 @@
 
                 /** @psalm-suppress PossiblyInvalidPropertyFetch */
                 $aLogOutput['sql'] = [
-                    'driver' => $oPDO ? $oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
-                    'query'  => preg_replace("/[\r\n\s\t]+/", " ", $sSQL),
-                    'group'  => $sQuery->sSQLGroup,
-                    'table'  => $sQuery->sSQLTable,
-                    'type'   => $sQuery->sSQLType,
-                    'hash'   => [
+                    'driver'  => $oPDO ? $oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
+                    'replica' => $oPDO === $this->oPDO_Replica,
+                    'query'   => preg_replace("/[\r\n\s\t]+/", " ", $sSQL),
+                    'group'   => $sQuery->sSQLGroup,
+                    'table'   => $sQuery->sSQLTable,
+                    'type'    => $sQuery->sSQLType,
+                    'hash'    => [
                         'group' => hash('sha1', $sQuery->sSQLGroup),
                         'query' => hash('sha1', $sSQL)
                     ]
@@ -300,10 +301,11 @@
                 $sGroup     = trim($sName) !== '' ? $sName : $sSQL;
 
                 $aLogOutput['sql'] = [
-                    'driver' => $oPDO ? $oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
-                    'query'  => preg_replace("/[\r\n\s\t]+/", " ", $sSQL),
-                    'group'  => $sGroup,
-                    'hash'   => [
+                    'driver'  => $oPDO ? $oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
+                    'replica' => $oPDO === $this->oPDO_Replica,
+                    'query'   => preg_replace("/[\r\n\s\t]+/", " ", $sSQL),
+                    'group'   => $sGroup,
+                    'hash'    => [
                         'group' => hash('sha1', $sGroup),
                         'query' => hash('sha1', $sSQL)
                     ]

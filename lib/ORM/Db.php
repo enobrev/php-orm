@@ -27,6 +27,8 @@
 
         public static bool $bUpsertUpdated  = false;
 
+        private static bool $bForceSource = false;
+
         /** @var mixed */
         private $sLastInsertId;
 
@@ -187,6 +189,10 @@
             return self::$bConnected;
         }
 
+        public static function forceSource(bool $bForceSource): void {
+            self::$bForceSource = $bForceSource;
+        }
+
         /**
          *
          * Keep the connection alive on a long-lived process
@@ -239,7 +245,8 @@
         }
 
         private function getPDOForQuery(string $sQuery): ?PDO {
-            if ($this->inTransaction() === false
+            if (self::$bForceSource === false
+            &&  $this->inTransaction() === false
             &&  $this->oPDO_Replica !== null
             &&  self::isRead($sQuery)) {
                 return $this->oPDO_Replica;
@@ -466,7 +473,7 @@
          * @return string
          */
         public function quote($sString, $sPDOType = PDO::PARAM_STR): string {
-            $oPDO = $this->oPDO_Replica ?? $this->oPDO_Source;
+            $oPDO = $this->replicaOrSource();
             return $oPDO->quote($sString, $sPDOType);
         }
 
@@ -486,6 +493,14 @@
             return $this->oPDO_Source->commit();
         }
 
+        private function replicaOrSource() {
+            if (!self::$bForceSource) {
+                return $this->oPDO_Replica ?? $this->oPDO_Source;
+            }
+
+            return $this->oPDO_Source;
+        }
+
         /**
          *
          * @param DateTimeZone|null $oTimezone
@@ -499,7 +514,7 @@
                 $oTimezone = new DateTimeZone("UTC");
             }
 
-            $oPDO = $this->oPDO_Replica ?? $this->oPDO_Source;
+            $oPDO = $this->replicaOrSource();
             $sDriver = $oPDO->getAttribute(PDO::ATTR_DRIVER_NAME);
             if ($sDriver === 'sqlite') {
                 return new DateTime('now');

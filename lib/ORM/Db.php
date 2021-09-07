@@ -17,9 +17,9 @@
     use Enobrev\SQLBuilder;
 
     class Db {
-        private static ?Db $oInstance = null;
+        private static ?Db $oInstance_MySQL = null;
 
-        private static ?Db $oInstance2 = null;
+        private static ?Db $oInstance_PG = null;
 
         private static bool $bConnected = false;
 
@@ -32,60 +32,54 @@
 
         private ?int $iLastRowsAffected;
 
-        private ?PDO $oPDO;
+        private ?PDO $oPDO_Source;
+        private ?PDO $oPDO_Replica;
 
         /**
-         * @param PDO|null $oPDO
+         * @param PDO|null $oPDO_Source
+         * @param PDO|null $oPDO_Replica if available, will be used for reads
          *
          * @return Db
          * @throws DbException
          */
-        public static function getInstance(?PDO $oPDO = null): Db {
-            if (!self::$oInstance instanceof self) {
-                if ($oPDO === null) {
+        public static function getInstance(?PDO $oPDO_Source = null, ?PDO $oPDO_Replica = null): Db {
+            if (!self::$oInstance_MySQL instanceof self) {
+                if ($oPDO_Source === null) {
                     throw new DbException('Db Has Not been Initialized Properly');
                 }
 
-                self::$oInstance = new self($oPDO);
+                self::$oInstance_MySQL = new self($oPDO_Source, $oPDO_Replica);
             }
 
-            return self::$oInstance;
+            return self::$oInstance_MySQL;
         }
 
         /**
          * Hackish and Silly.  There are definitely cleaner ways to do this.  But I want two databases at once with minimal effort, and this does it for now
-         * @param PDO|null $oPDO
-         * @return Db
-         * @throws DbException
-         */
-        public static function getInstance2(PDO $oPDO = null): Db {
-            if (!self::$oInstance2 instanceof self) {
-                if ($oPDO === null) {
-                    throw new DbException('Db Has Not been Initialized Properly');
-                }
-
-                self::$oInstance2 = new self($oPDO);
-            }
-
-            return self::$oInstance2;
-        }
-
-        public function getPDO(): ?PDO {
-            return $this->oPDO;
-        }
-
-        /**
-         * @param PDO $oPDO
+         *
+         * @param PDO|null $oPDO_PG
          *
          * @return Db
          * @throws DbException
          */
-        public static function replaceInstance(PDO $oPDO): Db {
-            if (self::$oInstance instanceof self && self::$bConnected) {
-                self::$oInstance->close();
+        public static function getPGInstance(PDO $oPDO_PG = null): Db {
+            if (!self::$oInstance_PG instanceof self) {
+                if ($oPDO_PG === null) {
+                    throw new DbException('Db Has Not been Initialized Properly');
+                }
+
+                self::$oInstance_PG = new self($oPDO_PG);
             }
 
-            return self::getInstance($oPDO);
+            return self::$oInstance_PG;
+        }
+
+        public function getPDOSource(): ?PDO {
+            return $this->oPDO_Source;
+        }
+
+        public function getPDOReplica(): ?PDO {
+            return $this->oPDO_Replica;
         }
 
         /**
@@ -159,22 +153,30 @@
         }
 
         /**
-         * @param PDO $oPDO
+         * @param PDO      $oPDO_Source
+         * @param PDO|null $oPDO_Replica
          */
-        private function __construct(PDO $oPDO) {
-            $this->oPDO = $oPDO;
+        private function __construct(PDO $oPDO_Source, ?PDO $oPDO_Replica) {
+            $this->oPDO_Source  = $oPDO_Source;
+            $this->oPDO_Replica = $oPDO_Replica;
         }
 
         /**
          * @psalm-suppress InvalidPropertyAssignment
          */
         public function close(): void {
-            if (self::$oInstance instanceof self && self::$bConnected) {
-                $this->oPDO = null;
+            if (self::$oInstance_MySQL instanceof self && self::$bConnected) {
+                $this->oPDO_Source = null;
+                $this->oPDO_Replica = null;
+            }
+
+            if (self::$oInstance_PG instanceof self && self::$bConnected) {
+                $this->oPDO_Source = null;
             }
 
             self::$bConnected = false;
-            self::$oInstance  = null;
+            self::$oInstance_MySQL  = null;
+            self::$oInstance_PG     = null;
         }
 
         /**
@@ -236,6 +238,16 @@
             return $this->query($sQuery, $sName);
         }
 
+        private function getPDOForQuery(string $sQuery): ?PDO {
+            if ($this->inTransaction() === false
+            &&  $this->oPDO_Replica !== null
+            &&  self::isRead($sQuery)) {
+                return $this->oPDO_Replica;
+            }
+
+            return $this->oPDO_Source;
+        }
+
         /**
          * @param string|SQLBuilder $sQuery
          * @param string            $sName
@@ -259,9 +271,11 @@
                     Log::ex('ORM.Db.query.builder', $e, $aLogOutput);
                 }
 
+                $oPDO = $this->getPDOForQuery($sSQL);
+
                 /** @psalm-suppress PossiblyInvalidPropertyFetch */
                 $aLogOutput['sql'] = [
-                    'driver' => $this->oPDO ? $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
+                    'driver' => $oPDO ? $oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
                     'query'  => preg_replace("/[\r\n\s\t]+/", " ", $sSQL),
                     'group'  => $sQuery->sSQLGroup,
                     'table'  => $sQuery->sSQLTable,
@@ -272,12 +286,14 @@
                     ]
                 ];
             } else {
+                $oPDO = $this->getPDOForQuery($sSQL);
+
                 /* @var string $sSQL */
                 // We have no pre-defined group, so the name or the query itself becomes the group
                 $sGroup     = trim($sName) !== '' ? $sName : $sSQL;
 
                 $aLogOutput['sql'] = [
-                    'driver' => $this->oPDO ? $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
+                    'driver' => $oPDO ? $oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
                     'query'  => preg_replace("/[\r\n\s\t]+/", " ", $sSQL),
                     'group'  => $sGroup,
                     'hash'   => [
@@ -373,14 +389,14 @@
 
             $this->iLastRowsAffected = 0;
             if ($mResult instanceof PDOStatement) {
-                switch($this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+                switch($oPDO->getAttribute(PDO::ATTR_DRIVER_NAME)) {
                     case 'mysql':
-                        $this->sLastInsertId     = $this->oPDO->lastInsertId();
+                        $this->sLastInsertId     = $oPDO->lastInsertId();
                         $this->iLastRowsAffected = $mResult->rowCount();
                         break;
 
                     case 'sqlite':
-                        $this->sLastInsertId     = $this->oPDO->lastInsertId();
+                        $this->sLastInsertId     = $oPDO->lastInsertId();
                         if (0 !== stripos($sSQL, 'select')) {
                             $this->iLastRowsAffected = $mResult->rowCount();
                         } else {
@@ -413,13 +429,19 @@
             return $mResult;
         }
 
+        private static function isRead($sQuery) {
+            return strpos(strtolower(trim($sQuery)), 'select') === 0;
+        }
+
         /**
          * Do not use Log class here as it will cause an infinite loop
          * @param string $sQuery
          * @return PDOStatement|null
          */
         public function rawQuery(string $sQuery): ?PDOStatement {
-            $oResult = $this->oPDO->query($sQuery);
+            $oPDO    = $this->getPDOForQuery($sQuery);
+            $oResult = $oPDO->query($sQuery);
+
             if ($oResult === false) {
                 return null;
             }
@@ -434,7 +456,8 @@
          * @return false|PDOStatement
          */
         public function prepare(string $sStatement, ?array $aDriverOptions = []) {
-            return $this->oPDO->prepare($sStatement, $aDriverOptions);
+            $oPDO = $this->getPDOForQuery($sStatement);
+            return $oPDO->prepare($sStatement, $aDriverOptions);
         }
 
         /**
@@ -443,23 +466,24 @@
          * @return string
          */
         public function quote($sString, $sPDOType = PDO::PARAM_STR): string {
-            return $this->oPDO->quote($sString, $sPDOType);
+            $oPDO = $this->oPDO_Replica ?? $this->oPDO_Source;
+            return $oPDO->quote($sString, $sPDOType);
         }
 
         public function beginTransaction(): bool {
-            return $this->oPDO->beginTransaction();
+            return $this->oPDO_Source->beginTransaction();
         }
 
         public function inTransaction(): bool {
-            return $this->oPDO->inTransaction();
+            return $this->oPDO_Source->inTransaction();
         }
 
         public function rollBack(): bool {
-            return $this->oPDO->rollBack();
+            return $this->oPDO_Source->rollBack();
         }
 
         public function commit(): bool {
-            return $this->oPDO->commit();
+            return $this->oPDO_Source->commit();
         }
 
         /**
@@ -475,7 +499,8 @@
                 $oTimezone = new DateTimeZone("UTC");
             }
 
-            $sDriver = $this->oPDO->getAttribute(PDO::ATTR_DRIVER_NAME);
+            $oPDO = $this->oPDO_Replica ?? $this->oPDO_Source;
+            $sDriver = $oPDO->getAttribute(PDO::ATTR_DRIVER_NAME);
             if ($sDriver === 'sqlite') {
                 return new DateTime('now');
             }

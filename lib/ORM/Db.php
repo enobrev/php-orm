@@ -158,7 +158,7 @@
          * @param PDO      $oPDO_Source
          * @param PDO|null $oPDO_Replica
          */
-        private function __construct(PDO $oPDO_Source, ?PDO $oPDO_Replica) {
+        private function __construct(PDO $oPDO_Source, ?PDO $oPDO_Replica = null) {
             $this->oPDO_Source  = $oPDO_Source;
             $this->oPDO_Replica = $oPDO_Replica;
         }

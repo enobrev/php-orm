@@ -29,6 +29,8 @@
 
         private static bool $bForceSource = false;
 
+        private static bool $bRetryOnSource = false;
+
         /** @var mixed */
         private $sLastInsertId;
 
@@ -194,6 +196,14 @@
         }
 
         /**
+         * When querying a replica returns no results, retry using the source Db one time and then set this back to false
+         * @param bool $bRetryOnSource
+         */
+        public static function retryOnSourceOnce(bool $bRetryOnSource): void {
+            self::$bRetryOnSource = $bRetryOnSource;
+        }
+
+        /**
          *
          * Keep the connection alive on a long-lived process
          */
@@ -270,7 +280,8 @@
                 'name'  => $sName
             ];
 
-            $sSQL = $sQuery;
+            $bUsedReplica = false;
+            $sSQL         = $sQuery;
             if ($sSQL instanceof SQLBuilder) {
                 try {
                     $sSQL = $sSQL->toString();
@@ -280,10 +291,12 @@
 
                 $oPDO = $this->getPDOForQuery($sSQL);
 
+                $bUsedReplica = $oPDO === $this->oPDO_Replica;
+
                 /** @psalm-suppress PossiblyInvalidPropertyFetch */
                 $aLogOutput['sql'] = [
                     'driver'  => $oPDO ? $oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
-                    'replica' => $oPDO === $this->oPDO_Replica,
+                    'replica' => $bUsedReplica,
                     'query'   => preg_replace("/[\r\n\s\t]+/", " ", $sSQL),
                     'group'   => $sQuery->sSQLGroup,
                     'table'   => $sQuery->sSQLTable,
@@ -300,9 +313,11 @@
                 // We have no pre-defined group, so the name or the query itself becomes the group
                 $sGroup     = trim($sName) !== '' ? $sName : $sSQL;
 
+                $bUsedReplica = $oPDO === $this->oPDO_Replica;
+
                 $aLogOutput['sql'] = [
                     'driver'  => $oPDO ? $oPDO->getAttribute(PDO::ATTR_DRIVER_NAME) : 'N/A',
-                    'replica' => $oPDO === $this->oPDO_Replica,
+                    'replica' => $bUsedReplica,
                     'query'   => preg_replace("/[\r\n\s\t]+/", " ", $sSQL),
                     'group'   => $sGroup,
                     'hash'    => [
@@ -434,6 +449,14 @@
             $aLogOutput['--ms']  = Log::stopTimer($sTimerName);
             $aLogOutput['rows']  = $this->iLastRowsAffected;
             Log::i('ORM.Db.query', $aLogOutput);
+
+            if ($this->iLastRowsAffected === 0 && $bUsedReplica && self::$bRetryOnSource) {
+                self::forceSource(true);
+                $mResult = $this->query($sQuery, $sName);
+                self::forceSource(false);
+            }
+
+            self::retryOnSourceOnce(false); // No matter what, we're revoking the retry after a single query
 
             return $mResult;
         }

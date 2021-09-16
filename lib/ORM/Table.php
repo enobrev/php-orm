@@ -475,6 +475,7 @@
             $aClass     = explode('\\', $sClass);
             $sQueryName = array_pop($aClass) . '.getBy.' . implode('_', $aQueryName);
 
+            Db::retryOnSourceOnce(true);
             if ($oResult = static::Db()->namedQuery($sQueryName, $oSQL)) {
                 return $oTable->createFromPDOStatement($oResult);
             }

@@ -577,7 +577,7 @@
 
             if ($this->oLimit instanceof ORM\Limit) {
                 $aSQL[]    = $this->oLimit->toSQL();
-                $aSQLLog[] = $this->oLimit->toSQL();
+                $aSQLLog[] = $this->oLimit->toSQLLog();
             }
 
             $this->sSQL      = implode(' ', $aSQL);

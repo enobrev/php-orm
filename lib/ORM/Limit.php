@@ -41,4 +41,18 @@
 
             return '';
         }
+
+        public function toSQLLog(): string {
+            if ($this->iOffset !== null) {
+                if ($this->iStart !== null) {
+                    return 'LIMIT int, int';
+                }
+
+                return 'LIMIT int';
+            }
+
+            if ($this->iStart !== null) {
+                return 'LIMIT int';
+            }
+        }
     }

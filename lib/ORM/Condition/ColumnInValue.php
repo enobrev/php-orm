@@ -39,7 +39,7 @@
             $sLeft  = $this->oLeft->toSQLColumn();
             $sRight = $this->oLeft->toSQLLog();
 
-            return "$sLeft $sSign ( $sRight\[] )";
+            return "$sLeft $sSign ( $sRight [] )";
         }
 
         public function __clone() {

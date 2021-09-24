@@ -1,7 +1,8 @@
 <?php
     namespace Enobrev\ORM;
-    
+
     use stdClass;
+    use ReflectionClass;
 
     abstract class Field {
         public ?string $sTable;
@@ -53,7 +54,7 @@
         abstract public function toSQL(): string;
 
         public function toSQLLog(): string {
-            return str_replace('Field_', '', get_class($this));
+            return (new ReflectionClass($this))->getShortName();
         }
 
         public function toSQLColumn(bool $bWithTable=true): string {

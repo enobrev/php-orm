@@ -828,7 +828,7 @@
         private static function toSQLLog(array $aFields): string {
             $aColumns = [];
             foreach($aFields as $oField) {
-                $aColumns[] = get_class($oField);
+                $aColumns[] = $oField->toSQLLog();
             }
 
             return implode(', ', $aColumns);
@@ -881,7 +881,7 @@
                     }
 
                 /** @var ORM\Field $oField */
-                $aColumns[] = $oField->toSQLColumn(false) . ' = ' . get_class($oField);
+                $aColumns[] = $oField->toSQLColumn(false) . ' = ' . $oField->toSQLLog();
             }
 
             return implode(', ', $aColumns);

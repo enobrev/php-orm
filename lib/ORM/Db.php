@@ -15,6 +15,7 @@
     use Enobrev\ORM\Exceptions\DbDuplicateException;
     use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\SQLBuilder;
+    use function Enobrev\notNowButRightNow;
 
     class Db {
         private static ?Db $oInstance_MySQL = null;
@@ -277,7 +278,8 @@
             Log::startTimer($sTimerName);
 
             $aLogOutput = [
-                'name'  => $sName
+                'name'            => $sName,
+                'start_timestamp' => notNowButRightNow()->format(DATE_RFC3339_EXTENDED)
             ];
 
             $bUsedReplica = false;
@@ -404,7 +406,8 @@
                         break;
                 }
 
-                $aLogOutput['--ms']  = Log::stopTimer($sTimerName);
+                $aLogOutput['--ms']          = Log::stopTimer($sTimerName);
+                $aLogOutput['end_timestamp'] = notNowButRightNow()->format(DATE_RFC3339_EXTENDED);
 
                 Log::ex('ORM.Db.query', $e, $aLogOutput);
 
@@ -446,8 +449,9 @@
                 }
             }
 
-            $aLogOutput['--ms']  = Log::stopTimer($sTimerName);
-            $aLogOutput['rows']  = $this->iLastRowsAffected;
+            $aLogOutput['--ms']          = Log::stopTimer($sTimerName);
+            $aLogOutput['rows']          = $this->iLastRowsAffected;
+            $aLogOutput['end_timestamp'] = notNowButRightNow()->format(DATE_RFC3339_EXTENDED);
             Log::i('ORM.Db.query', $aLogOutput);
 
             if ($this->iLastRowsAffected === 0 && $bUsedReplica && self::$bRetryOnSource) {

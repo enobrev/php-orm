@@ -325,18 +325,14 @@
         }
 
         /**
-         * @param int      $iPage
-         * @param int|null $iPer
+         * @param int $iPage
+         * @param int $iPer
          *
          * @return $this
          */
-        public function page(int $iPage = 1, ?int $iPer = null): self {
-            if ($iPer) {
-                $iStart = $iPer * ($iPage - 1);
-                return $this->limit($iStart, $iPer);
-            }
-
-            return $this->limit($iStart);
+        public function page(int $iPage, int $iPer): self {
+            $iStart = $iPer * ($iPage - 1);
+            return $this->limit($iStart, $iPer);
         }
 
         /**

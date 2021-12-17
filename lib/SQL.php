@@ -178,6 +178,17 @@
         }
 
         /**
+         * @param int $iPage
+         * @param int $iPer
+         *
+         * @return ORM\Limit
+         */
+        public static function page(int $iPage, int $iPer): ORM\Limit {
+            $iStart = $iPer * ($iPage - 1);
+            return self::limit($iStart, $iPer);
+        }
+
+        /**
          * @param ORM\Field[] $aFields
          * @return ORM\Group
          */

@@ -639,7 +639,31 @@
             $aReturn = [];
             foreach($this as $oTable) {
                 $sGroup = $oTable->$sKey->getValue();
-                if (!isseT($aReturn[$sGroup])) {
+                if (!isset($aReturn[$sGroup])) {
+                    $aReturn[$sGroup] = [];
+                }
+
+                $aReturn[$sGroup][] = $oTable;
+            }
+
+            return $aReturn;
+        }
+
+        /**
+         * @param array $aKeys
+         *
+         * @return array
+         */
+        public function toKeysGroupedArray(array $aKeys): array {
+            $aReturn = [];
+            foreach($this as $oTable) {
+                $aGroup = [];
+                foreach($aKeys as $sKey) {
+                    $aGroup[] = $oTable->$sKey->getValue();
+                }
+
+                $sGroup = implode('|', $aGroup);
+                if (!isset($aReturn[$sGroup])) {
                     $aReturn[$sGroup] = [];
                 }
 

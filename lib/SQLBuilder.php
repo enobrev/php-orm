@@ -707,6 +707,15 @@
                 }
             }
 
+            $aUpdateFields = [];
+            foreach($this->aFields as $oField) {
+                if ($oField->isPrimary()) {
+                    continue;
+                }
+
+                $aUpdateFields[] = $oField;
+            }
+
             $this->sSQL      = implode(' ',
                 [
                     'INSERT INTO', $this->oTable->getTitle(),
@@ -715,7 +724,7 @@
                     ') VALUES (',
                         self::toSQL($this->aFields),
                     ') ON DUPLICATE KEY UPDATE',
-                        self::toSQLUpdate($this->aFields)
+                        self::toSQLUpdate($aUpdateFields)
                 ]
             );
 
@@ -727,7 +736,7 @@
                     ') VALUES (',
                         self::toSQLLog($this->aFields),
                     ') ON DUPLICATE KEY UPDATE',
-                        self::toSQLLog($this->aFields),
+                        self::toSQLLog($aUpdateFields),
                     ')'
                 ]
             );

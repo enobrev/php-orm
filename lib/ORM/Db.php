@@ -274,7 +274,7 @@
          * @throws DbException
          */
         public function query($sQuery, $sName = ''): ?PDOStatement {
-            $sTimerName = 'ORM.Db.query.' . $sName;
+            $sTimerName = Log::method(__METHOD__) . ".$sName";
             Log::startTimer($sTimerName);
 
             $aLogOutput = [
@@ -288,7 +288,7 @@
                 try {
                     $sSQL = $sSQL->toString();
                 } catch(Exception $e) {
-                    Log::ex('ORM.Db.query.builder', $e, $aLogOutput);
+                    Log::ex(Log::method(__METHOD__), $e, $aLogOutput);
                 }
 
                 $oPDO = $this->getPDOForQuery($sSQL);
@@ -409,7 +409,7 @@
                 $aLogOutput['--ms']          = Log::stopTimer($sTimerName);
                 $aLogOutput['end_timestamp'] = notNowButRightNow()->format(DATE_RFC3339_EXTENDED);
 
-                Log::ex('ORM.Db.query', $e, $aLogOutput);
+                Log::ex(Log::method(__METHOD__), $e, $aLogOutput);
 
                 throw $oException;
             }
@@ -452,7 +452,7 @@
             $aLogOutput['--ms']          = Log::stopTimer($sTimerName);
             $aLogOutput['rows']          = $this->iLastRowsAffected;
             $aLogOutput['end_timestamp'] = notNowButRightNow()->format(DATE_RFC3339_EXTENDED);
-            Log::i('ORM.Db.query', $aLogOutput);
+            Log::i(Log::method(__METHOD__), $aLogOutput);
 
             if ($this->iLastRowsAffected === 0 && $bUsedReplica && self::$bRetryOnSource) {
                 self::forceSource(true);

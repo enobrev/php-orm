@@ -562,9 +562,9 @@
                 $this->postUpdate();
 
                 return $oReturn;
-            } else {
-                Log::w(Log::method(__METHOD__), ['state' => 'no-update', 'reason' => 'no-primary-value']);
             }
+
+            Log::w(Log::method(__METHOD__), ['state' => 'no-update', 'reason' => 'no-primary-value']);
 
             return null;
         }
@@ -595,9 +595,9 @@
                 );
                 $this->postDelete();
                 return $oReturn;
-            } else {
-                Log::w(Log::method(__METHOD__), ['state' => 'no-delete', 'reason' => 'no-primary-value']);
             }
+
+            Log::w(Log::method(__METHOD__), ['state' => 'no-delete', 'reason' => 'no-primary-value']);
 
 
             return null;

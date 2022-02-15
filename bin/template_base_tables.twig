@@ -6,6 +6,7 @@
     use Exception;
 {% endif %}
 
+    use Enobrev\Log;
     use Enobrev\ORM\Db;
     use Enobrev\ORM\Exceptions\DbException;
     use Enobrev\ORM\Tables;
@@ -54,7 +55,7 @@
 
             $oTable   = static::getTable();
             $oSQL     = SQLBuilder::select($oTable)->in($oTable->{{ primary.0.name }}, ${{ primary.0.var_array }});
-            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
+            $oResults = Db::getInstance()->namedQuery(Log::method(__METHOD__), $oSQL);
 
             return PublicNS\{{ table.plural }}::fromResults($oResults, $oTable);
         }
@@ -76,7 +77,7 @@
             $oTable = static::getTable();
             $oSQL = SQLBuilder::select($oTable)->eq($oTable->{{field.name}}->setValue(${{ field.reference.field.var }}));
 
-            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
+            $oResults = Db::getInstance()->namedQuery(Log::method(__METHOD__), $oSQL);
             return PublicNS\{{ table.plural }}::fromResults($oResults, $oTable);
         }
 
@@ -97,7 +98,7 @@
             $oTable = static::getTable();
             $oSQL = SQLBuilder::select($oTable)->in($oTable->{{field.name}}, ${{ field.reference.field.var_array }});
 
-            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
+            $oResults = Db::getInstance()->namedQuery(Log::method(__METHOD__), $oSQL);
             return PublicNS\{{ table.plural }}::fromResults($oResults, $oTable);
         }
 {% endif %}
@@ -125,7 +126,7 @@
             $oSQL->desc($oTable->{{ date_added.name }});
 {% endif %}
 
-            $oResults = Db::getInstance()->namedQuery(__METHOD__, $oSQL);
+            $oResults = Db::getInstance()->namedQuery(Log::method(__METHOD__), $oSQL);
 {% if date_updated %}
             return new DateTime($oResults->fetchObject()->{{ date_updated.name }});
 {% else %}

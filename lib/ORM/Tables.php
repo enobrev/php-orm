@@ -267,7 +267,7 @@
                     $sSearchField = $aCondition['field'] ?? null;
                     $oSearchField = null;
 
-                    Log::d('Tables.getForCMS', [
+                    Log::d(Log::method(__METHOD__), [
                         'table'     => $oTable->getTitle(),
                         'condition' => $aCondition
                     ]);
@@ -293,7 +293,7 @@
                                     try {
                                         $aSQLConditions[] = SQL::eq($oField, $sSearchValue);
                                     } catch (Throwable $e) {
-                                        Log::w('Tables.getQueryForCMS.InvalidValueForDateSearch');
+                                        Log::w(Log::method(__METHOD__), ['state' => 'InvalidValueForDateSearch']);
                                     }
                                 } else if ($oField instanceof Field\Enum) {
                                     if ($oField->isValue($sSearchValue)) {
@@ -314,7 +314,7 @@
                                 try {
                                     $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
                                 } catch (Throwable $e) {
-                                    Log::w('Tables.getQueryForCMS.InvalidValueForDateSearch');
+                                    Log::w(Log::method(__METHOD__), ['state' => 'InvalidValueForDateSearch']);
                                 }
                             } else if ($oSearchField instanceof Field\Enum) {
                                 if ($oSearchField->isValue($sSearchValue)) {
@@ -386,7 +386,7 @@
                     $sSortTableField = $aField['field'];
 
                     if (isset($aField['table'])) {
-                        Log::d('Tables.getForCMS.Sort.Foreign', $aField);
+                        Log::d(Log::method(__METHOD__), ['state' => 'Sort.Foreign', 'field' => $aField]);
                         $sSortTableClass = $aField['table'];
 
                         $oSortTable = new $sSortTableClass();
@@ -402,7 +402,7 @@
                                 $oQuery->fields($oTable); // Setting Primary Table fields to ensure joined fields aren't the only ones returned
                                 $oQuery->join($oTable->$sReferenceField, $oSortReference);
                             } catch (Throwable $e) {
-                                Log::ex('Tables.getForCMS.Sort.Foreign.JoinConditionError', $e);
+                                Log::ex(Log::method(__METHOD__), $e, ['state' => 'Sort.Foreign.JoinConditionError']);
                             }
                         } else {
                             $oSortReference = $oTable->getFieldThatReferencesTable($oSortTable);
@@ -416,7 +416,7 @@
                                 $oQuery->fields($oTable); // Setting Primary Table fields to ensure joined fields aren't the only ones returned
                                 $oQuery->join($oSortReference, $oSortTable->$sReferenceField);
                             } catch (Throwable $e) {
-                                Log::ex('Tables.getForCMS.Sort.Foreign.JoinConditionError', $e);
+                                Log::ex(Log::method(__METHOD__), $e, ['state' => 'Sort.Foreign.JoinConditionError']);
                             }
                         }
 

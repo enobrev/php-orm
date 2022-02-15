@@ -9,11 +9,10 @@
 
     use Enobrev\Log;
     use Enobrev\ORM\Condition\ConditionInterface;
+    use Enobrev\ORM\Exceptions\SQLBuilderMissingUpdateFieldsException;
     use Enobrev\ORM\Exceptions\TableException;
     use Enobrev\ORM\Exceptions\TableFieldNotFoundException;
     use Enobrev\SQLBuilder;
-
-    use function Enobrev\dbg;
 
     abstract class Table {
         protected string $sTitle = '';
@@ -244,11 +243,11 @@
                 return false;
             }
 
-            if ($mValue instanceof Table) {
-                $mValue = $mValue->{$this->sColumn};
+            if ($mValue instanceof self) {
+                $mValue = $mValue->{$oField->sColumn};
             }
 
-            if ($mValue instanceof self) {
+            if ($mValue instanceof Field) {
                 $mValue = $mValue->getValue();
             }
 
@@ -705,7 +704,7 @@
         }
 
         public function toHash(): string {
-            return hash('sha1', (string) json_encode($this->toArray()));
+            return hash('sha1', (string)json_encode($this->toArray(), JSON_THROW_ON_ERROR));
         }
 
         /**

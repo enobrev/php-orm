@@ -549,18 +549,17 @@
             }
 
             if ($this->primaryHasValue()) {
+                $oSQL = SQLBuilder::update($this)->also($this->getPrimary());
                 try {
-                    $sSQL = SQLBuilder::update($this)->also($this->getPrimary());
+                    $oReturn = static::Db()->namedQuery(static::class  . '.' . __FUNCTION__, $oSQL);
+                    $this->postUpdate();
+
+                    return $oReturn;
                 } catch (SQLBuilderMissingUpdateFieldsException $e) {
                     Log::w(Log::method(__METHOD__), ['state' => 'no-update', 'reason' => 'missing-updated-fields']);
                     // Nothing to update - same as !changed
                     return null;
                 }
-
-                $oReturn = static::Db()->namedQuery(static::class  . '.' . __FUNCTION__, $sSQL);
-                $this->postUpdate();
-
-                return $oReturn;
             }
 
             Log::w(Log::method(__METHOD__), ['state' => 'no-update', 'reason' => 'no-primary-value']);

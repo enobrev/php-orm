@@ -289,6 +289,7 @@
                     $sSQL = $sSQL->toString();
                 } catch(Exception $e) {
                     Log::ex('ORM.Db.query', $e, $aLogOutput);
+                    throw $e;
                 }
 
                 $oPDO = $this->getPDOForQuery($sSQL);

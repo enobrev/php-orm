@@ -205,8 +205,11 @@
             return $this->sValue;
         }
 
-        public function getValueOrDefault() {
-            return $this->hasValue() ? $this->sValue : $this->sDefault;
+        public function getValueOrDefault(?string $sDefault = null) {
+            if (!$sDefault) {
+                $sDefault = $this->sDefault;
+            }
+            return $this->hasValue() ? $this->sValue : $sDefault;
         }
 
         /**

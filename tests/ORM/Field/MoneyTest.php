@@ -12,6 +12,11 @@
 
     class MoneyTest extends TestCase {
 
+        protected function setUp(): void {
+            parent::setUp();
+            $this->markTestIncomplete(); // Disabled until moneyphp is updated for php 8.1
+        }
+
         public function test__toString(): void {
             $oMoney = new Field\Money('amount');
             $oMoney->setValue(500);

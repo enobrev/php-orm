@@ -32,7 +32,7 @@
         "ext-openssl": "*",
         "ext-pdo": "*",
         "ext-readline": "*",
-        "adbario/php-dot-notation": "^2.2",
+        "adbario/php-dot-notation": "2.x-dev",
         "enobrev/php-tools": "dev-master",
         "laminas/laminas-httphandlerrunner": "^2.0",
         "moneyphp/money": "^3.3",

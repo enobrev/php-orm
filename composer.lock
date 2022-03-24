@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "44608d5db1e230446b30c4eb170e4532",
+    "content-hash": "c11cb93a10696758f8f060213a584d5a",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
-            "version": "2.2.0",
+            "version": "2.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/adbario/php-dot-notation.git",
-                "reference": "eee4fc81296531e6aafba4c2bbccfc5adab1676e"
+                "reference": "0a69aaabe706beebac848ef32587116b68875eea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/adbario/php-dot-notation/zipball/eee4fc81296531e6aafba4c2bbccfc5adab1676e",
-                "reference": "eee4fc81296531e6aafba4c2bbccfc5adab1676e",
+                "url": "https://api.github.com/repos/adbario/php-dot-notation/zipball/0a69aaabe706beebac848ef32587116b68875eea",
+                "reference": "0a69aaabe706beebac848ef32587116b68875eea",
                 "shasum": ""
             },
             "require": {
@@ -25,9 +25,10 @@
                 "php": ">=5.5"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.0|^5.0|^6.0",
+                "phpunit/phpunit": "^4|^5|^6|^7|^8",
                 "squizlabs/php_codesniffer": "^3.0"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "files": [
@@ -57,7 +58,7 @@
                 "issues": "https://github.com/adbario/php-dot-notation/issues",
                 "source": "https://github.com/adbario/php-dot-notation/tree/2.x"
             },
-            "time": "2019-01-01T23:59:15+00:00"
+            "time": "2021-10-31T23:18:24+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -3155,6 +3156,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "adbario/php-dot-notation": 20,
         "enobrev/php-tools": 20
     },
     "prefer-stable": false,

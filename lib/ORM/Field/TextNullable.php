@@ -13,12 +13,14 @@
         public function getValue(): ?string {
             $sValue = $this->sValue;
 
-            if (trim($sValue) === '') {
-                $sValue = NULL;
-            }
+            if ($sValue !== null) {
+                if (trim($sValue) === '') {
+                    $sValue = NULL;
+                }
 
-            if (strtolower($sValue) === 'null') {
-                $sValue = NULL;
+                if (strtolower($sValue) === 'null') {
+                    $sValue = NULL;
+                }
             }
 
             return $sValue;
@@ -39,12 +41,14 @@
                 $sValue = $sValue->getValue();
             }
 
-            if (empty(trim($sValue))) {
-                $sValue = NULL;
-            }
+            if ($sValue !== null) {
+                if (empty(trim($sValue))) {
+                    $sValue = null;
+                }
 
-            if ($sValue === 'null' || $sValue === 'NULL') {
-                $sValue = NULL;
+                if ($sValue === 'null' || $sValue === 'NULL') {
+                    $sValue = null;
+                }
             }
 
             $this->sValue = $sValue;

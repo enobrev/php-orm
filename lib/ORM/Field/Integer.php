@@ -38,12 +38,15 @@
                 $sValue = $sValue->getValue();
             }
 
-            if (strtolower($sValue) === 'null') {
-                $sValue = null;
-            }
 
-            if (trim($sValue) === '') {
-                $sValue = null;
+            if ($sValue !== null) {
+                if (strtolower($sValue) === 'null') {
+                    $sValue = null;
+                }
+
+                if (trim($sValue) === '') {
+                    $sValue = null;
+                }
             }
 
             if ($sValue !== null) {

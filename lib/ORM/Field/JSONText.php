@@ -26,12 +26,14 @@
                 $sValue = json_encode($sValue);
             }
 
-            if (empty(trim($sValue))) {
-                $sValue = NULL;
-            }
+            if ($sValue !== null) {
+                if (empty(trim($sValue))) {
+                    $sValue = null;
+                }
 
-            if ($sValue === 'null' || $sValue === 'NULL') {
-                $sValue = NULL;
+                if ($sValue === 'null' || $sValue === 'NULL') {
+                    $sValue = null;
+                }
             }
 
             $this->sValue = $sValue;

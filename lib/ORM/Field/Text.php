@@ -18,7 +18,7 @@
          */
         public function getValue() {
             // Remove invalid UTF-8 Characters
-            return mb_convert_encoding($this->sValue, 'UTF-8', 'UTF-8');
+            return $this->sValue !== null ? mb_convert_encoding($this->sValue, 'UTF-8', 'UTF-8') : null;
         }
 
         public function __toString(): string {

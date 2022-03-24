@@ -324,7 +324,7 @@
                 'nullable'          => strtolower($oField->is_nullable) === 'yes',
                 'var'               => getFieldTitle($sField),
                 'var_array'         => 'a' . pluralize(getFieldTitle($sField)),
-                'default'           => strlen($oField->column_default) ? $oField->column_default : null,
+                'default'           => $oField->column_default !== null && strlen($oField->column_default) > 0 ? $oField->column_default : null,
                 'comment'           => $oField->column_comment,
                 'mysql_type'        => $oField->data_type
             );

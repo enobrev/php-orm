@@ -16,12 +16,14 @@
         public function getValue(): ?string {
             $sValue = $this->sValue;
 
-            if (trim($sValue) === '') {
-                $sValue = NULL;
-            }
+            if ($sValue !== null) {
+                if (trim($sValue) === '') {
+                    $sValue = null;
+                }
 
-            if (strtolower($sValue) === 'null') {
-                $sValue = NULL;
+                if (strtolower($sValue) === 'null') {
+                    $sValue = null;
+                }
             }
 
             return $sValue;

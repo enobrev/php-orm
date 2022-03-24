@@ -22,7 +22,7 @@
                 $sValue = $sValue->getValue();
             }
 
-            if (strtolower($sValue) === 'null') {
+            if ($sValue !== null && strtolower($sValue) === 'null') {
                 $sValue = null;
             }
 

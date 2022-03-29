@@ -498,11 +498,12 @@
         }
 
         /**
-         * @param     $sString
-         * @param int $sPDOType
+         * @param string $sString
+         * @param int    $sPDOType
+         *
          * @return string
          */
-        public function quote($sString, $sPDOType = PDO::PARAM_STR): string {
+        public function quote(string $sString, int $sPDOType = PDO::PARAM_STR): string {
             $oPDO = $this->replicaOrSource();
             return $oPDO->quote($sString, $sPDOType);
         }

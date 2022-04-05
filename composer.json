@@ -27,10 +27,6 @@
         },
         {
             "type": "git",
-            "url":  "https://github.com/enobrev/php-dot-notation.git"
-        },
-        {
-            "type": "git",
             "url":  "https://github.com/enobrev/garden-cli.git"
         }
     ],
@@ -40,7 +36,7 @@
         "ext-openssl": "*",
         "ext-pdo": "*",
         "ext-readline": "*",
-        "adbario/php-dot-notation": "2.x-dev",
+        "adbario/php-dot-notation": "^3.1",
         "enobrev/php-tools": "dev-master",
         "laminas/laminas-httphandlerrunner": "^2.0",
         "twig/twig": "^3.1",

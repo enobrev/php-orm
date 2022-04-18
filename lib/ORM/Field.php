@@ -177,6 +177,10 @@
             return $this->getValue() === $this->sDefault;
         }
 
+        public function setTable(string $sTable): void {
+            $this->sTable = $sTable;
+        }
+
         public function setAlias(string $sAlias): void {
             $this->sAlias = $sAlias;
         }

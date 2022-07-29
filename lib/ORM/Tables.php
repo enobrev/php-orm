@@ -317,9 +317,7 @@
                                     Log::w(Log::method(__METHOD__), ['state' => 'InvalidValueForDateSearch']);
                                 }
                             } else if ($oSearchField instanceof Field\Enum) {
-                                if ($oSearchField->isValue($sSearchValue)) {
-                                    $aSQLConditions[] = SQL::eq($oSearchField, $sSearchValue);
-                                }
+                                $aSQLConditions[] = SQL::in($oSearchField, explode(',', $sSearchValue));
                             } else if ($oSearchField instanceof Field\Number) {
                                 if (strpos($sSearchValue, ',') !== false) {
                                     $aSQLConditions[] = SQL::in($oSearchField, explode(',', $sSearchValue));

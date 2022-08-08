@@ -549,8 +549,8 @@
             }
 
             if ($this->primaryHasValue()) {
-                $oSQL = SQLBuilder::update($this)->also($this->getPrimary());
                 try {
+                    $oSQL = SQLBuilder::update($this)->also($this->getPrimary());
                     $oReturn = static::Db()->namedQuery(static::class  . '.' . __FUNCTION__, $oSQL);
                     $this->postUpdate();
 

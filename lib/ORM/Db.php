@@ -374,7 +374,6 @@
                     }
                 }
             }
-
             /* @var string $sSQL */
             assert(trim($sSQL) !== '', new DbException('Empty Query'));
 
@@ -394,6 +393,7 @@
                         }
                         break;
 
+                    case 1205:
                     case 40001:
                         $oException = new DbDeadlockException($sMessage . ' in SQL: ' . $sSQL, $iCode);
                         break;

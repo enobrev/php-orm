@@ -403,7 +403,11 @@
                         break;
 
                     default:
-                        $oException = new DbException($sMessage . ' in SQL: ' . $sSQL, $iCode);
+                        if (str_contains($sMessage, 'Lock wait timeout exceeded')) { // Sometimes the code doesn't come through - especially if it's an INSERT SELECT, for instance
+                            $oException = new DbDeadlockException($sMessage . ' in SQL: ' . $sSQL, $iCode);
+                        } else {
+                            $oException = new DbException($sMessage . ' in SQL: ' . $sSQL, $iCode);
+                        }
                         break;
                 }
 

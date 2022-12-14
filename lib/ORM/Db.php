@@ -244,7 +244,7 @@
             while($iTries < $iMaxAttempts) {
                 $iTries++;
                 try {
-                    return $oDb->namedQuery($sName, $sQuery);
+                    return $this->namedQuery($sName, $sQuery);
                 } catch (DbDeadlockException $e) {
                     if ($iTries >= $iMaxAttempts - 1) {
                         Log::ex(Log::method(__METHOD__), $e, ['state' => 'Deadlock.Fail', 'name' => $sName, 'tries' => $iTries]);

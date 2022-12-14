@@ -388,15 +388,15 @@
                     case 1062:
                     case 23000:
                         if (strpos($sMessage, 'foreign key constraint fails') !== false) {
-                            $oException = new DbConstraintException($sMessage . ' in SQL: ' . $sSQL, $iCode);
+                            $oException = new DbConstraintException("$sMessage in SQL $sSQL", $iCode);
                         } else {
-                            $oException = new DbDuplicateException($sMessage . ' in SQL: ' . $sSQL, $iCode);
+                            $oException = new DbDuplicateException("$sMessage in SQL $sSQL", $iCode);
                         }
                         break;
 
                     case 1205:
                     case 40001:
-                        $oException = new DbDeadlockException($sMessage . ' in SQL: ' . $sSQL, $iCode);
+                        $oException = new DbDeadlockException("$sMessage in SQL $sSQL", $iCode);
                         break;
 
                     case 42000:
@@ -405,9 +405,9 @@
 
                     default:
                         if (str_contains($sMessage, 'Lock wait timeout exceeded')) { // Sometimes the code doesn't come through - especially if it's an INSERT SELECT, for instance
-                            $oException = new DbDeadlockException($sMessage . ' in SQL: ' . $sSQL, $sCode);
+                            $oException = new DbDeadlockException("[$sCode] $sMessage in SQL $sSQL", $iCode);
                         } else {
-                            $oException = new DbException($sMessage . ' in SQL: ' . $sSQL, $sCode);
+                            $oException = new DbException("[$sCode] $sMessage in SQL $sSQL", $iCode);
                         }
                         break;
                 }

@@ -415,7 +415,7 @@
                 $aLogOutput['--ms']          = Log::stopTimer($sTimerName);
                 $aLogOutput['end_timestamp'] = notNowButRightNow()->format(DATE_RFC3339_EXTENDED);
 
-                Log::ex('ORM.Db.query', $e, $aLogOutput);
+                Log::w('ORM.Db.query.exception', $aLogOutput);
 
                 throw $oException;
             }

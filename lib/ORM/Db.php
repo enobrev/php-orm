@@ -379,8 +379,9 @@
 
             try {
                 $mResult = $this->rawQuery($sSQL);
-            } catch(PDOException $e) {
-                $iCode = (int) $e->getCode();
+            } catch(Throwable | PDOException $e) {
+                $sCode = $e->getCode();
+                $iCode = (int) $sCode;
                 $sMessage = $e->getMessage();
 
                 switch($iCode) {
@@ -404,9 +405,9 @@
 
                     default:
                         if (str_contains($sMessage, 'Lock wait timeout exceeded')) { // Sometimes the code doesn't come through - especially if it's an INSERT SELECT, for instance
-                            $oException = new DbDeadlockException($sMessage . ' in SQL: ' . $sSQL, $iCode);
+                            $oException = new DbDeadlockException($sMessage . ' in SQL: ' . $sSQL, $sCode);
                         } else {
-                            $oException = new DbException($sMessage . ' in SQL: ' . $sSQL, $iCode);
+                            $oException = new DbException($sMessage . ' in SQL: ' . $sSQL, $sCode);
                         }
                         break;
                 }

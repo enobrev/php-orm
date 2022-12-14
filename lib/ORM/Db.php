@@ -239,6 +239,27 @@
             return $this->iLastRowsAffected;
         }
 
+        public function namedQueryWithDeadlockRetries($iMaxAttempts, $sName, $sQuery): ?PDOStatement {
+            $iTries = 0;
+            while($iTries < $iMaxAttempts) {
+                $iTries++;
+                try {
+                    return $oDb->namedQuery($sName, $sQuery);
+                } catch (DbDeadlockException $e) {
+                    if ($iTries >= $iMaxAttempts - 1) {
+                        Log::ex(Log::method(__METHOD__), $e, ['state' => 'Deadlock.Fail', 'name' => $sName, 'tries' => $iTries]);
+                        throw $e;
+                    }
+
+                    $iSleep = pow($iTries, 2);
+                    Log::w(Log::method(__METHOD__), ['state' => 'Deadlock.Retry', 'name' => $sName, 'tries' => $iTries, 'sleep' => $iSleep]);
+                    sleep(random_int($iTries, $iSleep));
+                }
+            }
+
+            return null;
+        }
+
         /**
          * @param string|string[] $sName
          * @param string|SQLBuilder $sQuery

@@ -3,6 +3,7 @@
 
     use DateTime;
     use DateTimeZone;
+    use Enobrev\Handler;
     use Enobrev\ORM\Exceptions\DbConstraintException;
     use Enobrev\ORM\Exceptions\DbDeadlockException;
     use Enobrev\ORM\Exceptions\DbEmptyQueryException;
@@ -240,24 +241,7 @@
         }
 
         public function namedQueryWithDeadlockRetries($iMaxAttempts, $sName, $sQuery): ?PDOStatement {
-            $iTries = 0;
-            while($iTries < $iMaxAttempts) {
-                $iTries++;
-                try {
-                    return $this->namedQuery($sName, $sQuery);
-                } catch (DbDeadlockException $e) {
-                    if ($iTries >= $iMaxAttempts - 1) {
-                        Log::ex(Log::method(__METHOD__), $e, ['state' => 'Deadlock.Fail', 'name' => $sName, 'tries' => $iTries]);
-                        throw $e;
-                    }
-
-                    $iSleep = pow($iTries, 2);
-                    Log::w(Log::method(__METHOD__), ['state' => 'Deadlock.Retry', 'name' => $sName, 'tries' => $iTries, 'sleep' => $iSleep]);
-                    sleep(random_int($iTries, $iSleep));
-                }
-            }
-
-            return null;
+            return Handler::DbDeadlock(Log::method(__METHOD__), static fn () => $this->namedQuery($sName, $sQuery), $iMaxAttempts);
         }
 
         /**

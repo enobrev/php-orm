@@ -241,7 +241,7 @@
         }
 
         public function namedQueryWithDeadlockRetries($iMaxAttempts, $sName, $sQuery): ?PDOStatement {
-            return Handler::DbDeadlock(Log::method(__METHOD__), static fn () => $this->namedQuery($sName, $sQuery), $iMaxAttempts);
+            return Handler::DbDeadlock(Log::method(__METHOD__), fn () => $this->namedQuery($sName, $sQuery), $iMaxAttempts);
         }
 
         /**

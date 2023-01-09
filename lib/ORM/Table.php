@@ -239,6 +239,10 @@
          * @return bool
          */
         public function fieldChangedFrom(Field $oField, $mValue): bool {
+            if (!$this->oResult) {
+                return true;
+            }
+
             if (!$this->fieldChanged($oField)) {
                 return false;
             }

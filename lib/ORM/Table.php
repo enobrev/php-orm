@@ -243,6 +243,10 @@
                 return true;
             }
 
+            if (!property_exists($this->oResult, $oField->sColumn)) {
+                return true;
+            }
+
             if (!$this->fieldChanged($oField)) {
                 return false;
             }

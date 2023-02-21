@@ -161,21 +161,26 @@
 
             $aResponse = [];
             $sSort     = trim($sSort);
-            $sGetSort  = preg_replace('/,\s+/', ',', $sSort);
+            $sGetSort  = preg_replace('/,\-\s+/', ',', $sSort);
             $aSort     = explode(',', $sGetSort);
 
             foreach($aSort as $sSortField) {
+                $sDirection = str_starts_with($sSortField, '-') ? 'DESC' : 'ASC';
+                $sSortField = ltrim($sSortField, '-');
+
                 if (strpos($sSortField, '.')) {
                     $aSplit = explode('.', $sSortField);
                     if (count($aSplit) === 2) {
                         $aResponse[] = [
                             'table' => $aSplit[0],
-                            'field' => $aSplit[1]
+                            'field' => $aSplit[1],
+                            'direction' => $sDirection
                         ];
                     }
                 } else {
                     $aResponse[] = [
-                        'field' => $sSortField
+                        'field' => $sSortField,
+                        'direction' => $sDirection
                     ];
                 }
             }
@@ -382,6 +387,7 @@
             if ($aSort) {
                 foreach($aSort as $aField) {
                     $sSortTableField = $aField['field'];
+                    $sDireciton = $aField['direction'] ?? 'ASC';
 
                     if (isset($aField['table'])) {
                         Log::d(Log::method(__METHOD__), ['state' => 'Sort.Foreign', 'field' => $aField]);
@@ -418,11 +424,19 @@
                             }
                         }
 
-                        $oQuery->asc($oSortTable->$sSortTableField);
+                        if ($sDireciton === 'ASC') {
+                            $oQuery->asc($oSortTable->$sSortTableField);
+                        } else {
+                            $oQuery->desc($oSortTable->$sSortTableField);
+                        }
                     } else {
                         $oSortField = $oTable->$sSortTableField;
                         if ($oSortField instanceof Field) {
-                            $oQuery->asc($oSortField);
+                            if ($sDireciton === 'ASC') {
+                                $oQuery->asc($oSortField);
+                            } else {
+                                $oQuery->desc($oSortField);
+                            }
                         }
                     }
                 }

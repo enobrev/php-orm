@@ -279,8 +279,7 @@
          * @throws DbException
          */
         public function query($sQuery, $sName = ''): ?PDOStatement {
-            $sTimerName = 'ORM.Db.query.' . $sName;
-            Log::startTimer($sTimerName);
+            $oTimer = Log::startTimer('ORM.Db.query.' . $sName);
 
             $aLogOutput = [
                 'name'            => $sName,
@@ -417,7 +416,7 @@
                         break;
                 }
 
-                $aLogOutput['--ms']          = Log::stopTimer($sTimerName);
+                $aLogOutput['--ms']          = $oTimer->stop();
                 $aLogOutput['end_timestamp'] = notNowButRightNow()->format(DATE_RFC3339_EXTENDED);
 
                 Log::w('ORM.Db.query.exception', $aLogOutput);
@@ -460,7 +459,7 @@
                 }
             }
 
-            $aLogOutput['--ms']          = Log::stopTimer($sTimerName);
+            $aLogOutput['--ms']          = $oTimer->stop();
             $aLogOutput['rows']          = $this->iLastRowsAffected;
             $aLogOutput['end_timestamp'] = notNowButRightNow()->format(DATE_RFC3339_EXTENDED);
             Log::i('ORM.Db.query', $aLogOutput);
